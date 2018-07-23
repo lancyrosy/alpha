@@ -27,7 +27,7 @@ int main(void){
 
 	clrscr();
 
-   	puts("I'm alive!");
+   	puts("I'm alive! abcde");
 
 
    	InitDataCold();
