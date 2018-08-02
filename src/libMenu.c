@@ -93,11 +93,9 @@ void MenuTest(){
 			DisWheelMotor();
 			break;
 		case 3:
-			EnableSensor();
-			EnWheelMotor();
+
 			MyTest();
-			DisableSensor();
-			DisWheelMotor();
+
 			break;
 	    case MENU_EXIT:
 			return;
@@ -271,7 +269,11 @@ void MyTest(){
 		while(1) {
 		    switch(SelectMenuItem(&sensorNum, MENU_SIZE, menuStrg)) {
 			case 1:
+				EnableSensor();
+				EnWheelMotor();
 				TestRun();
+				DisableSensor();
+				DisWheelMotor();
 				break;
 			case 2:
 				MoveRobotCalibrate(XSPEED, 200, 0, 200, 0, 1000);

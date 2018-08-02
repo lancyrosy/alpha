@@ -261,13 +261,15 @@ void StopRobot(void)
 // 			rotational(in degree)
 // @param  see SetMoveCommand()
 void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
-
+	char s[8];
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc);
 
 	while(!EndOfMove(speedType)) {
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc
+		sprintf(s,"%4d", RSumMarker);
+		DispDotMatrix(s);
 		if (bSWFlag) {	// user switch break!
 			break;
 		}

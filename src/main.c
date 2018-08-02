@@ -27,21 +27,35 @@ int main(void){
 
 	clrscr();
 
+   	puts("I'm alive!12345");
 
-   	puts("I'm alive! abcde");
 
    	InitDataCold();
 
 	InitDataWarm();
 
 
-	EnWheelMotor();
+	//EnWheelMotor();
 	//DispAllSensorValues();
 	//ReadDataFromFlash();
 	//StartCMUCAM(4, 57600);
 	//PrintCamValues();
 	//CAM_to_WinM3();
 	//TestMotorMenu();
+#ifdef xxx
+	while(1){
+		char c;
+		gotoxy(5,5);
+		printf("%5d", pwm);
+		c = GetChar();
+		if (c=='u')
+			pwm+=20;
+		if (c=='d')
+			pwm-=20;
+		SetPWM0(pwm);
+		SetPWM1(pwm);
+	}
+#endif
 
 
 	MainMenu();

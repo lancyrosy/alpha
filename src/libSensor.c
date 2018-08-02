@@ -26,7 +26,7 @@ volatile uint16_t adc2_dma_buf[16];
 volatile uint16_t adc3_dma_buf[16];
 
 volatile int senfla;
-volatile int sensoroffset, cenval;
+volatile int sensoroffset, sensoroffset2, cenval;
 volatile int state, substate;
 volatile int adcCnt;
 

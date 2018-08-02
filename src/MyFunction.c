@@ -60,60 +60,7 @@ void TestRun(){
 	WaitSW();
 
 }
-/*
-void LMarketDetect(){
-	if (sensorCal[13] >= 600) {
-		LState = 1;
-		JLState = 0;
-		disL = curPos[0]/DIST_mm_oc(1);
-	}
-	if (sensorCal[13] <= 400 && LState == 1){
-		LState = 0;
-		JLState = 1;
-		LSumMarker ++;
-		pulseLED(0,100);
-		pulseBuzzer(1000, 50);
-		if((RState == 1) || (JRState == 1)){
-			if (abs(disL-disR) < 20){
-				if(bJunFlag == FALSE){
-					sumJunction++;
-					LSumMarker--;
-					RSumMarker--;
-					pulseBuzzer(2500, 50);
-					bJunFlag = TRUE;
-				}
-			}
-		}
-	}
-}
 
-void RMarketDetect(){
-	if (sensorCal[14] >= 600){
-		RState = 1;
-		JRState = 0;
-		disR = curPos[0]/DIST_mm_oc(1);
-	}
-	if (sensorCal[14] <= 400 && RState == 1){
-		RState = 0;
-		JRState = 1; //just pass right marker
-		RSumMarker ++;
-		pulseLED(1,100);
-		pulseBuzzer(1000, 50);
-		if((LState == 1) || (JLState == 1)){
-			if (abs(disL-disR) < 20){
-				if(bJunFlag == FALSE){
-					sumJunction++;
-					LSumMarker--;
-					RSumMarker--;
-					pulseBuzzer(2500, 50);
-					bJunFlag = TRUE;
-				}
-			}
-		}
-	}
-
-}
-*/
 
 void LMarketDetect(){
 	if (sensorCal[13] >= 600) {

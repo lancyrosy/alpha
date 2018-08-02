@@ -20,7 +20,7 @@ typedef enum {FALSE = 0, TRUE = !FALSE} bool;
 #include "libSwitch.h"
 #include "libMotor.h"
 #include "libCMUCAM.h"
-
+#include "Myfunction.h"
 // ---------------------------------------------------------------------------------
 // Data type definition
 // ---------------------------------------------------------------------------------
@@ -100,7 +100,6 @@ extern bool bBlinkFlag, bScrollFlag, bRawFlag, bAlignFlag;
 extern unsigned pulseDuration[2];
 extern int pulseBuzzerDuration;
 extern volatile int LSumMarker,RSumMarker,sumJunction;
-extern volatile int sensoroffset;
 
 // ---------------------------------------------------------------------------------
 //  Function prototypes
@@ -165,12 +164,6 @@ void CollectSensorStatistic();
 
 /* */
 
-void LMarketDetect();
-void RMarketDetect();
-void pulseLED(int num, int duration);
-void pulseBuzzer( int per, int duration);
-void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc);
-int16_t Cen1();
 
 /* */
 
