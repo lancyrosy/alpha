@@ -27,13 +27,17 @@ int i=0;
 #define R_MARKER_SEN sensorBlack[14]
 
 bool bPulseFlag = FALSE;
+bool bJunFlag = FALSE;
 
 void collectBlackValue();
 void pulseLED(int num, int duration);
 void pulseBuzzer( int per, int duration);
 void LMarketDetect();
 void RMarketDetect();
+void JMarkerDetect();
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc);
+
+
 
 void pulseLED(int num, int duration){
 	bPulseFlag = TRUE;
@@ -47,10 +51,16 @@ void pulseBuzzer( int period, int duration){
 }
 
 void TestRun(){
-	DelaymSec(1000);
-	MoveRobot(XSPEED, 10000, 0, 500, 0, 2000);
-}
 
+	DelaymSec(1000);
+	ClearMarkerFlag();
+	MoveRobotExplore(XSPEED, 25000, 0, 500, 0, 2000);
+
+	StopRobot();
+	WaitSW();
+
+}
+/*
 void LMarketDetect(){
 	if (sensorCal[13] >= 600) {
 		LState = 1;
@@ -63,7 +73,17 @@ void LMarketDetect(){
 		LSumMarker ++;
 		pulseLED(0,100);
 		pulseBuzzer(1000, 50);
-		JMarkerDetect();
+		if((RState == 1) || (JRState == 1)){
+			if (abs(disL-disR) < 20){
+				if(bJunFlag == FALSE){
+					sumJunction++;
+					LSumMarker--;
+					RSumMarker--;
+					pulseBuzzer(2500, 50);
+					bJunFlag = TRUE;
+				}
+			}
+		}
 	}
 }
 
@@ -75,25 +95,85 @@ void RMarketDetect(){
 	}
 	if (sensorCal[14] <= 400 && RState == 1){
 		RState = 0;
-		JRState = 1;
+		JRState = 1; //just pass right marker
 		RSumMarker ++;
 		pulseLED(1,100);
 		pulseBuzzer(1000, 50);
+		if((LState == 1) || (JLState == 1)){
+			if (abs(disL-disR) < 20){
+				if(bJunFlag == FALSE){
+					sumJunction++;
+					LSumMarker--;
+					RSumMarker--;
+					pulseBuzzer(2500, 50);
+					bJunFlag = TRUE;
+				}
+			}
+		}
+	}
+
+}
+*/
+
+void LMarketDetect(){
+	if (sensorCal[13] >= 600) {
+		LState = 1;
+		JLState = 0;
+	}
+	if (sensorCal[13] <= 400 && LState == 1){
+		LState = 0;
+		JLState = 1;
+		disL = curPos[0]/DIST_mm_oc(1);
 		JMarkerDetect();
+	}
+	if (JLState==1) {
+		uint16_t tDist = curPos[0]/DIST_mm_oc(1);
+		if ((tDist-disL)>25) {
+			JLState = 0;
+			LSumMarker ++;
+			pulseLED(0,100);
+			//pulseBuzzer(1000, 50);
+		}
+	}
+}
+
+void RMarketDetect(){
+	if (sensorCal[14] >= 600){
+		RState = 1;
+		JRState = 0;
+	}
+	if (sensorCal[14] <= 400 && RState == 1){
+		RState = 0;
+		JRState = 1;
+		disR = curPos[0]/DIST_mm_oc(1);
+		JMarkerDetect();
+	}
+	if (JRState==1) {
+		uint16_t tDist = curPos[0]/DIST_mm_oc(1);
+		if ((tDist-disR)>25) {
+			JRState = 0;
+			RSumMarker ++;
+			pulseLED(1,100);
+			pulseBuzzer(4000, 50);
+		}
 	}
 }
 void JMarkerDetect(){
-	if ((JLState == 1) || (JRState == 1)) {
+	if ((JLState == 1) && (JRState == 1)) {
 		if (abs(disL - disR) < 20) {
 			sumJunction++;
-			LSumMarker--;
-			RSumMarker--;
+			//LSumMarker--;
+			//RSumMarker--;
 			pulseBuzzer(2500, 50);
 		}
 		JLState=JRState=0;
 	}
 }
-
+void ClearMarkerFlag(){
+	JRState=JLState=0;
+	LState=RState=0;
+	RSumMarker=LSumMarker=sumJunction=0;
+}
 
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 
@@ -122,4 +202,19 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 	}
 
 	bAlignFlag = TRUE;
+}
+void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
+	char s[8];
+	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc);
+
+	while(!EndOfMove(speedType)) {
+		// Do other stuff here!!!
+		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
+		// like checking for sensors to detect object etc
+		sprintf(s,"%d%3d", RSumMarker, sumJunction);
+		DispDotMatrix(s);
+		if (bSWFlag || RSumMarker==2) {	// user switch break!
+			break;
+		}
+	}
 }
