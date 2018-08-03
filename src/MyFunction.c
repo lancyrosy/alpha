@@ -58,23 +58,25 @@ void pulseBuzzer( int period, int duration){
 }
 
 void TestRun(){
-
+	//DisWheelMotor();
 	DelaymSec(1000);
 	ClearMarkerFlag();
 	char s[8];
 	while(RSumMarker!=2) {
 		tsensoroffset = sensoroffset;
-		if(tsensoroffset<-150) tsensoroffset = -250;
-		if(tsensoroffset>150)  tsensoroffset = 250;
+		if(tsensoroffset<-400) tsensoroffset = -400;
+		if(tsensoroffset>400)  tsensoroffset = 400;
 
 		sensoroffsetsqr = tsensoroffset*tsensoroffset;
 
-		xSpeed = -(0.1)*sensoroffsetsqr+1000;
+		xSpeed = -0.003125*sensoroffsetsqr+1000;
 		SetRobotSpeedX(xSpeed);
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc
-		sprintf(s,"4%d", xSpeed);
+		sprintf(s,"%d", xSpeed);
+		gotoxy(5,5);
+		printf("%d     %d     %d   ",sensoroffset,tsensoroffset,xSpeed);
 		DispDotMatrix(s);
 		if (bSWFlag ) {	// user switch break!
 			break;
