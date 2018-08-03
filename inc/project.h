@@ -91,6 +91,7 @@ extern char debugChar;
 extern bool bSensorEnableFlag;
 
 
+
 extern volatile uint16_t sensorSwitchTime;
 extern volatile uint16_t sensorSwitchOffTime;
 

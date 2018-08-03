@@ -271,7 +271,7 @@ void MyTest(){
 			case 1:
 				EnableSensor();
 				EnWheelMotor();
-				TestRun();
+				//TestRun();
 				DisableSensor();
 				DisWheelMotor();
 				break;

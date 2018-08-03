@@ -13,12 +13,16 @@
 // flash data
 //......................................................................................
 
+
 #include "project.h"
 #include "stdlib.h"
+#include "MyFunction.h"
 
 unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
+int sensoroffsetsqr = 0;
+int xSpeed = 0;
 volatile int LSumMarker,RSumMarker,sumJunction,disL,disR;
 int LState,RState,JLState,JRState;
 int i=0;
@@ -54,8 +58,24 @@ void TestRun(){
 
 	DelaymSec(1000);
 	ClearMarkerFlag();
-	MoveRobotExplore(XSPEED, 25000, 0, 500, 0, 2000);
+	char s[8];
+	while(!RSumMarker==2) {
+		if(sensoroffset<-150) sensoroffset = -250;
+		if(sensoroffset>150)  sensoroffset = 250;
 
+		sensoroffsetsqr = sensoroffset*sensoroffset;
+
+		xSpeed = -(0.1)*sensoroffsetsqr+1000;
+		SetRobotSpeedX(xSpeed);
+		// Do other stuff here!!!
+		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
+		// like checking for sensors to detect object etc
+		sprintf(s,"4%d", xSpeed);
+		DispDotMatrix(s);
+		if (bSWFlag ) {	// user switch break!
+			break;
+		}
+	}
 	StopRobot();
 	WaitSW();
 
@@ -152,15 +172,22 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 }
 void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 	char s[8];
-	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc);
 
-	while(!EndOfMove(speedType)) {
+
+	while(!RSumMarker==2) {
+		if(sensoroffset<-150) sensoroffset = -250;
+		if(sensoroffset>150)  sensoroffset = 250;
+
+		sensoroffsetsqr = sensoroffset*sensoroffset;
+
+		xSpeed = -(0.1)*sensoroffsetsqr+1000;
+		SetRobotSpeedX(xSpeed);
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc
-		sprintf(s,"%d%3d", RSumMarker, sumJunction);
+		sprintf(s,"4%d", xSpeed);
 		DispDotMatrix(s);
-		if (bSWFlag || RSumMarker==2) {	// user switch break!
+		if (bSWFlag ) {	// user switch break!
 			break;
 		}
 	}
