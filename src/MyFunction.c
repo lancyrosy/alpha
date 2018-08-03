@@ -61,6 +61,7 @@ void TestRun(){
 	ClearMarkerFlag();
 	MoveRobotExplore(XSPEED, 25000, 0, 500, 0, 2000);
 
+
 	StopRobot();
 	WaitSW();
 }
