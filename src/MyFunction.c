@@ -18,11 +18,15 @@
 #include "stdlib.h"
 #include "MyFunction.h"
 
+//#define Fixed Speed Run
+
 unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
+
 int sensoroffsetsqr = 0;
 int xSpeed = 0;
+
 volatile int LSumMarker,RSumMarker,sumJunction,disL,disR;
 int LState,RState,JLState,JRState;
 int i=0;
@@ -40,8 +44,6 @@ void LMarketDetect();
 void RMarketDetect();
 void JMarkerDetect();
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc);
-
-
 
 void pulseLED(int num, int duration){
 	bPulseFlag = TRUE;
@@ -76,11 +78,10 @@ void TestRun(){
 			break;
 		}
 	}
+
 	StopRobot();
 	WaitSW();
-
 }
-
 
 void LMarketDetect(){
 	if (sensorCal[13] >= 600) {
@@ -170,8 +171,13 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 
 	bAlignFlag = TRUE;
 }
+
+#ifdef Fixed Speed Run
 void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 	char s[8];
+
+	SetMoveCommand(speedType, dist, brakeDist,topSpeed, endSpeed, acc);
+
 
 
 	while(!RSumMarker==2) {
@@ -192,3 +198,28 @@ void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_
 		}
 	}
 }
+#endif
+void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
+	char s[8];
+	//change target speed then call SetRobotSpeedX() which inside libProfile
+	while(!RSumMarker==2) {
+		// Do other stuff here!!!
+		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
+		// like checking for sensors to detect object etc
+		if (sensoroffset < -150)
+			sensoroffset = -250;
+		if (sensoroffset > 150)
+			sensoroffset = 250;
+
+		sensoroffsetsqr = sensoroffset * sensoroffset;
+		xSpeed = -(0.1) * sensoroffsetsqr + 1000;
+		SetRobotSpeedX(xSpeed);
+
+		sprintf(s,"%d%3d", RSumMarker, sumJunction);
+		DispDotMatrix(s);
+		if (bSWFlag) {	// user switch break!
+			break;
+		}
+	}
+}
+
