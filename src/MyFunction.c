@@ -42,8 +42,6 @@ void RMarketDetect();
 void JMarkerDetect();
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc);
 
-
-
 void pulseLED(int num, int duration){
 	bPulseFlag = TRUE;
 	pulseDuration[num] = duration;
