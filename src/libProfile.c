@@ -61,7 +61,7 @@ void ResetSpeedProfileData() {
 
 // @brief : To move in x-direction
 // @param : xSpeed in mm/s
-void SetRobotSpeedX( int16_t xSpeed)
+void SetRobotSpeedX(int16_t xSpeed)
 {
 	targetSpeed[0] = SPEED_mm_oc(xSpeed);	// mm to optical count conversion
 }

@@ -301,7 +301,8 @@ void MyTest(){
 					char a[10];
 					sprintf(a,"%4u",ReadBatteryVolt() );
 					DispDotMatrix(a);
-					if(bSWFlag) break;
+					if(bSWFlag)
+						break;
 				}
 			case MENU_EXIT:
 				return;
