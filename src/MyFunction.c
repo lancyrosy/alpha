@@ -17,7 +17,7 @@
 #include "stdlib.h"
 #include "MyFunction.h"
 
-#define Fixed Speed Run
+//#define Fixed Speed Run
 
 unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
@@ -154,7 +154,7 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 #ifdef Fixed Speed Run
 void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 	char s[8];
-	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc);
+	SetMoveCommand(speedType, dist, brakeDist,topSpeed, endSpeed, acc);
 
 	while(!EndOfMove(speedType)) {
 		// Do other stuff here!!!
@@ -168,7 +168,6 @@ void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_
 	}
 }
 #endif
-/*
 void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 	char s[8];
 	//change target speed then call SetRobotSpeedX() which inside libProfile
@@ -182,9 +181,9 @@ void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_
 			sensoroffset = 250;
 
 		sensoroffsetsqr = sensoroffset * sensoroffset;
-
 		xSpeed = -(0.1) * sensoroffsetsqr + 1000;
 		SetRobotSpeedX(xSpeed);
+
 		sprintf(s,"%d%3d", RSumMarker, sumJunction);
 		DispDotMatrix(s);
 		if (bSWFlag) {	// user switch break!
@@ -192,4 +191,4 @@ void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_
 		}
 	}
 }
-*/
+
