@@ -25,6 +25,7 @@ unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
 
 int sensoroffsetsqr = 0;
+int tsensoroffset = 0;
 int xSpeed = 0;
 
 volatile int LSumMarker,RSumMarker,sumJunction,disL,disR;
@@ -61,11 +62,12 @@ void TestRun(){
 	DelaymSec(1000);
 	ClearMarkerFlag();
 	char s[8];
-	while(!RSumMarker==2) {
-		if(sensoroffset<-150) sensoroffset = -250;
-		if(sensoroffset>150)  sensoroffset = 250;
+	while(RSumMarker!=2) {
+		tsensoroffset = sensoroffset;
+		if(tsensoroffset<-150) tsensoroffset = -250;
+		if(tsensoroffset>150)  tsensoroffset = 250;
 
-		sensoroffsetsqr = sensoroffset*sensoroffset;
+		sensoroffsetsqr = tsensoroffset*tsensoroffset;
 
 		xSpeed = -(0.1)*sensoroffsetsqr+1000;
 		SetRobotSpeedX(xSpeed);
@@ -215,7 +217,7 @@ void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_
 		xSpeed = -(0.1) * sensoroffsetsqr + 1000;
 		SetRobotSpeedX(xSpeed);
 
-		sprintf(s,"%d%3d", RSumMarker, sumJunction);
+		sprintf(s,"%4d", xSpeed);
 		DispDotMatrix(s);
 		if (bSWFlag) {	// user switch break!
 			break;
