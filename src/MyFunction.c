@@ -60,12 +60,9 @@ void TestRun(){
 	DelaymSec(1000);
 	ClearMarkerFlag();
 	MoveRobotExplore(XSPEED, 25000, 0, 500, 0, 2000);
-
-
 	StopRobot();
 	WaitSW();
 }
-
 
 void LMarketDetect(){
 	if (sensorCal[13] >= 600) {
