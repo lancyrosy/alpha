@@ -45,50 +45,12 @@ bool bUseEncoderClickFlag;
 
 #define MAXPWMVALUE			1000
 
-#define LOG
-#ifdef LOG
-#define LOGINDEXSIZE	1500
+
 int16_t tmplog1, tmplog2, tmplog3, tmplog4;
-int16_t logData[LOGINDEXSIZE][4];
-volatile int16_t logIndex;
-bool logDataFlag = 0;
 
-void PrintLog() {
-	int16_t i;
-	DispDotMatrix(".  .");
-	for (i = 0; i < logIndex; i++) {
-		printf("\n%4d %4d %4d %4d", (int) logData[i][0], (int) logData[i][1],
-				(int) logData[i][2], (int) logData[i][3]);
-		//	printf("\n%4d %4d %4d %4d", logData[i][0], logData[i][1], logData[i][2], 0);
-		if (bSWFlag == 1) {
-			break;
-		}
-	}
-	for (; i < LOGINDEXSIZE; i++) {
-		printf("\n%4d %4d %4d %4d", (int) logData[i][0], (int) logData[i][1],
-				(int) logData[i][2], (int) logData[i][3]);
-			printf("\n%4d %4d %4d %4d", logData[i][0], logData[i][1], logData[i][2], 0);
-		if (bSWFlag == 1) {
-			break;
-		}
-	}
 
-}
 
-void ClearLog() {
 
-	logIndex = 0;
-	logDataFlag = 0;
-
-}
-#else
-void PrintLog() {
-}
-
-void ClearLog() {
-}
-
-#endif
 
 void InitMotor(void)
 {
@@ -172,7 +134,7 @@ void MotorPID(void)
 
 	}
 
-	posPWM[1] = (0-sensoroffset)/2 + ((sensoroffset2-sensoroffset)*2);
+	posPWM[1] = (0-sensoroffset) + ((sensoroffset2-sensoroffset)*12);
 	sensoroffset2 = sensoroffset;
 	/////////////////////////////////////////////////////////
 	// Calculate individual wheels PWM from X & W components

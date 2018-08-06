@@ -176,8 +176,7 @@ void PauseMotor();
 void UpdateWheelPos();
 void InitMotorData();
 void PrintMotorValues(void);
-void PrintLog();
-void ClearLog();
+
 void TestMotorMenu();
 
 

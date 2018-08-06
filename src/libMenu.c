@@ -261,7 +261,7 @@ void MyTest(){
 		static const char *const menuStrg[]={
 				"----",
 				"TestRun",
-				"CollectBlack",
+				"PrintLog",  //"CollectBlack",
 				"DisplaySensor",
 				"MarkerDetect",
 				"Battery"
@@ -276,7 +276,7 @@ void MyTest(){
 				DisWheelMotor();
 				break;
 			case 2:
-				MoveRobotCalibrate(XSPEED, 200, 0, 200, 0, 1000);
+				PrintLog();//MoveRobotCalibrate(XSPEED, 200, 0, 200, 0, 1000);
 				break;
 			case 3:
 				DispAllSensorValues();

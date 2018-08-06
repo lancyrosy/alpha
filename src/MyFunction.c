@@ -17,8 +17,13 @@
 #include "project.h"
 #include "stdlib.h"
 #include "MyFunction.h"
+#include "Math.h"
 
 //#define Fixed Speed Run
+#define LOGSIZE	12000
+int logData[LOGSIZE];
+int logIndex;
+bool logFlag = FALSE;
 
 unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
@@ -37,6 +42,28 @@ int i=0;
 
 bool bPulseFlag = FALSE;
 bool bJunFlag = FALSE;
+
+void StartLog(){
+	logIndex = 0;
+	logFlag = TRUE;
+}
+void LogData(int data) {
+	if (logFlag==TRUE && logIndex<LOGSIZE) {
+		logData[logIndex] = data;
+		logIndex++;
+	}
+}
+
+void PrintLog() {
+	int i;
+	logFlag=FALSE;
+	logIndex=0;
+	for (i=0; i<LOGSIZE; ) {
+		printf("\n%5d", logData[i++]);
+		printf(" %5d", logData[i++]);
+		printf(" %5d", logData[i++]);
+	}
+}
 
 void collectBlackValue();
 void pulseLED(int num, int duration);
@@ -58,18 +85,22 @@ void pulseBuzzer( int period, int duration){
 }
 
 void TestRun(){
-	//DisWheelMotor();
 	DelaymSec(1000);
+	EnWheelMotor();
+	SetRobotAccX(5000);
+
 	ClearMarkerFlag();
 	char s[8];
+	StartLog();
 	while(RSumMarker!=2) {
 		tsensoroffset = sensoroffset;
-		if(tsensoroffset<-400) tsensoroffset = -400;
-		if(tsensoroffset>400)  tsensoroffset = 400;
+		if(tsensoroffset<-800) tsensoroffset = -800;
+		if(tsensoroffset>800)  tsensoroffset = 800;
 
-		sensoroffsetsqr = tsensoroffset*tsensoroffset;
+		sensoroffsetsqr = (long)tsensoroffset*tsensoroffset;
 
-		xSpeed = -0.003125*sensoroffsetsqr+1000;
+		//xSpeed = -0.000781f*sensoroffsetsqr+1000;
+		xSpeed=sqrt(16000000-25*sensoroffsetsqr)/8+1000;
 		SetRobotSpeedX(xSpeed);
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
@@ -176,7 +207,7 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 	bAlignFlag = TRUE;
 }
 
-#ifdef Fixed Speed Run
+#ifdef FixedSpeedRun
 void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 	char s[8];
 

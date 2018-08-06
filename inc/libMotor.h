@@ -117,6 +117,7 @@ extern volatile int16_t wheelPWM[NUM_OF_WHEEL];
 extern volatile int32_t curPos[NUM_OF_SPEED];
 extern volatile int32_t finalPos[NUM_OF_SPEED];
 extern volatile int16_t curSpeed[NUM_OF_SPEED];
+extern volatile int16_t targetSpeed[NUM_OF_SPEED];
 extern volatile int16_t alignSpeed;
 extern int16_t curAcc[NUM_OF_SPEED];
 extern int16_t afterBrakeDist[NUM_OF_SPEED];	// Speed profile use
