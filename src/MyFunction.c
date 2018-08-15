@@ -99,28 +99,16 @@ void pulseBuzzer( int period, int duration){
 #define b 500.0f
 void TestRun(){
 	DelaymSec(1000);
-<<<<<<< HEAD
-	DisWheelMotor();
-=======
+
 	EnWheelMotor();
->>>>>>> refs/remotes/origin/master
+
 	SetRobotAccX(10000);
 
 	ClearMarkerFlag();
-<<<<<<< HEAD
-=======
 	int ty0;
-
->>>>>>> refs/remotes/origin/master
 	char s[8];
 	StartLog();
 	while(RSumMarker!=2) {
-<<<<<<< HEAD
-		if(abs(sensoroffset) >abs(sensoroffset2))
-			tsensoroffset = sensoroffset;
-		else if(abs(sensoroffset) <= abs(sensoroffset2))
-			tsensoroffset = sensoroffset2*4;
-=======
 		if(slowFlag == TRUE){
 			ty0=y0-300;
 		}
@@ -134,7 +122,6 @@ void TestRun(){
 		else
 			tsensoroffset = sensoroffset2;
 		*/
->>>>>>> refs/remotes/origin/master
 		if(tsensoroffset<-a) tsensoroffset = -a;
 		if(tsensoroffset>a)  tsensoroffset = a;
 
@@ -142,26 +129,16 @@ void TestRun(){
 
 		//xSpeed = -0.000781f*sensoroffsetsqr+1000;
 
-<<<<<<< HEAD
-		xSpeed=(b/a)*sqrt(a*a-sensoroffsetsqr)+y0;
-=======
 		xSpeed=(b/a)*sqrt(a*a-sensoroffsetsqr)+ty0;
->>>>>>> refs/remotes/origin/master
 		SetRobotSpeedX(xSpeed);
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc
-<<<<<<< HEAD
-		sprintf(s,"%d", xSpeed);
-		gotoxy(5,5);
-		printf(" 2nd row %d   1st row  %d  tsen   %d  xspeed  %d ",sensoroffset,sensoroffset2,tsensoroffset,xSpeed);
-=======
 		sprintf(s,"%d", timeCount/1000);
 		//gotoxy(5,5);
 		//printf(" 2nd row %d   1st row  %d  tsen   %d  xspeed  %d   ",sensoroffset,sensoroffset2,tsensoroffset,xSpeed);
 		//gotoxy(5,10);
 		//printf(" slowFlag:%d  fastFlag:%d  s1:%d  s2:%d  s3:%d   ",sl,f,sensorCal[0],sensorCal[1],sensorCal[2]);
->>>>>>> refs/remotes/origin/master
 		DispDotMatrix(s);
 		if (bSWFlag ) {	// user switch break!
 			break;

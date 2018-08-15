@@ -383,13 +383,7 @@ int16_t Cen1(){
 			(sensorCal[3] + sensorCal[4]+ sensorCal[5] + sensorCal[6] + sensorCal[7] +
 			sensorCal[8] + sensorCal[9]+ sensorCal[10] + sensorCal[11] + sensorCal[12]);
 
-<<<<<<< HEAD
 
-	if (sensorCal[0]>)
-    sensoroffset2= (sensorCal[0]*(-200l)+sensorCal[2]*(200l))/(sensorCal[0] + sensorCal[1]+ sensorCal[2]);
-	return sensoroffset;
-
-=======
 /*	if(sensorCal[0] > 400){
 		if(sensorCal[1]>900 && sensorCal[2]>400){
 			fastFlag = TRUE;
@@ -423,7 +417,7 @@ int16_t Cen1(){
 	}
 
       return sensoroffset;
->>>>>>> refs/remotes/origin/master
+
 
 }
 
