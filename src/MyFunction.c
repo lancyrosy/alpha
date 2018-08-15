@@ -52,7 +52,7 @@ void PrintLog() {
 	}
 }
 
-void logExplore (){
+void LogExplore (){
 	//int i,count,Rcount,Lcount;
 
 	for (i=2;i<1000;i=i+3){
