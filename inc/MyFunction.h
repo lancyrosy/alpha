@@ -15,3 +15,5 @@ void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_
 void LogData(int data);
 void StartLog();
 void PrintLog();
+void LogOffset(int data);
+void LogExplore();

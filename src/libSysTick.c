@@ -40,6 +40,7 @@ void Handler_SysTick(void){
 	LogData(targetSpeed[0]);
 	LogData(curSpeed[0]);
 	LogData(sensoroffset);
+	LogExplore();
 	count=0;
 	}
 	StartSensorISR();

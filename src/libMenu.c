@@ -261,9 +261,9 @@ void MyTest(){
 		static const char *const menuStrg[]={
 				"----",
 				"TestRun",
-				"PrintLog",  //"CollectBlack",
+				"PrintLog",
+				"CollectBlack",
 				"DisplaySensor",
-				"MarkerDetect",
 				"Battery"
 		};
 		while(1) {
@@ -276,25 +276,13 @@ void MyTest(){
 				DisWheelMotor();
 				break;
 			case 2:
-				PrintLog();//MoveRobotCalibrate(XSPEED, 200, 0, 200, 0, 1000);
+				PrintLog();
 				break;
 			case 3:
-				DispAllSensorValues();
+				MoveRobotCalibrate(XSPEED, 200, 0, 200, 0, 1000);
 				break;
 			case 4:
-				DelaymSec(1000);
-				EnWheelMotor();
-				LSumMarker = RSumMarker = sumJunction = 0;
-				MoveRobot(XSPEED, 300, 0, 200, 0, 2000);
-				while(1){
-					gotoxy(5,5);
-					printf(" %4d  %4d  %4d", LSumMarker, RSumMarker, sumJunction);
-					if (bSWFlag) {	// user switch break!
-						bSWFlag=FALSE;
-						break;
-					}
-				}
-				DisWheelMotor();
+				DispAllSensorValues();
 				break;
 			case 5:
 				while(1){
@@ -304,6 +292,7 @@ void MyTest(){
 					if(bSWFlag)
 						break;
 				}
+				break;
 			case MENU_EXIT:
 				return;
 		    }

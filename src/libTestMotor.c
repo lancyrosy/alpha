@@ -44,6 +44,9 @@ void PrintMotorStatus() {
 
 	    gotoxy(12,START_ROW+10);
 		printf("targetPos0=%-6d  1=%-6d ", finalPos[0], finalPos[1]);
+
+		gotoxy(12,START_ROW+12);
+		printf("sensoroffset=%4d",sensoroffset);
 }
 
 // Menu for testing various speed profile functions

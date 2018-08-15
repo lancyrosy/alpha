@@ -1,19 +1,3 @@
-// ---------------------------------------------------------------------------------
-//   File        :main.c
-//   Version     :v1.0.1
-//   Date        :06Feb2011
-//   Author      :NgBK
-//   Description :main()
-// ---------------------------------------------------------------------------------
-
-//......................................................................................
-// To do list (reminder on what to do in this project)
-// test input port pins
-// buzzer
-// flash data
-//......................................................................................
-
-
 #include "project.h"
 #include "stdlib.h"
 #include "MyFunction.h"
@@ -22,6 +6,7 @@
 //#define Fixed Speed Run
 #define LOGSIZE	12000
 int logData[LOGSIZE];
+int logExplore[1000];
 int logIndex;
 bool logFlag = FALSE;
 
@@ -53,19 +38,43 @@ void LogData(int data) {
 		logIndex++;
 	}
 }
-
 void PrintLog() {
 	int i;
 	logFlag=FALSE;
 	logIndex=0;
-	for (i=0; i<LOGSIZE; ) {
+	/*for (i=0; i<LOGSIZE; ) {
 		printf("\n%5d", logData[i++]);
 		printf(" %5d", logData[i++]);
 		printf(" %5d", logData[i++]);
+	}*/
+	for (i=0;i <1000;i++){
+		printf("\n%5d",logExplore[i]);
 	}
 }
 
-void collectBlackValue();
+void LogExplore(){
+	//int i,count,Rcount,Lcount;
+
+	for (i=2;i<1000;i=i+3){
+		if(logData[i] <= 80 && logData[i] >= -80){
+			//count++;
+			logExplore[i] = 0; //If sensoroffset(abs) is less than 80 for 500ms, Straight line
+			//if(logData[i] >80 || logData[i] <-80) count = 0; //Clear count to 0
+		}
+		else if(logData[i] > 80){
+			//Rcount++;
+			logExplore[i] = -1;//If sensoroffset is higher than 800 for 500ms, Right curve
+			//if(logData[i] <= 80) Rcount = 0;
+		}
+		else if(logData[i] < -80){
+			//Lcount++;
+			logExplore[i] = 1;//If sensoroffset is lower than -800 for 500ms, Left curve
+			//if(logData[i] >= -80) Lcount = 0;
+		}
+	}
+}
+
+
 void pulseLED(int num, int duration);
 void pulseBuzzer( int per, int duration);
 void LMarketDetect();
@@ -73,11 +82,11 @@ void RMarketDetect();
 void JMarkerDetect();
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc);
 
+
 void pulseLED(int num, int duration){
 	bPulseFlag = TRUE;
 	pulseDuration[num] = duration;
 }
-
 void pulseBuzzer( int period, int duration){
 	TIM2->ARR = period;
     TIM2->CCR2 = TIM2->ARR/2;
@@ -100,7 +109,7 @@ void TestRun(){
 		sensoroffsetsqr = (long)tsensoroffset*tsensoroffset;
 
 		//xSpeed = -0.000781f*sensoroffsetsqr+1000;
-		xSpeed=sqrt(16000000-25*sensoroffsetsqr)/8+1000;
+		xSpeed=sqrt(16000000-25*sensoroffsetsqr)/8+700;
 		SetRobotSpeedX(xSpeed);
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
@@ -118,6 +127,7 @@ void TestRun(){
 	WaitSW();
 }
 
+//Marker detect
 void LMarketDetect(){
 	if (sensorCal[13] >= 600) {
 		LState = 1;
@@ -139,7 +149,6 @@ void LMarketDetect(){
 		}
 	}
 }
-
 void RMarketDetect(){
 	if (sensorCal[14] >= 600){
 		RState = 1;
@@ -178,6 +187,8 @@ void ClearMarkerFlag(){
 	RSumMarker=LSumMarker=sumJunction=0;
 }
 
+
+//Collect black value
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc);
@@ -207,33 +218,7 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 	bAlignFlag = TRUE;
 }
 
-#ifdef FixedSpeedRun
-void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
-	char s[8];
 
-	SetMoveCommand(speedType, dist, brakeDist,topSpeed, endSpeed, acc);
-
-
-
-	while(!RSumMarker==2) {
-		if(sensoroffset<-150) sensoroffset = -250;
-		if(sensoroffset>150)  sensoroffset = 250;
-
-		sensoroffsetsqr = sensoroffset*sensoroffset;
-
-		xSpeed = -(0.1)*sensoroffsetsqr+1000;
-		SetRobotSpeedX(xSpeed);
-		// Do other stuff here!!!
-		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
-		// like checking for sensors to detect object etc
-		sprintf(s,"4%d", xSpeed);
-		DispDotMatrix(s);
-		if (bSWFlag ) {	// user switch break!
-			break;
-		}
-	}
-}
-#endif
 void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 	char s[8];
 	//change target speed then call SetRobotSpeedX() which inside libProfile

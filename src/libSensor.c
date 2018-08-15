@@ -26,7 +26,7 @@ volatile uint16_t adc2_dma_buf[16];
 volatile uint16_t adc3_dma_buf[16];
 
 volatile int senfla;
-volatile int sensoroffset, sensoroffset2, cenval;
+volatile int sensoroffset, sensoroffset2, sensoroffsetold, cenval;
 volatile int state, substate;
 volatile int adcCnt;
 
@@ -254,7 +254,7 @@ void DispAllSensorValues() {
 			printf("Battery %4uV ", ReadBatteryVolt());
 			sprintf(a,"%4uV", ReadBatteryVolt());
 		   	gotoxy(COL1, ROW1+18);
-		   	printf("Centre of gravity %5d", sensoroffset);
+		   	printf("Sensor Offset 1: %5d,  2: %5d", sensoroffset, sensoroffset2);
 
 		   	gotoxy(COL1, ROW1+20);
 		   	printf(" S1   S2   S3");		// dc value
@@ -374,20 +374,13 @@ int16_t Cen1(){
 		if (sensorCal[i] <= 0) sensorCal[i] = 0;
 
 	}
-	/* for(a=0;a<15;a++){
-			if (sensor[a]>800)
-				highCnt++;
-	       }
 
-	if(highCnt>4) {
-		tmpOffset = 0;
-	}*/
-
-
-	sensoroffset = (sensorCal[0]*(-720l)+sensorCal[2]*(720l)+ sensorCal[3] * (-1800l) + sensorCal[4] * (-1400l) + sensorCal[5] * (-1000l)+ sensorCal[6] * (-600l) + sensorCal[7]* (-200l)+
+	sensoroffset = (sensorCal[3] * (-1800l) + sensorCal[4] * (-1400l) + sensorCal[5] * (-1000l)+ sensorCal[6] * (-600l) + sensorCal[7]* (-200l)+
 			sensorCal[8] * (200l) + sensorCal[9] * (600l) + sensorCal[10] * (1000l) + sensorCal[11] * (1400l) + sensorCal[12] * (1800l))/
-			(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3] + sensorCal[4]+ sensorCal[5] + sensorCal[6] + sensorCal[7] +
+			(sensorCal[3] + sensorCal[4]+ sensorCal[5] + sensorCal[6] + sensorCal[7] +
 			sensorCal[8] + sensorCal[9]+ sensorCal[10] + sensorCal[11] + sensorCal[12]);
+
+	sensoroffset2 = (sensorCal[0] * (-200l) + sensorCal[2] * (200l))/(sensorCal[0]+sensorCal[1]+sensorCal[2]);
       return sensoroffset;
 
 }
