@@ -110,7 +110,6 @@ void TestRun(){
 		//xSpeed = -0.000781f*sensoroffsetsqr+1000;
 
 		xSpeed=(b/a)*sqrt(a*a-sensoroffsetsqr)+y0;
-		//xSpeed=sqrt(16000000-25*sensoroffsetsqr)/8+700;
 		SetRobotSpeedX(xSpeed);
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
