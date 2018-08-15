@@ -385,6 +385,7 @@ int16_t Cen1(){
 			sensorCal[8] + sensorCal[9]+ sensorCal[10] + sensorCal[11] + sensorCal[12]);
 
 
+	if (sensorCal[0]>)
     sensoroffset2= (sensorCal[0]*(-200l)+sensorCal[2]*(200l))/(sensorCal[0] + sensorCal[1]+ sensorCal[2]);
 	return sensoroffset;
 
