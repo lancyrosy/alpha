@@ -1,6 +1,8 @@
 extern unsigned pulseDuration[2];
 extern int pulseBuzzerDuration;
 extern int xSpeed;
+extern int sl,f;
+extern volatile int RSumMarker;
 
 
 #define L_MARKER_SEN sensorBlack[13]

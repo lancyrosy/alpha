@@ -17,6 +17,7 @@ int pulseBuzzerDuration = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
+int sl,f;
 
 volatile int LSumMarker,RSumMarker,sumJunction,disL,disR;
 int LState,RState,JLState,JRState;
@@ -42,14 +43,14 @@ void PrintLog() {
 	int i;
 	logFlag=FALSE;
 	logIndex=0;
-	/*for (i=0; i<LOGSIZE; ) {
+	for (i=0; i<LOGSIZE; ) {
 		printf("\n%5d", logData[i++]);
 		printf(" %5d", logData[i++]);
 		printf(" %5d", logData[i++]);
-	}*/
-	for (i=0;i <1000;i++){
-		printf("\n%5d",logExplore[i]);
 	}
+	/*for (i=0;i <1000;i++){
+		printf("\n%5d",logExplore[i]);
+	}*/
 }
 
 void LogExplore (){
@@ -93,30 +94,50 @@ void pulseBuzzer( int period, int duration){
 	pulseBuzzerDuration = duration;
 }
 
+#define y0 1000
+#define a 800.0f
+#define b 500.0f
 void TestRun(){
 	DelaymSec(1000);
 	EnWheelMotor();
-	SetRobotAccX(5000);
+	SetRobotAccX(10000);
 
 	ClearMarkerFlag();
+	int ty0;
+
 	char s[8];
 	StartLog();
 	while(RSumMarker!=2) {
-		tsensoroffset = sensoroffset;
-		if(tsensoroffset<-800) tsensoroffset = -800;
-		if(tsensoroffset>800)  tsensoroffset = 800;
+		if(slowFlag == TRUE){
+			ty0=y0-300;
+		}
+		else{
+			ty0=y0+300;
+		}
+
+		/*if(abs(sensoroffset) > abs(sensoroffset2)){
+			tsensoroffset = sensoroffset;
+		}
+		else
+			tsensoroffset = sensoroffset2;
+		*/
+		if(tsensoroffset<-a) tsensoroffset = -a;
+		if(tsensoroffset>a)  tsensoroffset = a;
 
 		sensoroffsetsqr = (long)tsensoroffset*tsensoroffset;
 
 		//xSpeed = -0.000781f*sensoroffsetsqr+1000;
-		xSpeed=sqrt(16000000-25*sensoroffsetsqr)/8+700;
+
+		xSpeed=(b/a)*sqrt(a*a-sensoroffsetsqr)+ty0;
 		SetRobotSpeedX(xSpeed);
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc
-		sprintf(s,"%d", xSpeed);
-		gotoxy(5,5);
-		printf("%d     %d     %d   ",sensoroffset,tsensoroffset,xSpeed);
+		sprintf(s,"%d", timeCount/1000);
+		//gotoxy(5,5);
+		//printf(" 2nd row %d   1st row  %d  tsen   %d  xspeed  %d   ",sensoroffset,sensoroffset2,tsensoroffset,xSpeed);
+		//gotoxy(5,10);
+		//printf(" slowFlag:%d  fastFlag:%d  s1:%d  s2:%d  s3:%d   ",sl,f,sensorCal[0],sensorCal[1],sensorCal[2]);
 		DispDotMatrix(s);
 		if (bSWFlag ) {	// user switch break!
 			break;
@@ -190,9 +211,9 @@ void ClearMarkerFlag(){
 
 //Collect black value
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
-
-	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc);
+	DelaymSec(1000);
 	bAlignFlag = FALSE;
+	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc);
 
 	while(!EndOfMove(speedType)) {
 
