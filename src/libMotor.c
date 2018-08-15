@@ -134,8 +134,8 @@ void MotorPID(void)
 
 	}
 
-	posPWM[1] = (0-sensoroffset) + ((sensoroffset2-sensoroffset)*12);
-	sensoroffset2 = sensoroffset;
+	posPWM[1] = (0-sensoroffset)/2 + ((sensoroffsetOld-sensoroffset)*12);
+	sensoroffsetOld = sensoroffset;
 	/////////////////////////////////////////////////////////
 	// Calculate individual wheels PWM from X & W components
 	/////////////////////////////////////////////////////////
