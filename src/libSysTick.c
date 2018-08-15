@@ -10,6 +10,8 @@ volatile u32 waitDelay;
 uint16_t elapsedTime;
 int encoderChangeCnt;
 int count=0;
+float timeCount=0;
+
 bool bAlignFlag = TRUE;
 
 void LED_ISR(void){
@@ -33,14 +35,17 @@ void Handler_SysTick(void){
 	waitDelay--;
 	elapsedTime++;
 
+
 	// Start IR sensor interrupt
 	//if (bSensorEnableFlag)
+	if(RSumMarker=1)
+		timeCount++;
 	count++;
 	if(count==5){
-	LogData(targetSpeed[0]);
-	LogData(curSpeed[0]);
+	LogData(targetSpeed[0]/SPEED_mm_oc(1));
+	LogData(curSpeed[0]/SPEED_mm_oc(1));
 	LogData(sensoroffset);
-	LogExplore();//LogData(sensoroffset2);
+	//LogExplore();
 	count=0;
 	}
 	StartSensorISR();

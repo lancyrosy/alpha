@@ -16,7 +16,7 @@
 #include "project.h"
 
 volatile int16_t  sensorCal[NUM_SENSOR];
-volatile int16_t  sensorBlack[NUM_SENSOR];
+volatile int16_t  sensorBlack[NUM_SENSOR]={78,96,87,121,174,197,194,166,171,201,178,192,158,91,103};
 volatile uint16_t sensor[NUM_SENSOR];
 volatile uint16_t sensorOld[NUM_SENSOR];
 volatile uint16_t sensorMin[NUM_SENSOR];
@@ -26,14 +26,14 @@ volatile uint16_t adc2_dma_buf[16];
 volatile uint16_t adc3_dma_buf[16];
 
 volatile int senfla;
-
-volatile int sensoroffset, sensoroffset2, sensoroffsetOld, cenval;
-
+volatile int sensoroffset, sensoroffset2, sensoroffsetold, cenval;
 volatile int state, substate;
 volatile int adcCnt;
 
 bool bDispSensorValue;
 bool bEndSensorISRFlag;
+bool slowFlag=FALSE;
+bool fastFlag=FALSE;
 
 
 bool bSensorEnableFlag;
@@ -256,7 +256,6 @@ void DispAllSensorValues() {
 			printf("Battery %4uV ", ReadBatteryVolt());
 			sprintf(a,"%4uV", ReadBatteryVolt());
 		   	gotoxy(COL1, ROW1+18);
-
 		   	printf("Sensor Offset 1: %5d,  2: %5d", sensoroffset, sensoroffset2);
 
 		   	gotoxy(COL1, ROW1+20);
@@ -372,23 +371,59 @@ uint16_t ReadBatteryVolt() {
 
 int16_t Cen1(){
 	int i=0;
+	int sum;
 	for (i=0; i<15; i++) {
 		sensorCal[i] = sensor[i] - sensorBlack[i];
 		if (sensorCal[i] <= 0) sensorCal[i] = 0;
 
 	}
 
-
 	sensoroffset = (sensorCal[3] * (-1800l) + sensorCal[4] * (-1400l) + sensorCal[5] * (-1000l)+ sensorCal[6] * (-600l) + sensorCal[7]* (-200l)+
 			sensorCal[8] * (200l) + sensorCal[9] * (600l) + sensorCal[10] * (1000l) + sensorCal[11] * (1400l) + sensorCal[12] * (1800l))/
 			(sensorCal[3] + sensorCal[4]+ sensorCal[5] + sensorCal[6] + sensorCal[7] +
 			sensorCal[8] + sensorCal[9]+ sensorCal[10] + sensorCal[11] + sensorCal[12]);
 
+<<<<<<< HEAD
 
 	if (sensorCal[0]>)
     sensoroffset2= (sensorCal[0]*(-200l)+sensorCal[2]*(200l))/(sensorCal[0] + sensorCal[1]+ sensorCal[2]);
 	return sensoroffset;
 
+=======
+/*	if(sensorCal[0] > 400){
+		if(sensorCal[1]>900 && sensorCal[2]>400){
+			fastFlag = TRUE;
+		}
+		else if(sensorCal[1]< 200 && sensorCal[2] < 200)
+			slowFlag = TRUE;
+	}
+	else if(sensorCal[2] > 400){
+		if(sensorCal[0]< 200 && sensorCal[1] < 200)
+			slowFlag = TRUE;
+	}
+	else{
+			slowFlag=TRUE;
+	}*/
+
+	sum = sensorCal[0]+sensorCal[1]+sensorCal[2];
+
+	sensoroffset2 = (sensorCal[0] * (-200l) + sensorCal[2] * (200l))/sum;
+
+	/*if ( sum < 500) {
+		sensoroffset2 = 300;
+	}*/
+
+	if (sensoroffset2<80 && sensoroffset2>-80 && sum > 400) {
+		fastFlag = TRUE;
+		slowFlag = FALSE;
+	}
+	else{
+		slowFlag = TRUE;
+		fastFlag = FALSE;
+	}
+
+      return sensoroffset;
+>>>>>>> refs/remotes/origin/master
 
 }
 

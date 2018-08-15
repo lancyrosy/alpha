@@ -12,5 +12,6 @@
 extern void DelaymSec(uint32_t time_ms);
 extern void SysTick_Configuration(void);
 extern void Handler_SysTick(void);
+extern float timeCount;
 
 #endif

@@ -279,7 +279,11 @@ void MyTest(){
 				PrintLog();
 				break;
 			case 3:
+				EnableSensor();
+				EnWheelMotor();
 				MoveRobotCalibrate(XSPEED, 200, 0, 200, 0, 1000);
+				DisableSensor();
+				DisWheelMotor();
 				break;
 			case 4:
 				DispAllSensorValues();
