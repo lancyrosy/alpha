@@ -368,7 +368,6 @@ uint16_t ReadBatteryVolt() {
 	return (senBattery * 840) / 1980;
 }
 
-
 int16_t Cen1(){
 	int i=0;
 	int sum;
@@ -383,7 +382,8 @@ int16_t Cen1(){
 			(sensorCal[3] + sensorCal[4]+ sensorCal[5] + sensorCal[6] + sensorCal[7] +
 			sensorCal[8] + sensorCal[9]+ sensorCal[10] + sensorCal[11] + sensorCal[12]);
 
-/*	if(sensorCal[0] > 400){
+	//check Sensor row2 individually
+    /*	if(sensorCal[0] > 400){
 		if(sensorCal[1]>900 && sensorCal[2]>400){
 			fastFlag = TRUE;
 		}
@@ -399,7 +399,6 @@ int16_t Cen1(){
 	}*/
 
 	sum = sensorCal[0]+sensorCal[1]+sensorCal[2];
-
 	sensoroffset2 = (sensorCal[0] * (-200l) + sensorCal[2] * (200l))/sum;
 
 	/*if ( sum < 500) {
@@ -414,8 +413,7 @@ int16_t Cen1(){
 		slowFlag = TRUE;
 		fastFlag = FALSE;
 	}
-
-      return sensoroffset;
+    return sensoroffset;
 
 }
 

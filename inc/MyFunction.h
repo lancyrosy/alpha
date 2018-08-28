@@ -19,3 +19,6 @@ void StartLog();
 void PrintLog();
 void LogOffset(int data);
 void LogExplore();
+void TestRun();
+void ExploreRun();
+void FastRun();

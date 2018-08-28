@@ -4,7 +4,7 @@
 #include "Math.h"
 
 //#define Fixed Speed Run
-#define LOGSIZE	12000
+#define LOGSIZE	8000
 int logData[LOGSIZE];
 int logExplore[1000];
 int logIndex;
@@ -52,7 +52,6 @@ void PrintLog() {
 		printf("\n%5d",logExplore[i]);
 	}*/
 }
-
 void LogExplore (){
 	//int i,count,Rcount,Lcount;
 
@@ -75,14 +74,12 @@ void LogExplore (){
 	}
 }
 
-
 void pulseLED(int num, int duration);
 void pulseBuzzer( int per, int duration);
 void LMarketDetect();
 void RMarketDetect();
 void JMarkerDetect();
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc);
-
 
 void pulseLED(int num, int duration){
 	bPulseFlag = TRUE;
@@ -94,48 +91,54 @@ void pulseBuzzer( int period, int duration){
 	pulseBuzzerDuration = duration;
 }
 
-#define y0 1000
-#define a 800.0f
-#define b 500.0f
+#define y0 1200
+#define a 250.0f
+#define b 600.0f
 void TestRun(){
 	DelaymSec(1000);
 	EnWheelMotor();
-	SetRobotAccX(10000);
+	SetRobotAccX(3000,8000);
 
 	ClearMarkerFlag();
-	int ty0;
+	int ty0=y0;
+	int tmpOffset, tmpSpeed;
+	//tsensoroffset = sensoroffset;
 
 	char s[8];
 	StartLog();
 	while(RSumMarker!=2) {
-		if(slowFlag == TRUE){
-			ty0=y0-300;
-		}
-		else{
-			ty0=y0+300;
-		}
+		//change the value of y
+//		if(slowFlag == TRUE){
+//			ty0=y0-300;
+//		}
+//		else{
+//			ty0=y0+300;
+//		}
+		//change tsensoroffset
+//		tmpOffset = sensoroffset2;
+//		tmpSpeed = curSpeed[0]/SPEED_mm_oc(1);
+//		if(tmpSpeed<y0) tmpSpeed = y0;
+//		tmpOffset = tmpOffset*(long)(tmpSpeed-600)/400;
 
-		/*if(abs(sensoroffset) > abs(sensoroffset2)){
+		if(abs(sensoroffset) > abs(sensoroffset2)){
 			tsensoroffset = sensoroffset;
 		}
 		else
 			tsensoroffset = sensoroffset2;
-		*/
+
 		if(tsensoroffset<-a) tsensoroffset = -a;
 		if(tsensoroffset>a)  tsensoroffset = a;
 
 		sensoroffsetsqr = (long)tsensoroffset*tsensoroffset;
-
-		//xSpeed = -0.000781f*sensoroffsetsqr+1000;
-
 		xSpeed=(b/a)*sqrt(a*a-sensoroffsetsqr)+ty0;
 		SetRobotSpeedX(xSpeed);
+
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc
-		sprintf(s,"%d", timeCount/1000);
+		sprintf(s,"%4d", (int)(timeCount/100));
 		//gotoxy(5,5);
-		//printf(" 2nd row %d   1st row  %d  tsen   %d  xspeed  %d   ",sensoroffset,sensoroffset2,tsensoroffset,xSpeed);
+		//printf(" 2nd row %d   1st row  %d  tsen   %d  xspeed  %d mark %d  ",sensoroffset,sensoroffset2,tsensoroffset,xSpeed,RSumMarker);
 		//gotoxy(5,10);
 		//printf(" slowFlag:%d  fastFlag:%d  s1:%d  s2:%d  s3:%d   ",sl,f,sensorCal[0],sensorCal[1],sensorCal[2]);
 		DispDotMatrix(s);
@@ -143,12 +146,43 @@ void TestRun(){
 			break;
 		}
 	}
+	StopRobot();
+	WaitSW();
 
+}
+
+void ExploreRun(){
+	DelaymSec(1000);
+	EnWheelMotor();
+	ClearMarkerFlag();
+
+	int i=0;
+	char segment[i];
+	char dis[i];
+	bool s,c;
+	StartLog();
+	while (RSumMarker != 2) {
+		SetRobotSpeedX(1000);
+		if(fastFlag ==TRUE&&sensoroffset<100&&sensoroffset>-100){
+			uint16_t disCurve1 = curPos[0]/DIST_mm_oc(1);
+		}
+		else if (slowFlag==TRUE){
+			uint16_t disCurve2 = curPos[0]/DIST_mm_oc(1);
+			dis[i]=disCurve2-disCurve2;
+			segment[i]=(s,dis[i]);
+		}
+
+		if (bSWFlag) {	// user switch break!
+			break;
+		}
+	}
 	StopRobot();
 	WaitSW();
 }
+void FastRun(){
 
-//Marker detect
+}
+//Marker detection
 void LMarketDetect(){
 	if (sensorCal[13] >= 600) {
 		LState = 1;
@@ -208,7 +242,6 @@ void ClearMarkerFlag(){
 	RSumMarker=LSumMarker=sumJunction=0;
 }
 
-
 //Collect black value
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 	DelaymSec(1000);
@@ -239,11 +272,10 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 	bAlignFlag = TRUE;
 }
 
-
 void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 	char s[8];
 	//change target speed then call SetRobotSpeedX() which inside libProfile
-	while(!RSumMarker==2) {
+	while(RSumMarker!=2) {
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc

@@ -120,6 +120,7 @@ extern volatile int16_t curSpeed[NUM_OF_SPEED];
 extern volatile int16_t targetSpeed[NUM_OF_SPEED];
 extern volatile int16_t alignSpeed;
 extern int16_t curAcc[NUM_OF_SPEED];
+extern int16_t curDec[NUM_OF_SPEED];
 extern int16_t afterBrakeDist[NUM_OF_SPEED];	// Speed profile use
 											// after brake(deceleration) distance
 											// In case there is not enough distance to brake
@@ -149,7 +150,7 @@ void StopRobot(void);	// Stop robot movement immediately
 // ---------------------------------------------------------------------------------
 void SetRobotSpeedX( int16_t xSpeed);
 void SetRobotSpeedW( int16_t wSpeed);
-void SetRobotAccX( int16_t acc);
+void SetRobotAccX( int16_t acc, int16_t dec);
 void SetRobotAccW( int16_t acc);
 
 // ---------------------------------------------------------------------------------

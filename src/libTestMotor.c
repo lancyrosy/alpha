@@ -76,7 +76,7 @@ void TestMotorMenu() {
 					break;                            
 			case '2':               
 					// No auto speed profile
-					SetRobotAccX(500);
+					SetRobotAccX(500,500);
 					SetRobotSpeedX(500);
 					DelaymSec(500);                                                
 					SetRobotSpeedX(0);
