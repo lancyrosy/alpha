@@ -13,9 +13,9 @@
 
 /* Data for motor functions */
 // PID gain constant
-int16_t kp[NUM_OF_SPEED] = {2,		// kp[0] is for X-component
+int16_t kp[NUM_OF_SPEED] = {4,		// kp[0] is for X-component
 							1};		// kp[1] is for W-component
-int16_t kd[NUM_OF_SPEED] = {0,		// kd[0] is for X-component
+int16_t kd[NUM_OF_SPEED] = {8,		// kd[0] is for X-component
 							0};		// kd[1] is for W-component
 
 bool bWheelMotorEnable;
@@ -35,10 +35,8 @@ volatile int16_t posErrOld[NUM_OF_SPEED];
 volatile int16_t PIDFeedback[NUM_OF_SPEED];
 volatile int16_t PIDInput[NUM_OF_SPEED];
 
-
 int16_t encoderChangeCnt;
 bool bUseEncoderClickFlag;
-
 
 #define LEFTMOTORPWM		TIM1->CCR1
 #define RIGHTMOTORPWM		TIM1->CCR4
@@ -47,9 +45,6 @@ bool bUseEncoderClickFlag;
 
 
 int16_t tmplog1, tmplog2, tmplog3, tmplog4;
-
-
-
 
 
 void InitMotor(void)

@@ -84,13 +84,9 @@ volatile extern int16_t debugCode, debugCode1, debugCode2;
 extern uint16_t elapsedTime;
 extern bool	bDispSensorValue;
 
-
 extern char debugChar;
 
-
 extern bool bSensorEnableFlag;
-
-
 
 extern volatile uint16_t sensorSwitchTime;
 extern volatile uint16_t sensorSwitchOffTime;
@@ -148,8 +144,6 @@ void DispDotMatrix(const char *strg);
 int  DispDotMatrixWait( const char *strg );
 void DispDotMatrixInt16(int16_t *num);
 
-
-
 /* Side sensors routines (sensor.c) */
 void InitSensor();
 void ReadSensorsAndUpdate();
@@ -176,9 +170,7 @@ void PauseMotor();
 void UpdateWheelPos();
 void InitMotorData();
 void PrintMotorValues(void);
-
 void TestMotorMenu();
-
 
 // Serial port fns
 void UART1_init(int baudrate);

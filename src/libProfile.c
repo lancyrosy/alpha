@@ -23,6 +23,8 @@ volatile int32_t finalPos[NUM_OF_SPEED];
 
 int16_t curAcc[NUM_OF_SPEED] = {ACC_mm_oc(5000),		// curAcc[0] is for X-component
 								ACC_deg_oc(2000)};	// curAcc[1] is for W-component
+int16_t curDec[NUM_OF_SPEED] = {ACC_mm_oc(5000),		// curAcc[0] is for X-component
+								ACC_deg_oc(2000)};	// curAcc[1] is for W-component
 
 volatile int16_t targetSpeed[NUM_OF_SPEED];
 volatile int16_t targetEndSpeed[NUM_OF_SPEED];
@@ -75,9 +77,10 @@ void SetRobotSpeedW( int16_t wSpeed)
 
 // @brief : To set acceleration for x-movement
 // @param : acc in mm/s/s
-void SetRobotAccX( int16_t acc)
+void SetRobotAccX( int16_t acc, int16_t dec)
 {
 	curAcc[0] = ACC_mm_oc(acc);
+	curDec[0] = ACC_mm_oc(dec);
 }
 
 // @brief : To set acceleration for rotational-movement
@@ -134,7 +137,7 @@ void UpdateCurSpeed() {
 				curSpeed[i] = targetSpeed[i];
 		}
 		else if (curSpeed[i] > targetSpeed[i]) {
-			curSpeed[i] -= curAcc[i];
+			curSpeed[i] -= curDec[i];
 			if (curSpeed[i] < targetSpeed[i])
 				curSpeed[i] = targetSpeed[i];
 		}

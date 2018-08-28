@@ -23,6 +23,7 @@ void MenuMotor();
 void MenuSensor();
 void MyTest();
 
+
 int16_t specialVariable1;
 
 char s[80];
@@ -61,7 +62,6 @@ void MainMenu(){
 	     	}
 	}
 }
-
 
 
 void MenuTest(){
@@ -104,7 +104,6 @@ void MenuTest(){
 }
 
 
-
 void MenuRun(){
 	int8_t itemNum=1, selectedItem;
 	static const char *const menuStrg[] = {
@@ -120,10 +119,10 @@ void MenuRun(){
 
 		switch(selectedItem) {
 		case 1:
-
+			ExploreRun();
 			break;
 		case 2:
-
+			FastRun();
 			break;
 	    case MENU_EXIT:
 			return;
@@ -272,6 +271,7 @@ void MyTest(){
 				EnableSensor();
 				EnWheelMotor();
 				TestRun();
+				//MoveRobotExplore( 0,  5000,  200,  1000,  50,  5000);
 				DisableSensor();
 				DisWheelMotor();
 				break;

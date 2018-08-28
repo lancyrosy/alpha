@@ -35,10 +35,9 @@ void Handler_SysTick(void){
 	waitDelay--;
 	elapsedTime++;
 
-
 	// Start IR sensor interrupt
 	//if (bSensorEnableFlag)
-	if(RSumMarker=1)
+	if(RSumMarker==1)
 		timeCount++;
 	count++;
 	if(count==5){

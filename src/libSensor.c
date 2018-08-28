@@ -368,7 +368,6 @@ uint16_t ReadBatteryVolt() {
 	return (senBattery * 840) / 1980;
 }
 
-
 int16_t Cen1(){
 	int i=0;
 	int sum;
@@ -384,7 +383,9 @@ int16_t Cen1(){
 			sensorCal[8] + sensorCal[9]+ sensorCal[10] + sensorCal[11] + sensorCal[12]);
 
 
-/*	if(sensorCal[0] > 400){
+	//check Sensor row2 individually
+    /*	if(sensorCal[0] > 400){
+
 		if(sensorCal[1]>900 && sensorCal[2]>400){
 			fastFlag = TRUE;
 		}
@@ -416,7 +417,7 @@ int16_t Cen1(){
 		fastFlag = FALSE;
 	}
 
-      return sensoroffset;
+    return sensoroffset;
 
 
 }
