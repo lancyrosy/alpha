@@ -37,12 +37,14 @@ void Handler_SysTick(void){
 
 	// Start IR sensor interrupt
 	//if (bSensorEnableFlag)
-	if(RSumMarker==1)
+	if(RSumMarker==1){
 		timeCount++;
+		logFlag = TRUE;
+	}
 	count++;
-	if(count==5){
-	LogData(targetSpeed[0]/SPEED_mm_oc(1));
-	LogData(curSpeed[0]/SPEED_mm_oc(1));
+	if(count==1){
+	//LogData(targetSpeed[0]/SPEED_mm_oc(1));
+	//LogData(curSpeed[0]/SPEED_mm_oc(1));
 	LogData(sensoroffset);
 	//LogData(sensoroffset2);
 	count=0;
