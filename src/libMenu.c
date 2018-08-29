@@ -93,9 +93,9 @@ void MenuTest(){
 			DisWheelMotor();
 			break;
 		case 3:
-
+			EnableSensor();
 			MyTest();
-
+			DisableSensor();
 			break;
 	    case MENU_EXIT:
 			return;

@@ -2,6 +2,7 @@ extern unsigned pulseDuration[2];
 extern int pulseBuzzerDuration;
 extern int xSpeed;
 extern int sl,f;
+extern int tsensoroffset;
 extern volatile int RSumMarker;
 
 
@@ -18,7 +19,7 @@ void LogData(int data);
 void StartLog();
 void PrintLog();
 void LogOffset(int data);
-void LogExplore();
 void TestRun();
+void DumbRun();
 void ExploreRun();
 void FastRun();

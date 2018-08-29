@@ -4,9 +4,9 @@
 #include "Math.h"
 
 //#define Fixed Speed Run
-#define LOGSIZE	8000
+#define LOGSIZE	12000
 int logData[LOGSIZE];
-int logExplore[1000];
+int segment[100];
 int logIndex;
 bool logFlag = FALSE;
 
@@ -44,7 +44,7 @@ void PrintLog() {
 	logFlag=FALSE;
 	logIndex=0;
 	for (i=0; i<LOGSIZE; ) {
-		printf("\n%5d", logData[i++]);
+		printf("\n%5d", logData[i]);
 		printf(" %5d", logData[i++]);
 		printf(" %5d", logData[i++]);
 	}
@@ -52,27 +52,7 @@ void PrintLog() {
 		printf("\n%5d",logExplore[i]);
 	}*/
 }
-void LogExplore (){
-	//int i,count,Rcount,Lcount;
 
-	for (i=2;i<1000;i=i+3){
-		if(logData[i] <= 80 && logData[i] >= -80){
-			//count++;
-			logExplore[i] = 0; //If sensoroffset(abs) is less than 80 for 500ms, Straight line
-			//if(logData[i] >80 || logData[i] <-80) count = 0; //Clear count to 0
-		}
-		else if(logData[i] > 80){
-			//Rcount++;
-			logExplore[i] = -1;//If sensoroffset is higher than 800 for 500ms, Right curve
-			//if(logData[i] <= 80) Rcount = 0;
-		}
-		else if(logData[i] < -80){
-			//Lcount++;
-			logExplore[i] = 1;//If sensoroffset is lower than -800 for 500ms, Left curve
-			//if(logData[i] >= -80) Lcount = 0;
-		}
-	}
-}
 
 void pulseLED(int num, int duration);
 void pulseBuzzer( int per, int duration);
@@ -91,21 +71,74 @@ void pulseBuzzer( int period, int duration){
 	pulseBuzzerDuration = duration;
 }
 
+
+
+void TestRun(){
+	timeCount = 0;
+	int i = 0;
+	bool rFlag,lFlag;
+	rFlag = FALSE;
+	lFlag = FALSE;
+	DelaymSec(1000);
+	EnWheelMotor();
+	ClearMarkerFlag();
+	char s[8];
+	StartLog();
+	while(RSumMarker!=2){
+
+		if(sensoroffset > 80 && rFlag == FALSE){
+			segment[i++] = timeCount/10;
+			rFlag = TRUE;
+			if(sensoroffset > )
+			if(sensoroffset < 80 && rFlag == TRUE){
+				segment[i++] = timeCount/10;
+				rFlag = FALSE;
+			}
+		}
+		if(sensoroffset < -80 && lFlag == FALSE){
+			segment[i++] = timeCount/10;
+			lFlag = TRUE;
+			if(sensoroffset > -80 && lFlag == TRUE){
+				segment[i++] = timeCount/10;
+				lFlag = FALSE;
+			}
+		}
+
+		SetRobotSpeedX(1000);
+
+		// Do other stuff here!!!
+		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
+		// like checking for sensors to detect object etc
+		sprintf(s,"%4d", (int)(timeCount/100));
+		//gotoxy(5,5);
+		//printf(" 2nd row %d   1st row  %d  tsen   %d  xspeed  %d mark %d  ",sensoroffset,sensoroffset2,tsensoroffset,xSpeed,RSumMarker);
+		//gotoxy(5,10);
+		//printf(" slowFlag:%d  fastFlag:%d  s1:%d  s2:%d  s3:%d   ",sl,f,sensorCal[0],sensorCal[1],sensorCal[2]);
+		DispDotMatrix(s);
+		if (bSWFlag ) {	// user switch break!
+			break;
+		}
+	}
+	StopRobot();
+	WaitSW();
+}
+
+void
+
 #define y0 1200
 #define a 250.0f
 #define b 600.0f
-void TestRun(){
+void DumbRun(){
+	timeCount = 0;
 	DelaymSec(1000);
 
 	EnWheelMotor();
 
 	SetRobotAccX(3000,8000);
 
-
-
 	ClearMarkerFlag();
 	int ty0=y0;
-	int tmpOffset, tmpSpeed;
+	//int tmpOffset, tmpSpeed;
 	//tsensoroffset = sensoroffset;
 
 	char s[8];
@@ -124,6 +157,7 @@ void TestRun(){
 //		if(tmpSpeed<y0) tmpSpeed = y0;
 //		tmpOffset = tmpOffset*(long)(tmpSpeed-600)/400;
 
+		DI;
 		if(abs(sensoroffset) > abs(sensoroffset2)){
 			tsensoroffset = sensoroffset;
 		}
@@ -132,6 +166,7 @@ void TestRun(){
 
 		if(tsensoroffset<-a) tsensoroffset = -a;
 		if(tsensoroffset>a)  tsensoroffset = a;
+		EI;
 
 		sensoroffsetsqr = (long)tsensoroffset*tsensoroffset;
 		xSpeed=(b/a)*sqrt(a*a-sensoroffsetsqr)+ty0;
