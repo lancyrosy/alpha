@@ -276,7 +276,8 @@ void MyTest(){
 				DisWheelMotor();
 				break;
 			case 2:
-				PrintLog();
+				//PrintLog();
+				PrintSegment();
 				break;
 			case 3:
 				EnableSensor();

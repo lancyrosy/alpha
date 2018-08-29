@@ -4,9 +4,9 @@
 #include "Math.h"
 
 //#define Fixed Speed Run
-#define LOGSIZE	12000
+#define LOGSIZE	3000
 int logData[LOGSIZE];
-int segment[100];
+int segment[200];
 int logIndex;
 bool logFlag = FALSE;
 
@@ -29,10 +29,7 @@ int i=0;
 bool bPulseFlag = FALSE;
 bool bJunFlag = FALSE;
 
-void StartLog(){
-	logIndex = 0;
-	logFlag = TRUE;
-}
+
 void LogData(int data) {
 	if (logFlag==TRUE && logIndex<LOGSIZE) {
 		logData[logIndex] = data;
@@ -44,13 +41,17 @@ void PrintLog() {
 	logFlag=FALSE;
 	logIndex=0;
 	for (i=0; i<LOGSIZE; ) {
-		printf("\n%5d", logData[i]);
-		printf(" %5d", logData[i++]);
-		printf(" %5d", logData[i++]);
+		printf("\n%5d", logData[i++]);
+		//printf(" %5d", logData[i++]);
+		//printf(" %5d", logData[i++]);
 	}
-	/*for (i=0;i <1000;i++){
-		printf("\n%5d",logExplore[i]);
-	}*/
+}
+
+void PrintSegment() {
+	int i;
+	for (i=0; i<100; i++ ) {
+		printf("\n%5d", segment[i]);
+	}
 }
 
 
@@ -73,34 +74,39 @@ void pulseBuzzer( int period, int duration){
 
 
 void TestRun(){
+	logIndex = 0;
 	timeCount = 0;
 	int i = 0;
-	bool rFlag,lFlag;
-	rFlag = FALSE;
-	lFlag = FALSE;
+	int oldTimeCount = 0;
+	bool cFlag;
+	cFlag = FALSE;
 	DelaymSec(1000);
 	EnWheelMotor();
 	ClearMarkerFlag();
 	char s[8];
-	StartLog();
+
+#define a 70
+
 	while(RSumMarker!=2){
 
-		if(sensoroffset > 80 && rFlag == FALSE){
-			segment[i] = timeCount/10;
-			rFlag = TRUE;
-			if(sensoroffset < 80 && rFlag == TRUE){
-				segment[i+1] = timeCount/10;
-				rFlag = FALSE;
+		if(logFlag == TRUE){
+			if(sensoroffset > a || sensoroffset < -a ){
+				if((cFlag == FALSE) && ((timeCount-oldTimeCount)>20)){
+					segment[i++] = timeCount;
+					oldTimeCount = timeCount;
+					cFlag = TRUE;
+				}
+			}
+			else if(sensoroffset < a && sensoroffset > -a) {
+				if((cFlag == TRUE) && ((timeCount-oldTimeCount)>20)){
+					segment[i++] = timeCount;
+					oldTimeCount = timeCount;
+					cFlag = FALSE;
+				}
+
 			}
 		}
-		if(sensoroffset < -80 && lFlag == FALSE){
-			segment[i] = timeCount/10;
-			lFlag = TRUE;
-			if(sensoroffset > -80 && lFlag == TRUE){
-				segment[i+1] = timeCount/10;
-				lFlag = FALSE;
-			}
-		}
+
 		SetRobotSpeedX(1000);
 
 		// Do other stuff here!!!
@@ -124,7 +130,9 @@ void TestRun(){
 #define y0 1200
 #define a 250.0f
 #define b 600.0f
+
 void DumbRun(){
+	logIndex = 0;
 	timeCount = 0;
 	DelaymSec(1000);
 
@@ -138,7 +146,6 @@ void DumbRun(){
 	//tsensoroffset = sensoroffset;
 
 	char s[8];
-	StartLog();
 	while(RSumMarker!=2) {
 		//change the value of y
 //		if(slowFlag == TRUE){
@@ -153,7 +160,7 @@ void DumbRun(){
 //		if(tmpSpeed<y0) tmpSpeed = y0;
 //		tmpOffset = tmpOffset*(long)(tmpSpeed-600)/400;
 
-		DI;
+
 		if(abs(sensoroffset) > abs(sensoroffset2)){
 			tsensoroffset = sensoroffset;
 		}
@@ -162,7 +169,7 @@ void DumbRun(){
 
 		if(tsensoroffset<-a) tsensoroffset = -a;
 		if(tsensoroffset>a)  tsensoroffset = a;
-		EI;
+
 
 		sensoroffsetsqr = (long)tsensoroffset*tsensoroffset;
 		xSpeed=(b/a)*sqrt(a*a-sensoroffsetsqr)+ty0;
@@ -195,7 +202,6 @@ void ExploreRun(){
 	char segment[i];
 	char dis[i];
 	bool s,c;
-	StartLog();
 	while (RSumMarker != 2) {
 		SetRobotSpeedX(1000);
 		if(fastFlag ==TRUE&&sensoroffset<100&&sensoroffset>-100){
