@@ -72,7 +72,6 @@ void pulseBuzzer( int period, int duration){
 }
 
 
-
 void TestRun(){
 	timeCount = 0;
 	int i = 0;
@@ -87,23 +86,21 @@ void TestRun(){
 	while(RSumMarker!=2){
 
 		if(sensoroffset > 80 && rFlag == FALSE){
-			segment[i++] = timeCount/10;
+			segment[i] = timeCount/10;
 			rFlag = TRUE;
-			if(sensoroffset > )
 			if(sensoroffset < 80 && rFlag == TRUE){
-				segment[i++] = timeCount/10;
+				segment[i+1] = timeCount/10;
 				rFlag = FALSE;
 			}
 		}
 		if(sensoroffset < -80 && lFlag == FALSE){
-			segment[i++] = timeCount/10;
+			segment[i] = timeCount/10;
 			lFlag = TRUE;
 			if(sensoroffset > -80 && lFlag == TRUE){
-				segment[i++] = timeCount/10;
+				segment[i+1] = timeCount/10;
 				lFlag = FALSE;
 			}
 		}
-
 		SetRobotSpeedX(1000);
 
 		// Do other stuff here!!!
@@ -123,7 +120,6 @@ void TestRun(){
 	WaitSW();
 }
 
-void
 
 #define y0 1200
 #define a 250.0f
