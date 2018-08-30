@@ -119,7 +119,7 @@ void MenuRun(){
 
 		switch(selectedItem) {
 		case 1:
-			ExploreRun();
+
 			break;
 		case 2:
 			FastRun();
@@ -260,7 +260,8 @@ void MyTest(){
 		static const char *const menuStrg[]={
 				"----",
 				"TestRun",
-				"PrintLog",
+				"PLog",
+				"pExpl"
 				"CollectBlack",
 				"DisplaySensor",
 				"Battery"
@@ -276,20 +277,22 @@ void MyTest(){
 				DisWheelMotor();
 				break;
 			case 2:
-				//PrintLog();
-				PrintSegment();
+				PrintLog();
 				break;
 			case 3:
+				PrintSegment();
+				break;
+			case 4:
 				EnableSensor();
 				EnWheelMotor();
 				MoveRobotCalibrate(XSPEED, 200, 0, 200, 0, 1000);
 				DisableSensor();
 				DisWheelMotor();
 				break;
-			case 4:
+			case 5:
 				DispAllSensorValues();
 				break;
-			case 5:
+			case 6:
 				while(1){
 					char a[10];
 					sprintf(a,"%4u",ReadBatteryVolt() );
