@@ -9,6 +9,8 @@ void FilterSegments(void);
 #define LOGSIZE	9000
 #define SEGSIZE 200
 int logData[LOGSIZE];
+int logTime[10];
+int t = 0;
 int segment[SEGSIZE], segType[SEGSIZE], segNum;
 int segmentF[SEGSIZE], segTypeF[SEGSIZE], segNumF;
 int segmentF2[SEGSIZE], segTypeF2[SEGSIZE], segNumF2;
@@ -49,6 +51,10 @@ void PrintLog() {
 		printf("\n%5d", logData[i++]);
 		//printf(" %5d", logData[i++]);
 		//printf(" %5d", logData[i++]);
+	}
+	printf("\n\n\n");
+	for(i=0;i<10;i++){
+		printf("%5d\n",logTime[i]);
 	}
 }
 
@@ -310,6 +316,7 @@ void JMarkerDetect(){
 			//LSumMarker--;
 			//RSumMarker--;
 			pulseBuzzer(2500, 50);
+			logTime[t++] = timeCount;
 		}
 		JLState=JRState=0;
 	}
