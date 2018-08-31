@@ -4,10 +4,13 @@
 #include "Math.h"
 
 //#define Fixed Speed Run
-#define LOGSIZE	10000
-#define SEGMENTSIZE 250
+void FindSegments(void);
+void FilterSegments(void);
+#define LOGSIZE	9000
+#define SEGSIZE 200
 int logData[LOGSIZE];
-int segment[SEGMENTSIZE];
+int segment[SEGSIZE], segType[SEGSIZE], segNum;
+int segmentF[SEGSIZE], segTypeF[SEGSIZE], segNumF;
 int logIndex;
 bool logFlag = FALSE;
 
@@ -38,8 +41,8 @@ void LogData(int data) {
 void PrintLog() {
 	int i;
 	logFlag=FALSE;
-	logIndex=0;
-	for (i=0; i<LOGSIZE; ) {
+
+	for (i=0; i<logIndex; ) {
 		printf("\n%5d", logData[i++]);
 		//printf(" %5d", logData[i++]);
 		//printf(" %5d", logData[i++]);
@@ -49,8 +52,12 @@ void PrintLog() {
 void PrintSegment() {
 	//analyseSegment();
 	int i;
-	for (i=0; i<SEGMENTSIZE; i++ ) {
-		printf("\n%5d", segment[i]);
+	for (i=0; i<segNum; i++ ) {
+		printf("%5d  %2d\n", segment[i], segType[i]);
+	}
+	printf("\n\n\n");
+	for (i=0; i<segNumF; i++ ) {
+		printf("%5d  %2d\n", segmentF[i], segTypeF[i]);
 	}
 }
 
@@ -72,60 +79,17 @@ void pulseBuzzer( int period, int duration){
 	pulseBuzzerDuration = duration;
 }
 
-void analyseSegment(){
-	int i,a;
-	i = 0;
-	a = 0;
-	int tValue = 0;
-	int tSegment[SEGMENTSIZE];
-	tSegment[a] = segment[i];
-	for (i=0; i<SEGMENTSIZE;) {
-
-		if((segment[i++]-tValue)>20){
-			tSegment[a++] = tValue;
-		}
-
-	}
-
-	for (i=0; i<SEGMENTSIZE; i++){
-		segment[i]=tSegment[i];
-	}
-}
-
 void TestRun(){
-	logIndex = 0;
+
 	timeCount = 0;
-	int i = 0;
-	//int oldTimeCount = 0;
-	//int dif = 0;
-	bool cFlag;
-	cFlag = FALSE;
 	DelaymSec(1000);
 	EnWheelMotor();
 	ClearMarkerFlag();
 	char s[8];
-
-#define c 70
+	logIndex = 0;
+	logFlag = FALSE;
 
 	while(RSumMarker!=2){
-
-		if(logFlag == TRUE){
-			if(sensoroffset > c || sensoroffset < -c ){
-				if(cFlag == FALSE){
-					segment[i++] = timeCount;
-					//oldTimeCount = timeCount;
-					cFlag = TRUE;
-				}
-			}
-			else if(sensoroffset < c && sensoroffset > -c) {
-				if(cFlag == TRUE){
-					segment[i++] = timeCount;
-					//oldTimeCount = timeCount;
-					cFlag = FALSE;
-				}
-			}
-			//dif = timeCount - oldTimeCount;
-		}
 
 		SetRobotSpeedX(1000);
 
@@ -142,16 +106,74 @@ void TestRun(){
 			break;
 		}
 	}
+	logFlag = FALSE;
 	StopRobot();
 	WaitSW();
+	FindSegments();
 }
 
+#define thres 70
+void FindSegments(void) {
+	int i, offset;
+	int cFlag;		//0:str, 1:+, -1:-ve
+	cFlag = 0;
+	segNum = 0;
+
+	for (i=0; i<logIndex; i++) {
+		offset = logData[i];
+
+		if(offset >= thres) {
+			if(cFlag != 1 ){
+				segment[segNum] = i;
+				segType[segNum++] = cFlag;
+				cFlag = 1;
+			}
+		}
+		else if(offset <= -thres) {
+			if(cFlag != -1 ){
+				segment[segNum] = i;
+				segType[segNum++] = cFlag;
+				cFlag = -1;
+			}
+		}
+		else  {
+			if((cFlag != 0)){
+				segment[segNum] = i;
+				segType[segNum++] = cFlag;
+				cFlag = 0;
+			}
+		}
+	}
+	segment[segNum] = i;
+	segType[segNum++] = cFlag;
+	FilterSegments();
+}
+
+void FilterSegments(void) {
+	int dif, i;
+	segNumF = 0;
+	segmentF[0] = segment[0];
+	segTypeF[0] = segType[0];
+	for (i = 1; i < segNum; i++) {
+		dif = segment[i] - segment[i-1];
+		printf("d=%4d s=%d\n",dif, segNumF);
+		if (dif > 20) {
+			segNumF++;
+			segmentF[segNumF] = segment[i];
+			segTypeF[segNumF] = segType[i];
+		}
+		else {
+			segmentF[segNumF] = segment[i];
+		}
+	}
+	segNumF++;
+}
 
 #define y0 1200
 #define a 250.0f
 #define b 600.0f
 
-void DumbRun(){
+void DumbRun(void){
 	logIndex = 0;
 	timeCount = 0;
 	DelaymSec(1000);
@@ -210,7 +232,6 @@ void DumbRun(){
 	}
 	StopRobot();
 	WaitSW();
-
 }
 
 void ExploreRun(){

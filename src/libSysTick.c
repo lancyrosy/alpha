@@ -42,7 +42,8 @@ void Handler_SysTick(void){
 		logFlag = TRUE;
 	}
 	count++;
-	if(count==2){
+
+	if(count==5){
 	//LogData(targetSpeed[0]/SPEED_mm_oc(1));
 	//LogData(curSpeed[0]/SPEED_mm_oc(1));
 	LogData(sensoroffset);

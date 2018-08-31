@@ -119,7 +119,7 @@ void MenuRun(){
 
 		switch(selectedItem) {
 		case 1:
-			ExploreRun();
+
 			break;
 		case 2:
 			FastRun();
@@ -260,8 +260,8 @@ void MyTest(){
 		static const char *const menuStrg[]={
 				"----",
 				"TestRun",
-				"PrintLog",
-				"PrintSegment",
+				"PLog",
+				"pExpl"
 				"CollectBlack",
 				"DisplaySensor",
 				"Battery"
