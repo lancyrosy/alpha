@@ -4,9 +4,10 @@
 #include "Math.h"
 
 //#define Fixed Speed Run
-#define LOGSIZE	3000
+#define LOGSIZE	10000
+#define SEGMENTSIZE 250
 int logData[LOGSIZE];
-int segment[200];
+int segment[SEGMENTSIZE];
 int logIndex;
 bool logFlag = FALSE;
 
@@ -17,11 +18,9 @@ int pulseBuzzerDuration = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
-int sl,f;
 
 volatile int LSumMarker,RSumMarker,sumJunction,disL,disR;
 int LState,RState,JLState,JRState;
-int i=0;
 
 #define L_MARKER_SEN sensorBlack[13]
 #define R_MARKER_SEN sensorBlack[14]
@@ -48,8 +47,9 @@ void PrintLog() {
 }
 
 void PrintSegment() {
+	//analyseSegment();
 	int i;
-	for (i=0; i<100; i++ ) {
+	for (i=0; i<SEGMENTSIZE; i++ ) {
 		printf("\n%5d", segment[i]);
 	}
 }
@@ -72,12 +72,32 @@ void pulseBuzzer( int period, int duration){
 	pulseBuzzerDuration = duration;
 }
 
+void analyseSegment(){
+	int i,a;
+	i = 0;
+	a = 0;
+	int tValue = 0;
+	int tSegment[SEGMENTSIZE];
+	tSegment[a] = segment[i];
+	for (i=0; i<SEGMENTSIZE;) {
+
+		if((segment[i++]-tValue)>20){
+			tSegment[a++] = tValue;
+		}
+
+	}
+
+	for (i=0; i<SEGMENTSIZE; i++){
+		segment[i]=tSegment[i];
+	}
+}
 
 void TestRun(){
 	logIndex = 0;
 	timeCount = 0;
 	int i = 0;
-	int oldTimeCount = 0;
+	//int oldTimeCount = 0;
+	//int dif = 0;
 	bool cFlag;
 	cFlag = FALSE;
 	DelaymSec(1000);
@@ -85,26 +105,26 @@ void TestRun(){
 	ClearMarkerFlag();
 	char s[8];
 
-#define a 70
+#define c 70
 
 	while(RSumMarker!=2){
 
 		if(logFlag == TRUE){
-			if(sensoroffset > a || sensoroffset < -a ){
-				if((cFlag == FALSE) && ((timeCount-oldTimeCount)>20)){
+			if(sensoroffset > c || sensoroffset < -c ){
+				if(cFlag == FALSE){
 					segment[i++] = timeCount;
-					oldTimeCount = timeCount;
+					//oldTimeCount = timeCount;
 					cFlag = TRUE;
 				}
 			}
-			else if(sensoroffset < a && sensoroffset > -a) {
-				if((cFlag == TRUE) && ((timeCount-oldTimeCount)>20)){
+			else if(sensoroffset < c && sensoroffset > -c) {
+				if(cFlag == TRUE){
 					segment[i++] = timeCount;
-					oldTimeCount = timeCount;
+					//oldTimeCount = timeCount;
 					cFlag = FALSE;
 				}
-
 			}
+			//dif = timeCount - oldTimeCount;
 		}
 
 		SetRobotSpeedX(1000);
@@ -194,32 +214,9 @@ void DumbRun(){
 }
 
 void ExploreRun(){
-	DelaymSec(1000);
-	EnWheelMotor();
-	ClearMarkerFlag();
 
-	int i=0;
-	char segment[i];
-	char dis[i];
-	bool s,c;
-	while (RSumMarker != 2) {
-		SetRobotSpeedX(1000);
-		if(fastFlag ==TRUE&&sensoroffset<100&&sensoroffset>-100){
-			uint16_t disCurve1 = curPos[0]/DIST_mm_oc(1);
-		}
-		else if (slowFlag==TRUE){
-			uint16_t disCurve2 = curPos[0]/DIST_mm_oc(1);
-			dis[i]=disCurve2-disCurve2;
-			segment[i]=(s,dis[i]);
-		}
-
-		if (bSWFlag) {	// user switch break!
-			break;
-		}
-	}
-	StopRobot();
-	WaitSW();
 }
+
 void FastRun(){
 
 }
@@ -286,6 +283,7 @@ void ClearMarkerFlag(){
 //Collect black value
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 	DelaymSec(1000);
+	int i;
 	bAlignFlag = FALSE;
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc);
 
