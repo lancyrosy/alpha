@@ -11,6 +11,7 @@ void FilterSegments(void);
 int logData[LOGSIZE];
 int segment[SEGSIZE], segType[SEGSIZE], segNum;
 int segmentF[SEGSIZE], segTypeF[SEGSIZE], segNumF;
+int segmentF2[SEGSIZE], segTypeF2[SEGSIZE], segNumF2;
 int logIndex;
 bool logFlag = FALSE;
 
@@ -60,8 +61,11 @@ void PrintSegment() {
 	for (i=0; i<segNumF; i++ ) {
 		printf("%5d  %2d\n", segmentF[i], segTypeF[i]);
 	}
+	printf("\n\n\n");
+	for (i=0; i<segNumF2; i++ ) {
+			printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
+	}
 }
-
 
 void pulseLED(int num, int duration);
 void pulseBuzzer( int per, int duration);
@@ -153,14 +157,14 @@ void FindSegments(void) {
 }
 
 void FilterSegments(void) {
-	int dif, i;
-	segNumF = 0;
+	int difNum, difType,i;
+	segNumF = 0,segNumF2=0;
 	segmentF[0] = segment[0];
 	segTypeF[0] = segType[0];
-	for (i = 1; i < segNum; i++) {
-		dif = segment[i] - segment[i-1];
-		printf("d=%4d s=%d\n",dif, segNumF);
-		if (dif > 20) {
+	for (i = 1; i <segNum; i++) {
+		difNum = segment[i] - segment[i-1];
+		//printf("d=%4d s=%d\n",difNum, segNumF);
+		if (difNum > 20) {
 			segNumF++;
 			segmentF[segNumF] = segment[i];
 			segTypeF[segNumF] = segType[i];
@@ -170,6 +174,22 @@ void FilterSegments(void) {
 		}
 	}
 	segNumF++;
+	segmentF2[0] = segmentF[0];
+	segTypeF2[0] = segTypeF[0];
+
+	for (i = 1; i < segNumF; i++) {
+		difType = segTypeF[i] - segTypeF[i - 1];
+		//printf("d=%4d s=%d\n", difNum, segNumF2);
+		if (difType != 0) {
+			segNumF2++;
+			segmentF2[segNumF2] = segmentF[i];
+			segTypeF2[segNumF2] = segTypeF[i];
+		}
+		else {
+			segmentF2[segNumF2] = segmentF[i];
+		}
+	}
+	segNumF2++;
 }
 
 #define y0 1200
