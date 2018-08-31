@@ -10,6 +10,7 @@ volatile u32 waitDelay;
 uint16_t elapsedTime;
 int encoderChangeCnt;
 int count=0;
+int sumoffset = 0;
 float timeCount=0;
 
 bool bAlignFlag = TRUE;
@@ -31,6 +32,7 @@ void LED_ISR(void){
 
 // SysTick timer is setup in stm32_NVIC_Configuration()
 // It is a regular 1ms interrupt
+
 void Handler_SysTick(void){
 	waitDelay--;
 	elapsedTime++;
@@ -42,13 +44,14 @@ void Handler_SysTick(void){
 		logFlag = TRUE;
 	}
 	count++;
-
+	sumoffset += sensoroffset;
 	if(count==5){
 	//LogData(targetSpeed[0]/SPEED_mm_oc(1));
 	//LogData(curSpeed[0]/SPEED_mm_oc(1));
-	LogData(sensoroffset);
+	LogData(sumoffset/5);
 	//LogData(sensoroffset2);
 	count=0;
+	sumoffset = 0;
 	}
 	StartSensorISR();
 	if (bAlignFlag)

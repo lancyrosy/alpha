@@ -261,7 +261,7 @@ void MyTest(){
 				"----",
 				"TestRun",
 				"PLog",
-				"pExpl"
+				"pExpl",
 				"CollectBlack",
 				"DisplaySensor",
 				"Battery"
