@@ -25,11 +25,9 @@ int pulseBuzzerDuration = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
-int sl,f;
 
 volatile int LSumMarker,RSumMarker,sumJunction,disL,disR;
 int LState,RState,JLState,JRState;
-int i=0;
 
 #define L_MARKER_SEN sensorBlack[13]
 #define R_MARKER_SEN sensorBlack[14]
@@ -60,6 +58,7 @@ void PrintLog() {
 }
 
 void PrintSegment() {
+	//analyseSegment();
 	int i;
 	for (i=0; i<segNum; i++ ) {
 		printf("%5d  %2d\n", segment[i], segType[i]);
@@ -99,12 +98,10 @@ void pulseBuzzer( int period, int duration){
 void TestRun(){
 
 	timeCount = 0;
-
 	DelaymSec(1000);
 	EnWheelMotor();
 	ClearMarkerFlag();
 	char s[8];
-
 	logIndex = 0;
 	logFlag = FALSE;
 
@@ -299,6 +296,10 @@ void DumbRun(void){
 	WaitSW();
 }
 
+void ExploreRun(){
+
+}
+
 void FastRun(){
 
 }
@@ -366,6 +367,7 @@ void ClearMarkerFlag(){
 //Collect black value
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
 	DelaymSec(1000);
+	int i;
 	bAlignFlag = FALSE;
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc);
 
