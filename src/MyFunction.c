@@ -12,8 +12,9 @@ int logData[LOGSIZE];
 int logTime[10];
 int t = 0;
 int segment[SEGSIZE], segType[SEGSIZE], segNum;
-int segmentF[SEGSIZE], segTypeF[SEGSIZE], segNumF;
+int segmentF1[SEGSIZE], segTypeF1[SEGSIZE], segNumF1;
 int segmentF2[SEGSIZE], segTypeF2[SEGSIZE], segNumF2;
+int segmentF3[SEGSIZE], segTypeF3[SEGSIZE], segNumF3;
 int logIndex;
 bool logFlag = FALSE;
 
@@ -59,12 +60,17 @@ void PrintSegment() {
 		printf("%5d  %2d\n", segment[i], segType[i]);
 	}
 	printf("\n\n\n");
-	for (i=0; i<segNumF; i++ ) {
-		printf("%5d  %2d\n", segmentF[i], segTypeF[i]);
+	for (i=0; i<segNumF1; i++ ) {
+		printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
 	}
 	printf("\n\n\n");
 	for (i=0; i<segNumF2; i++ ) {
 			printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
+	}
+
+	printf("\n\n\n");
+	for (i=0; i<segNumF3; i++ ) {
+			printf("%5d  %2d\n", segmentF3[i], segTypeF3[i]);
 	}
 }
 
@@ -157,38 +163,68 @@ void FindSegments(void) {
 
 void FilterSegments(void) {
 	int difNum, difType,i;
-	segNumF = 0,segNumF2=0;
-	segmentF[0] = segment[0];
-	segTypeF[0] = segType[0];
+
+
+	//Filter out spike. Make it straight
 	for (i = 1; i <segNum; i++) {
 		difNum = segment[i] - segment[i-1];
 		//printf("d=%4d s=%d\n",difNum, segNumF);
-		if (difNum > 20) {
-			segNumF++;
-			segmentF[segNumF] = segment[i];
-			segTypeF[segNumF] = segType[i];
-		}
-		else {
-			segmentF[segNumF] = segment[i];
+		if (difNum < 10) {
+			segType[i] = 0;
 		}
 	}
-	segNumF++;
-	segmentF2[0] = segmentF[0];
-	segTypeF2[0] = segTypeF[0];
 
-	for (i = 1; i < segNumF; i++) {
-		difType = segTypeF[i] - segTypeF[i - 1];
+	//Join all adjacent same segment types
+	segmentF1[0] = segment[0];
+	segTypeF1[0] = segType[0];
+	for (i = 1; i < segNum; i++) {
+		difType = segType[i] - segType[i - 1];
 		//printf("d=%4d s=%d\n", difNum, segNumF2);
 		if (difType != 0) {
-			segNumF2++;
-			segmentF2[segNumF2] = segmentF[i];
-			segTypeF2[segNumF2] = segTypeF[i];
+			segNumF1++;
+			segmentF1[segNumF1] = segment[i];
+			segTypeF1[segNumF1] = segType[i];
 		}
 		else {
-			segmentF2[segNumF2] = segmentF[i];
+			segmentF1[segNumF1] = segment[i];
+		}
+	}
+	segNumF1++;
+
+	// Join short segment to previous segment
+	segNumF2=0;
+	segmentF2[0] = segmentF1[0];
+	segTypeF2[0] = segTypeF1[0];
+	for (i = 1; i <segNumF1; i++) {
+		difNum = segmentF1[i] - segmentF1[i-1];
+		//printf("d=%4d s=%d\n",difNum, segNumF);
+		if (difNum > 20) {
+			segNumF2++;
+			segmentF2[segNumF2] = segmentF1[i];
+			segTypeF2[segNumF2] = segTypeF1[i];
+		}
+		else {
+			segmentF2[segNumF2] = segmentF1[i];
 		}
 	}
 	segNumF2++;
+
+	//Join all adjacent same segment types
+	segmentF3[0] = segmentF2[0];
+	segTypeF3[0] = segTypeF2[0];
+	for (i = 1; i < segNumF2; i++) {
+		difType = segTypeF2[i] - segTypeF2[i - 1];
+		//printf("d=%4d s=%d\n", difNum, segNumF2);
+		if (difType != 0) {
+			segNumF3++;
+			segmentF3[segNumF3] = segmentF2[i];
+			segTypeF3[segNumF3] = segTypeF2[i];
+		}
+		else {
+			segmentF3[segNumF3] = segmentF2[i];
+		}
+	}
+	segNumF3++;
 }
 
 #define y0 1200

@@ -26,7 +26,7 @@ volatile uint16_t adc2_dma_buf[16];
 volatile uint16_t adc3_dma_buf[16];
 
 volatile int senfla;
-volatile int sensoroffset, sensoroffset2, sensoroffsetold, cenval;
+volatile int sensoroffset, prevSensoroffset, sensoroffset2, sensoroffsetold, cenval;
 volatile int state, substate;
 volatile int adcCnt;
 
@@ -370,18 +370,43 @@ uint16_t ReadBatteryVolt() {
 
 int16_t Cen1(){
 	int i=0;
-	int sum;
+	int sum=0;
 	for (i=0; i<15; i++) {
 		sensorCal[i] = sensor[i] - sensorBlack[i];
 		if (sensorCal[i] <= 0) sensorCal[i] = 0;
 
 	}
+	for (i=3; i<12; i++) {
+		if (sensorCal[i] > 1000) sum++;
+
+	}
+
+//	if (prevSensoroffset<-450) {
+//		sensorCal[9]=sensorCal[10]=sensorCal[11]=sensorCal[12]=0;
+//	}
+//	else if (prevSensoroffset<-200) {
+//		sensorCal[12]=sensorCal[10]=sensorCal[11]=sensorCal[3]=0;
+//	}
+//	else if (prevSensoroffset<200) {
+//		sensorCal[11]=sensorCal[12]=sensorCal[4]=sensorCal[3]=0;
+//	}
+//	else if (prevSensoroffset<450) {
+//		sensorCal[12]=sensorCal[5]=sensorCal[4]=sensorCal[3]=0;
+//	}
+//	else {
+//		sensorCal[6]=sensorCal[5]=sensorCal[4]=sensorCal[3]=0;
+//	}
+
+
+
 
 	sensoroffset = (sensorCal[3] * (-1800l) + sensorCal[4] * (-1400l) + sensorCal[5] * (-1000l)+ sensorCal[6] * (-600l) + sensorCal[7]* (-200l)+
 			sensorCal[8] * (200l) + sensorCal[9] * (600l) + sensorCal[10] * (1000l) + sensorCal[11] * (1400l) + sensorCal[12] * (1800l))/
 			(sensorCal[3] + sensorCal[4]+ sensorCal[5] + sensorCal[6] + sensorCal[7] +
 			sensorCal[8] + sensorCal[9]+ sensorCal[10] + sensorCal[11] + sensorCal[12]);
 
+	if (sum>6) sensoroffset = 0;
+	prevSensoroffset = sensoroffset;
 	sensoroffset2 = (sensorCal[0] * (-200l) + sensorCal[2] * (200l))/(sensorCal[0]+sensorCal[1]+sensorCal[2]);
 
 
