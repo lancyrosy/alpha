@@ -50,10 +50,6 @@ void PrintLog() {
 		//printf(" %5d", logData[i++]);
 		//printf(" %5d", logData[i++]);
 	}
-	printf("\n\n\n");
-	for(i=0;i<10;i++){
-		printf("%5d\n",logTime[i]);
-	}
 }
 
 void PrintSegment() {
@@ -122,7 +118,7 @@ void TestRun(){
 	FindSegments();
 }
 
-#define thres 70
+#define thres 60
 void FindSegments(void) {
 	int i, offset;
 	int cFlag;		//0:str, 1:+, -1:-ve
