@@ -101,28 +101,28 @@ void TestMotorMenu() {
 					// Auto speed profile
 					// Robot will travel a designated distance using the
 					// speed and acceleration parameters given.
-					MoveRobot(XSPEED, 200, 0, 400, 0, 1000);
+					MoveRobot(XSPEED, 200, 0, 400, 0, 1000,1000);
 					StopRobot();       
 					break;
 			case '6':     
-					MoveRobot(XSPEED, -100, 0, 500, 0, 1000);
+					MoveRobot(XSPEED, -100, 0, 500, 0, 1000,1000);
 					StopRobot();       
 					break;
 			case '7':     
-					MoveRobot(WSPEED, 90, 0, 360, 0, 1800);
+					MoveRobot(WSPEED, 90, 0, 360, 0, 1800,1000);
 					StopRobot();       
 					break;
 			case '8':     
-					MoveRobot(WSPEED, -90, 0, 360, 0, 1800);
+					MoveRobot(WSPEED, -90, 0, 360, 0, 1800,1000);
 					StopRobot();       
 					break;
 			case '9':                                                    
 					// Move 2cm
-					MoveRobot(XSPEED, 30, 0, 300, 300, 500);
+					MoveRobot(XSPEED, 30, 0, 300, 300, 500,1000);
 					// Curve turn 90 degrees
-					MoveRobot(WSPEED, -45, 0, 1800, 10, 1800);
+					MoveRobot(WSPEED, -45, 0, 1800, 10, 1800,1000);
 					// Move 2cm
-					MoveRobot(XSPEED, 30, 0, 300, 0, 500);
+					MoveRobot(XSPEED, 30, 0, 300, 0, 500,1000);
 					StopRobot();       
 					break;
 			}

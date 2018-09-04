@@ -33,23 +33,17 @@ uint8_t menuNum;
 // @retval: none
 void MainMenu(){
 	static const char * const menuStrg[] = {
-			"RUN ",
-			"Test Menu",
+			"RUN",
+			"TEST",
 
 	};
 	int8_t itemNum=0, selectedItem;
 
-
 	DispDotMatrixWait("AlphaCentre RobotKit-"__DATE__);
-
-
 	while(1) {
 		DisableSensor();
-
-
 		menuNum = MENU_MAIN;
-
-	     selectedItem=SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
+	    selectedItem=SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
 
 			switch(selectedItem) {
 	     	case 0:
@@ -58,12 +52,57 @@ void MainMenu(){
 			case 1:
 				MenuTest();
 				break;
-
 	     	}
 	}
 }
 
+void MenuRun(){
+	int8_t itemNum=1, selectedItem;
+	static const char *const menuStrg[] = {
+				"----",
+				"expR",
+				"fastR"
+				"dumbR"
+				"testR"
+	};
+	while(1) {
+		menuNum = 1;
+	     selectedItem=SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
 
+		switch(selectedItem) {
+		case 1:
+			EnableSensor();
+			EnWheelMotor();
+			ExploreRun();
+			DisableSensor();
+			DisWheelMotor();
+			break;
+		case 2:
+			EnableSensor();
+			EnWheelMotor();
+			FastRun();
+			DisableSensor();
+			DisWheelMotor();
+			break;
+		case 3:
+			EnableSensor();
+			EnWheelMotor();
+			DumbRun();
+			DisableSensor();
+			DisWheelMotor();
+			break;
+		case 4:
+			EnableSensor();
+			EnWheelMotor();
+			TestRun();
+			DisableSensor();
+			DisWheelMotor();
+			break;
+	    case MENU_EXIT:
+			return;
+     	}
+	}
+}
 void MenuTest(){
 	int8_t itemNum=1, selectedItem;
 
@@ -74,55 +113,26 @@ void MenuTest(){
 				"MyTest"
 	};
 
-
 	while(1) {
 		DisableSensor();
-
 		menuNum = MENU_MAIN;
-	     selectedItem=SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
+	    selectedItem=SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
 
 		switch(selectedItem) {
 		case 1:
 			EnableSensor();
-			MenuSensor();
+			MenuSensor(); //sensor
 			DisableSensor();
 			break;
 		case 2:
 			EnWheelMotor();
-			MenuMotor();
+			MenuMotor();  //motor
 			DisWheelMotor();
 			break;
 		case 3:
 			EnableSensor();
-			MyTest();
+			MyTest();    //MyTest
 			DisableSensor();
-			break;
-	    case MENU_EXIT:
-			return;
-     	}
-	}
-}
-
-
-void MenuRun(){
-	int8_t itemNum=1, selectedItem;
-	static const char *const menuStrg[] = {
-				"----",
-				"explore",
-				"fastR"
-	};
-
-
-	while(1) {
-		menuNum = 1;
-	     selectedItem=SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
-
-		switch(selectedItem) {
-		case 1:
-
-			break;
-		case 2:
-			FastRun();
 			break;
 	    case MENU_EXIT:
 			return;
@@ -158,14 +168,14 @@ void MenuMotor(){
 	          break;
 
 		case 3:
-			MoveRobot(XSPEED, 2000, 0, 100, 0, 2000);
 
-			//StopRobot();
-			DelaymSec(200);
+
+			StopRobot();
+
 
 			break;
      	case 4:
-			MoveRobot(WSPEED, 360, 0, 360, 0, 720 );
+			MoveRobot(WSPEED, 360, 0, 360, 0, 1000,1000);
 			//StopRobot();
 			DelaymSec(200);
 	          break;
@@ -254,17 +264,16 @@ void MenuSensor(){
 		}
      }
 }
-
 void MyTest(){
 	int8_t sensorNum=1;
 		static const char *const menuStrg[]={
 				"----",
-				"TestRun",
+				"TestR",
 				"PLog",
 				"pExpl",
-				"CollectBlack",
-				"DisplaySensor",
-				"Battery"
+				"ColBlack",
+				"DispSen",
+				"Bat"
 		};
 		while(1) {
 		    switch(SelectMenuItem(&sensorNum, MENU_SIZE, menuStrg)) {
@@ -272,7 +281,6 @@ void MyTest(){
 				EnableSensor();
 				EnWheelMotor();
 				TestRun();
-				//MoveRobotExplore( 0,  5000,  200,  1000,  50,  5000);
 				DisableSensor();
 				DisWheelMotor();
 				break;
@@ -285,7 +293,7 @@ void MyTest(){
 			case 4:
 				EnableSensor();
 				EnWheelMotor();
-				MoveRobotCalibrate(XSPEED, 200, 0, 200, 0, 1000);
+				MoveRobotCalibrate(XSPEED, 200, 0, 200, 0, 1000,1000);
 				DisableSensor();
 				DisWheelMotor();
 				break;

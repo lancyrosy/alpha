@@ -157,8 +157,10 @@ void SetRobotAccW( int16_t acc);
 // Set the speed profile parameters. It makes sure the robot travel the dist according
 // to the speed and acceleration parameters.
 // ---------------------------------------------------------------------------------
-void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc);
-
+void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
+void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
+void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
+void MoveRobotFirst(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
 // ---------------------------------------------------------------------------------
 // Wait for the robot to travel certain distance. Must make sure the distance is less than
 // final target distance
@@ -169,7 +171,7 @@ void WaitDist(int16_t speedType, int16_t dist);
 // SetMoveCommand() is the same as MoveRobot() except that it doesn't wait for the
 // robot to travel the distance required.
 // ---------------------------------------------------------------------------------
-void SetMoveCommand(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc);
+void SetMoveCommand(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
 
 // ---------------------------------------------------------------------------------
 // Wait for end of speed profile. Basically, the functions just check if the distance to
