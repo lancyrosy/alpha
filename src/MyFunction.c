@@ -10,16 +10,19 @@ void FilterSegments(void);
 #define SEGSIZE 200
 int logData[LOGSIZE];
 int segment[SEGSIZE], segType[SEGSIZE], segNum;
+int segmentL[SEGSIZE], segTypeL[SEGSIZE], segNumL;
 int segmentF1[SEGSIZE], segTypeF1[SEGSIZE], segNumF1;
 int segmentF2[SEGSIZE], segTypeF2[SEGSIZE], segNumF2;
 int segmentF3[SEGSIZE], segTypeF3[SEGSIZE], segNumF3;
 int logIndex;
+int left[100];
 bool logFlag = FALSE;
 
 unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
 
+int leftNum = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
@@ -69,6 +72,16 @@ void PrintSegment() {
 	printf("\n\n\n");
 	for (i=0; i<segNumF3; i++ ) {
 			printf("%5d  %2d\n", segmentF3[i], segTypeF3[i]);
+	}
+
+	printf("\n\n\n");
+	for (i=0; i<segNumL; i++ ) {
+		printf("%5d  %2d\n", segmentL[i], segTypeL[i]);
+	}
+
+	printf("\n\n\n");
+	for (i=0; i<leftNum; i++ ) {
+		printf("%5d\n", left[i]);
 	}
 }
 
@@ -221,34 +234,66 @@ void FilterSegments(void) {
 	segNumF3++;
 }
 
+
+//Filter based on left segment, update segment position
+//void FilterLeft(){
+//	int i,a;
+//	if(segNumF3>segNumL)
+//		a = segNumF3;
+//	else
+//		a = segNumL;
+//	for (i = 0; i < a; i++) {
+//		if(segTypeF3[i] != segTypeL[i]){
 //
-//void FilterCurve(){
-//	int i,a,ave;
-//	segmentF4[0] = segmentF3[0];
-//		segTypeF4[0] = segTypeF3[0];
-//		for (i = 1; i < segNumF3; i++) {
-//			if (segTypeF3[i]==0) {
-//				a=segmentF3[i-1];
-//				int index,sum,t;
-//				sum = 0;
-//				for(index=a;index<segmentF3[i];index++){
-//					sum +=logData[index];
-//					if(logData[index]<50)
-//						break;
-//				}
-//				ave=sum/(index-a);
-//				if(ave>50){
-//					segmentF4[segNumF4]=segmentF3[i];
-//				}
-//			}
-//			else{
-//				segmentF4[segNumF4]=segmentF3[i];
-//				segTypeF4[segNumF4] = segTypeF3[i];
-//			}
 //		}
-//		segNumF4++;
-//
+//		else{
+//			segmentF4[segNumF4] = segmentF3[i];
+//			segTypeF4[segNumF4] = segTypeF3[i];
+//		}
+//	}
 //}
+
+//Find segments based on left markers
+void SegmentLeft(){
+	int i, offset;
+	int lNum=0;
+	int num = 0;
+	int sumoffset = 0;
+	int aveoffset = 0;
+	int cFlag;		//0:str, 1:+, -1:-ve
+	cFlag = 0;
+	segNumL = 0;
+
+	for (i=0; i<logIndex; i++) {
+		offset = logData[i];
+		sumoffset +=offset;
+		num++;
+		if(left[lNum]==(i*5)){
+			aveoffset = sumoffset/num;
+			if(aveoffset>50){
+				segmentL[segNumL] = i;
+				segTypeL[segNumL] = 1;
+				sumoffset = 0;
+				num =0;
+			}
+			else if(aveoffset<-50){
+				segmentL[segNumL] = i;
+				segTypeL[segNumL] = -1;
+				sumoffset = 0;
+				num =0;
+			}
+			else{
+				segmentL[segNumL] = i;
+				segTypeL[segNumL] = 0;
+				sumoffset = 0;
+				num =0;
+			}
+		}
+	}
+	segmentL[segNumL] = i;
+	segTypeL[segNumL] = 0;
+}
+
 
 #define y0 1200
 #define a 250.0f
@@ -339,6 +384,8 @@ void LMarketDetect(){
 		if ((tDist-disL)>25) {
 			JLState = 0;
 			LSumMarker ++;
+			left[leftNum]=timeCount;
+			leftNum++;
 			pulseLED(0,100);
 			//pulseBuzzer(1000, 50);
 		}
