@@ -204,7 +204,7 @@ void DoMoveCommand( ) {
 
 		decelerationRequired = GetDecRequired(finalPos[i]-curPos[i], afterBrakeDist[i], curSpeed[i], targetEndSpeed[i] );
 
-		if (decelerationRequired>=ABS(curAcc[i]) ) {
+		if (decelerationRequired>=ABS(curDec[i]) ) {
 			// Time to decelerate
 #ifndef xxx
 			if (moveState[i]==0) {
@@ -263,11 +263,15 @@ void StopRobot(void)
 // @brief : To move Robot a certain distance. Distance can be translational (in mm) or
 // 			rotational(in degree)
 // @param  see SetMoveCommand()
-void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
+void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc) {
 	char s[8];
-	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc);
+
+	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
 	while(!EndOfMove(speedType)) {
+		if(breakFlag){
+			break;
+		}
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc
@@ -278,7 +282,61 @@ void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSp
 		}
 	}
 }
+void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc) {
+	char s[8];
 
+	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
+
+	while(!EndOfMove(speedType)) {
+
+
+		sprintf(s,"%4d", RSumMarker);
+		DispDotMatrix(s);
+		if (bSWFlag) {
+			break;
+		}
+	}
+}
+
+
+void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc) {
+	char s[8];
+
+	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc ,dcc);
+
+	while(!EndOfMove(speedType)) {
+
+		sprintf(s,"%4d", RSumMarker);
+		DispDotMatrix(s);
+		if (bSWFlag) {
+			break;
+		}
+	}
+
+
+
+}
+void MoveRobotFirst(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc) {
+	char s[8];
+
+	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
+
+	while(!EndOfMove(speedType)) {
+		if (RSumMarker == 1) {
+			break;
+		}
+//		if (RSumMarker == 2) {
+//					break;
+//		}
+
+
+//		sprintf(s,"%4d", RSumMarker);
+//		DispDotMatrix(s);
+		if (bSWFlag) {
+			break;
+		}
+	}
+}
 // ---------------------------------------------------------------------------------
 // Wait for the robot to travel certain distance. Must make sure the distance is less than
 // final target distance
@@ -319,7 +377,7 @@ void WaitDist(int16_t speedType, int16_t dist) {
 // The profile generator runs regularly in the background through a ISR.
 // It ends when the distance to move is reached or exceeded.
 // ---------------------------------------------------------------------------------
-void SetMoveCommand(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc) {
+void SetMoveCommand(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc, int16_t dcc) {
 
 	int32_t dist32;
 	if (speedType == XSPEED) {
@@ -360,6 +418,7 @@ void SetMoveCommand(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 	targetSpeed[speedType] = topSpeed;
 	targetEndSpeed[speedType] = endSpeed;
 	curAcc[speedType] = acc;
+	curDec[speedType] = dcc;
 	moveState[speedType] = 0;
 
 	EI;

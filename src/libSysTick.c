@@ -41,7 +41,6 @@ void Handler_SysTick(void){
 	//if (bSensorEnableFlag)
 	if(RSumMarker==1){
 		timeCount++;
-		logFlag = TRUE;
 	}
 	count++;
 	sumoffset += sensoroffset;
@@ -62,8 +61,8 @@ void Handler_SysTick(void){
 
 	MotorPID();
 
-	LMarketDetect();
-	RMarketDetect();
+	LMarkerDetect();
+	RMarkerDetect();
 
 	// alphanumeric display service routine
 	Disp_dma_service();
