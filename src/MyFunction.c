@@ -9,8 +9,6 @@ void FilterSegments(void);
 #define LOGSIZE	9000
 #define SEGSIZE 200
 int logData[LOGSIZE];
-int logTime[10];
-int t = 0;
 int segment[SEGSIZE], segType[SEGSIZE], segNum;
 int segmentF1[SEGSIZE], segTypeF1[SEGSIZE], segNumF1;
 int segmentF2[SEGSIZE], segTypeF2[SEGSIZE], segNumF2;
@@ -124,7 +122,7 @@ void TestRun(){
 	FindSegments();
 }
 
-#define thres 60
+#define thres 70
 void FindSegments(void) {
 	int i, offset;
 	int cFlag;		//0:str, 1:+, -1:-ve
@@ -168,7 +166,6 @@ void FilterSegments(void) {
 	//Filter out spike. Make it straight
 	for (i = 1; i <segNum; i++) {
 		difNum = segment[i] - segment[i-1];
-		//printf("d=%4d s=%d\n",difNum, segNumF);
 		if (difNum < 10) {
 			segType[i] = 0;
 		}
@@ -179,7 +176,6 @@ void FilterSegments(void) {
 	segTypeF1[0] = segType[0];
 	for (i = 1; i < segNum; i++) {
 		difType = segType[i] - segType[i - 1];
-		//printf("d=%4d s=%d\n", difNum, segNumF2);
 		if (difType != 0) {
 			segNumF1++;
 			segmentF1[segNumF1] = segment[i];
@@ -197,7 +193,6 @@ void FilterSegments(void) {
 	segTypeF2[0] = segTypeF1[0];
 	for (i = 1; i <segNumF1; i++) {
 		difNum = segmentF1[i] - segmentF1[i-1];
-		//printf("d=%4d s=%d\n",difNum, segNumF);
 		if (difNum > 20) {
 			segNumF2++;
 			segmentF2[segNumF2] = segmentF1[i];
@@ -214,7 +209,6 @@ void FilterSegments(void) {
 	segTypeF3[0] = segTypeF2[0];
 	for (i = 1; i < segNumF2; i++) {
 		difType = segTypeF2[i] - segTypeF2[i - 1];
-		//printf("d=%4d s=%d\n", difNum, segNumF2);
 		if (difType != 0) {
 			segNumF3++;
 			segmentF3[segNumF3] = segmentF2[i];
@@ -226,6 +220,35 @@ void FilterSegments(void) {
 	}
 	segNumF3++;
 }
+
+//
+//void FilterCurve(){
+//	int i,a,ave;
+//	segmentF4[0] = segmentF3[0];
+//		segTypeF4[0] = segTypeF3[0];
+//		for (i = 1; i < segNumF3; i++) {
+//			if (segTypeF3[i]==0) {
+//				a=segmentF3[i-1];
+//				int index,sum,t;
+//				sum = 0;
+//				for(index=a;index<segmentF3[i];index++){
+//					sum +=logData[index];
+//					if(logData[index]<50)
+//						break;
+//				}
+//				ave=sum/(index-a);
+//				if(ave>50){
+//					segmentF4[segNumF4]=segmentF3[i];
+//				}
+//			}
+//			else{
+//				segmentF4[segNumF4]=segmentF3[i];
+//				segTypeF4[segNumF4] = segTypeF3[i];
+//			}
+//		}
+//		segNumF4++;
+//
+//}
 
 #define y0 1200
 #define a 250.0f
@@ -349,7 +372,6 @@ void JMarkerDetect(){
 			//LSumMarker--;
 			//RSumMarker--;
 			pulseBuzzer(2500, 50);
-			logTime[t++] = timeCount;
 		}
 		JLState=JRState=0;
 	}
