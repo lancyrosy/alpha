@@ -40,6 +40,15 @@ void MainMenu(){
 	int8_t itemNum=0, selectedItem;
 
 	DispDotMatrixWait("AlphaCentre RobotKit-"__DATE__);
+
+	while(1){
+		char a[10];
+		sprintf(a,"%4u",ReadBatteryVolt() );
+		DispDotMatrix(a);
+		if(bSWFlag)
+			break;
+	}
+
 	while(1) {
 		DisableSensor();
 		menuNum = MENU_MAIN;
@@ -61,8 +70,8 @@ void MenuRun(){
 	static const char *const menuStrg[] = {
 				"----",
 				"expR",
-				"fastR"
-				"dumbR"
+				"fastR",
+				"dumbR",
 				"testR"
 	};
 	while(1) {
