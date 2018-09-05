@@ -9,18 +9,17 @@ void FilterSegments(void);
 void AnalyseCurve(void);
 
 #define LOGSIZE	9000
-#define SEGSIZE 200
+#define SEGSIZE 100
 int logData[LOGSIZE];
 int segment[SEGSIZE], segType[SEGSIZE], segNum;
-int segmentL[SEGSIZE], segTypeL[SEGSIZE], segNumL;
 int segmentF1[SEGSIZE], segTypeF1[SEGSIZE], segNumF1;
 int segmentF2[SEGSIZE], segTypeF2[SEGSIZE], segNumF2;
 int segmentF3[SEGSIZE], segTypeF3[SEGSIZE], segNumF3;
+int segmentF4[SEGSIZE], segTypeF4[SEGSIZE], segNumF4;
 int dis[SEGSIZE];
 int rad[SEGSIZE];
 int arcAngle[SEGSIZE];
 int logIndex;
-int left[100];
 bool logFlag = FALSE;
 bool breakFlag=FALSE;
 
@@ -79,22 +78,15 @@ void PrintSegment() {
 	}
 	printf("\n\n\n");
 	for (i=0; i<segNumF2; i++ ) {
-			printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
+		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
 	}
-
 	printf("\n\n\n");
 	for (i=0; i<segNumF3; i++ ) {
-		printf("%5d  %2d  %5d  %5d  %5d\n ", segmentF3[i], segTypeF3[i],arcAngle[i],rad[i],dis[i]);
+		printf("%5d  %2d  %5d  %5d  %5d\n ", segmentF3[i], segTypeF3[i]);
 	}
-
 	printf("\n\n\n");
-	for (i=0; i<segNumL; i++ ) {
-		printf("%5d  %2d\n", segmentL[i], segTypeL[i]);
-	}
-
-	printf("\n\n\n");
-	for (i=0; i<leftNum; i++ ) {
-		printf("%5d\n", left[i]);
+	for (i=0; i<segNumF4; i++ ) {
+		printf("%5d  %2d\n ", segmentF4[i], segTypeF4[i]);
 	}
 
 }
@@ -146,14 +138,14 @@ void FindSegments(void) {
 	for (i=0; i<logIndex; i++) {
 		offset = logData[i];
 
-		if(offset >= thres) {
+		if(offset > thres) {
 			if(cFlag != 1 ){
 				segment[segNum] = i;
 				segType[segNum++] = cFlag;
 				cFlag = 1;
 			}
 		}
-		else if(offset <= -thres) {
+		else if(offset < -thres) {
 			if(cFlag != -1 ){
 				segment[segNum] = i;
 				segType[segNum++] = cFlag;
@@ -231,6 +223,48 @@ void FilterSegments(void) {
 	}
 	segNumF3++;
 
+	//F4
+	int index;
+	int sum = 0;
+	int ave = 0;
+	int num = 0;
+	bool aFlag = FALSE;
+	segmentF4[0] = segmentF3[0];
+	segTypeF4[0] = segTypeF3[0];
+	for (i = 1; i < segNumF3; i++) {
+		segNumF4++;
+		if((segmentF3[i]-segmentF3[i-1])>400){
+			for(index=segmentF3[i]; i<(segmentF3[i-1]);index++){
+				sum += logData[index];
+				num++;
+				ave = sum/num;
+//				if(num==20)
+//					aFlag = FALSE;
+				if(ave > 50){
+					if((logData[index] < 20)&&(aFlag == FALSE)){
+						segmentF4[i] = index;
+						segTypeF4[i] = 1;
+						ave = sum = num =0;
+						aFlag = TRUE;
+					}
+				}
+				else if(ave < -50){
+					if((logData[index] > -20)&&(aFlag == FALSE)){
+						segmentF4[i] = index;
+						segTypeF4[i] = -1;
+						ave = sum = num =0;
+						aFlag = TRUE;
+					}
+				}
+			}
+			segNumF4++;
+		}
+		segmentF4[segNumF4]=segmentF3[i];
+		segTypeF4[segNumF4]=segTypeF3[i];
+	}
+	segNumF4++;
+	//
+
 }
 void AnalyseCurve(void) {
 	int i,arcLength,radian,angle;
@@ -298,66 +332,6 @@ void FastRun(void) {
 	MoveRobot(XSPEED, 500, 0, 500, 40, 2000, 2000);
 	DelaymSec(5000);
 
-}
-
-
-//Filter based on left segment, update segment position
-//void FilterLeft(){
-//	int i,a;
-//	if(segNumF3>segNumL)
-//		a = segNumF3;
-//	else
-//		a = segNumL;
-//	for (i = 0; i < a; i++) {
-//		if(segTypeF3[i] != segTypeL[i]){
-//
-//		}
-//		else{
-//			segmentF4[segNumF4] = segmentF3[i];
-//			segTypeF4[segNumF4] = segTypeF3[i];
-//		}
-//	}
-//}
-
-//Find segments based on left markers
-void SegmentLeft(){
-	int i, offset;
-	int lNum=0;
-	int num = 0;
-	int sumoffset = 0;
-	int aveoffset = 0;
-	int cFlag;		//0:str, 1:+, -1:-ve
-	cFlag = 0;
-	segNumL = 0;
-
-	for (i=0; i<logIndex; i++) {
-		offset = logData[i];
-		sumoffset +=offset;
-		num++;
-		if(left[lNum]==(i*5)){
-			aveoffset = sumoffset/num;
-			if(aveoffset>50){
-				segmentL[segNumL] = i;
-				segTypeL[segNumL] = 1;
-				sumoffset = 0;
-				num =0;
-			}
-			else if(aveoffset<-50){
-				segmentL[segNumL] = i;
-				segTypeL[segNumL] = -1;
-				sumoffset = 0;
-				num =0;
-			}
-			else{
-				segmentL[segNumL] = i;
-				segTypeL[segNumL] = 0;
-				sumoffset = 0;
-				num =0;
-			}
-		}
-	}
-	segmentL[segNumL] = i;
-	segTypeL[segNumL] = 0;
 }
 
 
@@ -437,16 +411,19 @@ void TestRun(void){
 
 	while(RSumMarker!=2)
 	{
-		int i;
-		int n=7;
-		int disTest[]={330,400,175,130,480,515,360};
-		int endSpeed[]={1200,1200,1200,1200,1200,1200,50};
+//		int i;
+//		int n=7;
+//		int disTest[]={330,400,175,130,480,515,360};
+//		int endSpeed[]={1200,1200,1200,1200,1200,1200,50};
+//
+//		for(i=0;i<n;i++){
+//			MoveRobot(XSPEED, disTest[i], 0, 1200, endSpeed[i], 3000,3000);
+//			pulseBuzzer(2050,50);
+//		}
+//		break;
 
-		for(i=0;i<n;i++){
-			MoveRobot(XSPEED, disTest[i], 0, 1200, endSpeed[i], 3000,3000);
-			pulseBuzzer(2050,50);
-		}
-		break;
+		SetRobotSpeedX(1000);
+
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc
@@ -462,6 +439,8 @@ void TestRun(void){
 	}
 	logFlag = FALSE;
 	StopRobot();
+	FindSegments();
+
 	WaitSW();
 }
 
@@ -483,8 +462,6 @@ void LMarkerDetect(){
 		if ((tDist-disL)>25) {
 			JLState = 0;
 			LSumMarker ++;
-			left[leftNum]=timeCount;
-			leftNum++;
 			pulseLED(0,100);
 			//pulseBuzzer(1000, 50);
 		}
