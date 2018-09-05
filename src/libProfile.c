@@ -269,14 +269,15 @@ void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSp
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
 	while(!EndOfMove(speedType)) {
-		if(breakFlag){
-			break;
-		}
+
+//		if(RSumMarker==2){
+//			break;
+//		}
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc
-		sprintf(s,"%4d", RSumMarker);
-		DispDotMatrix(s);
+//		sprintf(s,"%4d", RSumMarker);
+//		DispDotMatrix(s);
 		if (bSWFlag) {	// user switch break!
 			break;
 		}
@@ -290,8 +291,8 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 	while(!EndOfMove(speedType)) {
 
 
-		sprintf(s,"%4d", RSumMarker);
-		DispDotMatrix(s);
+//		sprintf(s,"%4d", RSumMarker);
+//		DispDotMatrix(s);
 		if (bSWFlag) {
 			break;
 		}
@@ -306,8 +307,8 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 
 	while(!EndOfMove(speedType)) {
 
-		sprintf(s,"%4d", RSumMarker);
-		DispDotMatrix(s);
+//		sprintf(s,"%4d", RSumMarker);
+//		DispDotMatrix(s);
 		if (bSWFlag) {
 			break;
 		}
@@ -316,20 +317,15 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 
 
 }
-void MoveRobotFirst(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc) {
+void MoveRobotCheck(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc, int16_t marker) {
 	char s[8];
 
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
 	while(!EndOfMove(speedType)) {
-		if (RSumMarker == 1) {
+		if (RSumMarker == marker) {
 			break;
 		}
-//		if (RSumMarker == 2) {
-//					break;
-//		}
-
-
 //		sprintf(s,"%4d", RSumMarker);
 //		DispDotMatrix(s);
 		if (bSWFlag) {
@@ -386,6 +382,7 @@ void SetMoveCommand(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 		topSpeed = SPEED_mm_oc(topSpeed);
 		endSpeed = SPEED_mm_oc(endSpeed);
 		acc 	 = ACC_mm_oc(acc);
+		dcc 	 = ACC_mm_oc(dcc);
 	}
 	else {
 		dist32 = DIST_deg_oc(dist);
@@ -393,6 +390,7 @@ void SetMoveCommand(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 		topSpeed = SPEED_deg_oc(topSpeed);
 		endSpeed = SPEED_deg_oc(endSpeed);
 		acc 	 = ACC_deg_oc(acc);
+		dcc 	 = ACC_mm_oc(dcc);
 	}
 	// Init speed profile parameters
 	if (dist==0) {

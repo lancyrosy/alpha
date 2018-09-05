@@ -22,6 +22,7 @@
 
 
 int main(void){
+	int pwm=0;
 
 	InitIO();	// Must be initialised before any printf()
 
