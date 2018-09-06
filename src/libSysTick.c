@@ -11,6 +11,8 @@ uint16_t elapsedTime;
 int encoderChangeCnt;
 int count=0;
 int sumoffset = 0;
+int sumoffset2 = 0;
+int sumtOffset=0;
 float timeCount=0;
 
 bool bAlignFlag = TRUE;
@@ -44,13 +46,18 @@ void Handler_SysTick(void){
 	}
 	count++;
 	sumoffset += sensoroffset;
+	sumoffset2 += sensoroffset2;
+	sumtOffset += tsensoroffset;
 	if(count==5){
-	//LogData(targetSpeed[0]/SPEED_mm_oc(1));
-	//LogData(curSpeed[0]/SPEED_mm_oc(1));
-	LogData(sumoffset/5);
-	//LogData(sensoroffset2);
-	count=0;
-	sumoffset = 0;
+		//LogData(targetSpeed[0]/SPEED_mm_oc(1));
+		LogData(curSpeed[0] / SPEED_mm_oc(1));
+		LogData(sumoffset / 5);
+//		LogData(sumoffset2 / 5);
+//		LogData(sumtOffset);
+		count = 0;
+		sumoffset = 0;
+		sumoffset2 = 0;
+		sumtOffset = 0;
 	}
 	StartSensorISR();
 	if (bAlignFlag)
@@ -58,7 +65,6 @@ void Handler_SysTick(void){
 	else sensoroffset = 0;
 
 	DoSpeedProfile();
-
 	MotorPID();
 
 	LMarkerDetect();
@@ -77,7 +83,6 @@ void Handler_SysTick(void){
 		// Only the right wheel is used
 		// This allows the user to change a variable conveniently.
 		// Very useful for testing.
-
 		encoderChangeCnt+=encoderSpeed[1];
 
 		if (encoderChangeCnt>20) {

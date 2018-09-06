@@ -4,7 +4,7 @@ extern int xSpeed;
 extern int tsensoroffset;
 extern volatile int RSumMarker;
 extern bool logFlag;
-extern bool breakFlag;
+extern bool exploreFlag;
 
 #define L_MARKER_SEN sensorBlack[13]
 #define R_MARKER_SEN sensorBlack[14]

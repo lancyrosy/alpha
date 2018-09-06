@@ -8,7 +8,7 @@ void FindSegments(void);
 void FilterSegments(void);
 void AnalyseCurve(void);
 
-#define LOGSIZE	9000
+#define LOGSIZE	10000
 #define SEGSIZE 300
 int logData[LOGSIZE];
 int t = 0;
@@ -22,7 +22,7 @@ int arcAngle[SEGSIZE];
 int curveSpeed[SEGSIZE];
 int logIndex;
 bool logFlag = FALSE;
-bool breakFlag=FALSE;
+bool exploreFlag=FALSE;
 
 unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
@@ -61,8 +61,9 @@ void PrintLog() {
 
 	for (i=0; i<logIndex; ) {
 		printf("\n%5d", logData[i++]);
-		//printf(" %5d", logData[i++]);
-		//printf(" %5d", logData[i++]);
+		printf(" %5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
 	}
 	printf("\n\n\n");
 	//for(i=0;i<10;i++){
@@ -125,6 +126,7 @@ void ExploreRun(){
 	MoveRobot(XSPEED, 400, 0, 1500, 0, 4000, 4000);
 	StopRobot();
 	FindSegments();
+	exploreFlag=TRUE;
 	//DelaymSec(1000);
 }
 
@@ -304,8 +306,6 @@ void FastRun(void) {
 				if (curveEndSpeed > curveSpeed[i+1])
 					curveEndSpeed = curveSpeed[i+1];
 			}
-
-
 			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, acc, dec);
 		}
 	}
@@ -320,7 +320,7 @@ void FastRun(void) {
 	WaitSW();
 }
 
-#define y0 1200
+#define y0 1450
 #define a 250.0f
 #define b 600.0f
 void DumbRun(void){
@@ -328,8 +328,9 @@ void DumbRun(void){
 	timeCount = 0;
 	DelaymSec(1000);
 	EnWheelMotor();
-	SetRobotAccX(3000,8000);
-
+	SetRobotAccX(3000,9000);
+	logIndex = 0;
+	logFlag = FALSE;
 	ClearMarkerFlag();
 	int ty0=y0;
 	//int tmpOffset, tmpSpeed;
@@ -337,48 +338,30 @@ void DumbRun(void){
 
 	char s[8];
 	while(RSumMarker!=2) {
-		//change the value of y
-//		if(slowFlag == TRUE){
-//			ty0=y0-300;
-//		}
-//		else{
-//			ty0=y0+300;
-//		}
-		//change tsensoroffset
+
 //		tmpOffset = sensoroffset2;
 //		tmpSpeed = curSpeed[0]/SPEED_mm_oc(1);
 //		if(tmpSpeed<y0) tmpSpeed = y0;
 //		tmpOffset = tmpOffset*(long)(tmpSpeed-600)/400;
 
-
-		if(abs(sensoroffset) > abs(sensoroffset2)){
+		if(abs(sensoroffset) > abs(sensoroffset2))
 			tsensoroffset = sensoroffset;
-		}
 		else
 			tsensoroffset = sensoroffset2;
 
 		if(tsensoroffset<-a) tsensoroffset = -a;
 		if(tsensoroffset>a)  tsensoroffset = a;
 
-
 		sensoroffsetsqr = (long)tsensoroffset*tsensoroffset;
 		xSpeed=(b/a)*sqrt(a*a-sensoroffsetsqr)+ty0;
 		SetRobotSpeedX(xSpeed);
 
-		// Do other stuff here!!!
-		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
-		// like checking for sensors to detect object etc
-
-		//gotoxy(5,5);
-		//printf(" 2nd row %d   1st row  %d  tsen   %d  xspeed  %d mark %d  ",sensoroffset,sensoroffset2,tsensoroffset,xSpeed,RSumMarker);
-		//gotoxy(5,10);
-		//printf(" slowFlag:%d  fastFlag:%d  s1:%d  s2:%d  s3:%d   ",sl,f,sensorCal[0],sensorCal[1],sensorCal[2]);
-		sprintf(s,"%4d", (int)(timeCount/100));
-		DispDotMatrix(s);
-		if (bSWFlag ) {	// user switch break!
+		if (bSWFlag ) {
 			break;
 		}
 	}
+	sprintf(s,"%4d", (int)(timeCount/100));
+	DispDotMatrix(s);
 	StopRobot();
 	WaitSW();
 }
@@ -391,7 +374,6 @@ void TestRun(void){
 	char s[8];
 	logIndex = 0;
 	logFlag = FALSE;
-
 
 	while(RSumMarker!=2)
 	{
