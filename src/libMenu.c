@@ -89,7 +89,9 @@ void MenuRun(){
 		case 2:
 			EnableSensor();
 			EnWheelMotor();
-			FastRun();
+			if(exploreFlag==TRUE){
+				FastRun();
+			}
 			DisableSensor();
 			DisWheelMotor();
 			break;
