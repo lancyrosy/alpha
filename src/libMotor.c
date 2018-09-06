@@ -129,7 +129,10 @@ void MotorPID(void)
 
 	}
 
-	posPWM[1] = (0-sensoroffset)/2 + ((sensoroffsetold-sensoroffset)*12);
+	long  speed = curSpeed[0];
+	if (speed < SPEED_mm_oc(1000)) speed = SPEED_mm_oc(1000);
+	if (speed > SPEED_mm_oc(2000)) speed = SPEED_mm_oc(2000);
+	posPWM[1] = (0-sensoroffset)/2 + ((sensoroffsetold-sensoroffset)*12)*speed/SPEED_mm_oc(1000);
 	sensoroffsetold = sensoroffset;
 	/////////////////////////////////////////////////////////
 	// Calculate individual wheels PWM from X & W components
