@@ -8,7 +8,9 @@ void FindSegments(void);
 void FilterSegments(void);
 void AnalyseCurve(void);
 
+
 #define LOGSIZE	10000
+
 #define SEGSIZE 300
 int logData[LOGSIZE];
 int t = 0;
@@ -16,6 +18,7 @@ int segment[SEGSIZE], segType[SEGSIZE], segNum;
 int segmentF1[SEGSIZE], segTypeF1[SEGSIZE], segNumF1;
 int segmentF2[SEGSIZE], segTypeF2[SEGSIZE], segNumF2;
 int segmentF3[SEGSIZE], segTypeF3[SEGSIZE], segNumF3;
+int segmentF4[SEGSIZE], segTypeF4[SEGSIZE], segNumF4;
 int dis[SEGSIZE];
 int rad[SEGSIZE];
 int arcAngle[SEGSIZE];
@@ -27,6 +30,8 @@ bool exploreFlag=FALSE;
 unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
+
+int leftNum = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
@@ -65,10 +70,6 @@ void PrintLog() {
 //		printf(" %5d", logData[i++]);
 //		printf(" %5d", logData[i++]);
 	}
-	printf("\n\n\n");
-	//for(i=0;i<10;i++){
-	//	printf("%5d\n",logTime[i]);
-	//}
 }
 void PrintSegment() {
 	//analyseSegment();
@@ -82,13 +83,16 @@ void PrintSegment() {
 	}
 	printf("\n\n\n");
 	for (i=0; i<segNumF2; i++ ) {
-			printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
+		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
 	}
-
 	printf("\n\n\n");
-	for (i=0; i<segNumF3; i++ ) {
-			printf("%5d  %2d  %5d  %5d  %5d  %5d\n ", segmentF3[i], segTypeF3[i],arcAngle[i],rad[i],dis[i],curveSpeed[i]);
 
+	for (i=0; i<segNumF3; i++ ) {
+		printf("%5d  %2d  %5d  %5d  %5d\n ", segmentF3[i], segTypeF3[i]);
+	}
+	printf("\n\n\n");
+	for (i=0; i<segNumF4; i++ ) {
+		printf("%5d  %2d\n ", segmentF4[i], segTypeF4[i]);
 	}
 
 }
@@ -140,14 +144,14 @@ void FindSegments(void) {
 	for (i=0; i<logIndex; i++) {
 		offset = logData[i];
 
-		if(offset >= thres) {
+		if(offset > thres) {
 			if(cFlag != 1 ){
 				segment[segNum] = i;
 				segType[segNum++] = cFlag;
 				cFlag = 1;
 			}
 		}
-		else if(offset <= -thres) {
+		else if(offset < -thres) {
 			if(cFlag != -1 ){
 				segment[segNum] = i;
 				segType[segNum++] = cFlag;
@@ -170,8 +174,9 @@ void FilterSegments(void) {
 	int difNum, difType, i;
 
 	//Filter out spike. Make it straight
-	for (i = 1; i < segNum; i++) {
-		difNum = segment[i] - segment[i - 1];
+
+	for (i = 1; i <segNum; i++) {
+		difNum = segment[i] - segment[i-1];
 		if (difNum < 10) {
 			segType[i] = 0;
 		}
@@ -196,8 +201,8 @@ void FilterSegments(void) {
 	segNumF2 = 0;
 	segmentF2[0] = segmentF1[0];
 	segTypeF2[0] = segTypeF1[0];
-	for (i = 1; i < segNumF1; i++) {
-		difNum = segmentF1[i] - segmentF1[i - 1];
+	for (i = 1; i <segNumF1; i++) {
+		difNum = segmentF1[i] - segmentF1[i-1];
 		if (difNum > 20) {
 			segNumF2++;
 			segmentF2[segNumF2] = segmentF1[i];
@@ -213,7 +218,6 @@ void FilterSegments(void) {
 	segTypeF3[0] = segTypeF2[0];
 	for (i = 1; i < segNumF2; i++) {
 		difType = segTypeF2[i] - segTypeF2[i - 1];
-		//printf("d=%4d s=%d\n", difNum, segNumF2);
 		if (difType != 0) {
 			segNumF3++;
 			segmentF3[segNumF3] = segmentF2[i];
@@ -224,7 +228,49 @@ void FilterSegments(void) {
 		}
 	}
 	segNumF3++;
-	AnalyseCurve();
+
+	//F4
+	int index;
+	int sum = 0;
+	int ave = 0;
+	int num = 0;
+	bool aFlag = FALSE;
+	segmentF4[0] = segmentF3[0];
+	segTypeF4[0] = segTypeF3[0];
+	for (i = 1; i < segNumF3; i++) {
+		segNumF4++;
+		if((segmentF3[i]-segmentF3[i-1])>400){
+			for(index=segmentF3[i]; i<(segmentF3[i-1]);index++){
+				sum += logData[index];
+				num++;
+				ave = sum/num;
+//				if(num==20)
+//					aFlag = FALSE;
+				if(ave > 50){
+					if((logData[index] < 20)&&(aFlag == FALSE)){
+						segmentF4[i] = index;
+						segTypeF4[i] = 1;
+						ave = sum = num =0;
+						aFlag = TRUE;
+					}
+				}
+				else if(ave < -50){
+					if((logData[index] > -20)&&(aFlag == FALSE)){
+						segmentF4[i] = index;
+						segTypeF4[i] = -1;
+						ave = sum = num =0;
+						aFlag = TRUE;
+					}
+				}
+			}
+			segNumF4++;
+		}
+		segmentF4[segNumF4]=segmentF3[i];
+		segTypeF4[segNumF4]=segTypeF3[i];
+	}
+	segNumF4++;
+	//
+
 }
 void AnalyseCurve(void) {
 	int i,arcLength,radian,angle;
@@ -320,7 +366,9 @@ void FastRun(void) {
 	WaitSW();
 }
 
+
 #define y0 1450
+
 #define a 250.0f
 #define b 600.0f
 void DumbRun(void){
@@ -377,16 +425,19 @@ void TestRun(void){
 
 	while(RSumMarker!=2)
 	{
-		int i;
-		int n=7;
-		int disTest[]={330,400,175,130,480,515,360};
-		int endSpeed[]={1200,1200,1200,1200,1200,1200,50};
+//		int i;
+//		int n=7;
+//		int disTest[]={330,400,175,130,480,515,360};
+//		int endSpeed[]={1200,1200,1200,1200,1200,1200,50};
+//
+//		for(i=0;i<n;i++){
+//			MoveRobot(XSPEED, disTest[i], 0, 1200, endSpeed[i], 3000,3000);
+//			pulseBuzzer(2050,50);
+//		}
+//		break;
 
-		for(i=0;i<n;i++){
-			MoveRobot(XSPEED, disTest[i], 0, 1200, endSpeed[i], 3000,3000);
-			pulseBuzzer(2050,50);
-		}
-		break;
+		SetRobotSpeedX(1000);
+
 		// Do other stuff here!!!
 		//printf("\ncurPos0=%-5d s=%5d", (int16_t)(curPos[0]/DIST_mm_oc(1)), curSpeed[0]);
 		// like checking for sensors to detect object etc
@@ -402,6 +453,8 @@ void TestRun(void){
 	}
 	logFlag = FALSE;
 	StopRobot();
+	FindSegments();
+
 	WaitSW();
 }
 
