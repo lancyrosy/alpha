@@ -69,35 +69,42 @@ void PrintLog() {
 
 	for (i=0; i<logIndex; ) {
 		printf("\n%5d", logData[i++]);
-		printf(" %5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
 //		printf(" %5d", logData[i++]);
 //		printf(" %5d", logData[i++]);
 	}
 }
+
+
 void PrintSegment() {
-	//analyseSegment();
 	int i;
-	for (i=0; i<segNum; i++ ) {
+	for (i=0; i< segNum; i++ ) {
 		printf("%5d  %2d\n", segment[i], segType[i]);
 	}
 	printf("\n\n\n");
-	for (i=0; i<segNumF1; i++ ) {
+	for (i=0; i< segNumF1; i++ ) {
 		printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
 	}
 	printf("\n\n\n");
-	for (i=0; i<segNumF2; i++ ) {
+	for (i=0; i< segNumF2; i++ ) {
 		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
 	}
 	printf("\n\n\n");
-	for (i=0; i<segNumF3; i++ ) {
+	for (i=0; i< segNumF3; i++ ) {
 		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
 	}
 	printf("\n\n\n");
-	for (i=0; i<segNumFL; i++ ) {
+	for (i=0; i< segNumFL; i++ ) {
 		printf("%5d  %2d  %5d  %5d  %5d  %5d\n ", segmentFL[i], segTypeFL[i], arcAngle[i], rad[i], dis[i], curveSpeed[i]);
 	}
-
-
+//	printf("\n\n\n");
+//	for (i=0; i<segNumFL; i++ ) {
+//		printf("%5d  %2d\n ", segmentFL[i], segTypeFL[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<leftNum; i++ ) {
+//		printf("%5d\n ", left[i]);
+//	}
 }
 void pulseLED(int num, int duration){
 	bPulseFlag = TRUE;
@@ -169,7 +176,7 @@ void FindSegments(void) {
 			}
 		}
 	}
-	segment[segNum] = i-1;
+	segment[segNum] = i;
 	segType[segNum++] = cFlag;
 	FilterSegments();
 }
@@ -178,7 +185,7 @@ void FilterSegments(void) {
 
 	//Filter out spike. Make it straight
 
-	for (i = 1; i <segNum; i++) {
+	for (i = 1; i < segNum; i++) {
 		difNum = segment[i] - segment[i-1];
 		if (difNum < 10) {
 			segType[i] = 0;
@@ -204,7 +211,7 @@ void FilterSegments(void) {
 	segNumF2 = 0;
 	segmentF2[0] = segmentF1[0];
 	segTypeF2[0] = segTypeF1[0];
-	for (i = 1; i <segNumF1; i++) {
+	for (i = 1; i < segNumF1; i++) {
 		difNum = segmentF1[i] - segmentF1[i-1];
 		if (difNum > 20) {
 			segNumF2++;
@@ -232,51 +239,82 @@ void FilterSegments(void) {
 	}
 	segNumF3++;
 
+
 	//Filter Based on left marker
-
-
-	//FL
-	int index,sum,num,ave,a;
-	bool aFlag,bFlag;
 	segmentFL[0] = segmentF3[0];
 	segTypeFL[0] = segTypeF3[0];
-	for (i = 1; i < segNumF3; i++) {
+	for (i = 1; i < segNumF3; i++){
 		segNumFL++;
-		if((segmentF3[i]-segmentF3[i-1])>400){
-			sum = 0;
-			num = 0;
-			ave = 0;
-			a = 0;
-			aFlag = FALSE;
-			bFlag = FALSE;
-			for(index=segmentF3[i-1]; index<(segmentF3[i]);index++){
-				sum += logData[index];
-				num++;
-				ave = sum/num;
-//				if(num==20)
-//					aFlag = FALSE;
-
-
-				if(ave > 50){
-					if(logData[index] < 20){
-						if(aFlag == FALSE){
-							a = index;
-							ave = sum = num =0;
-							aFlag = TRUE;
-							segNumFL++;
-						}
-						if(aFlag == TRUE && bFlag == TRUE){
-							a = index;
-							ave = sum = num =0;
-							bFlag = FALSE;
-							segNumFL++;
-						}
-
-					}
-					if(logData[index] > 70){
-						bFlag = TRUE;
+		if(segmentF3[i] - segmentF3[i-1] > 400){
+			int index,index2,sum,ave,num;
+			bool leftFlag = FALSE;
+			sum = ave = num =0;
+			for(index = 0; index < leftNum; index++){
+				if((left[index] > segmentF3[i-1])&&(left[index] < segmentF3[i])){
+					//Assume only one left marker in one long seg
+					//if more than one leftmarker in a long segment, may cause problem
+					leftFlag = TRUE;
+					segmentFL[segNumFL] = left[index];
+					for(index2 = segmentF3[i-1]; index2 < segmentF3[i]; index2++){
+						sum += logData[index2];
+//						num++;
+//						ave = sum/num;
 					}
 				}
+			}
+			if(leftFlag){
+				if(sum >= 0){
+					segTypeFL[segNumFL] = 1;
+				}
+				else{
+					segTypeFL[segNumFL] = -1;
+				}
+				segNumFL++;
+			}
+		}
+		segmentFL[segNumFL] = segmentF3[i];
+		segTypeFL[segNumFL] = segTypeF3[i];
+	}
+	segNumFL++;
+
+//FL
+//	int index,sum,num,ave,a;
+//	bool aFlag,bFlag;
+//	segmentFL[0] = segmentF3[0];
+//	segTypeFL[0] = segTypeF3[0];
+//	for (i = 1; i < segNumF3; i++) {
+//		segNumFL++;
+//		if((segmentF3[i]-segmentF3[i-1])>400){
+//			sum = 0;
+//			num = 0;
+//			ave = 0;
+//			a = 0;
+//			aFlag = FALSE;
+//			bFlag = FALSE;
+//			for(index=segmentF3[i-1]; index<(segmentF3[i]);index++){
+//				sum += logData[index];
+//				num++;
+//				ave = sum/num;
+//				if(ave > 50){
+//					if(logData[index] < 20){
+//						if(aFlag == FALSE){
+//							a = index;
+//							ave = sum = num =0;
+//							aFlag = TRUE;
+//							segNumFL++;
+//						}
+//						if(aFlag == TRUE && bFlag == TRUE){
+//							a = index;
+//							ave = sum = num =0;
+//							bFlag = FALSE;
+//							segNumFL++;
+//						}
+//
+//					}
+//					if(logData[index] > 70){
+//						bFlag = TRUE;
+//					}
+//				}
 //				else if(ave < -50){
 //					if(logData[index] > -20){
 //						if(aFlag == FALSE){
@@ -297,16 +335,16 @@ void FilterSegments(void) {
 //						bFlag = TRUE;
 //					}
 //				}
-
-			}
-			segmentFL[segNum] = a;
-			segTypeFL[segNum] = 1;
-
-		}
-		segmentFL[segNumFL]=segmentF3[i];
-		segTypeFL[segNumFL]=segTypeF3[i];
-	}
-	segNumFL++;
+//
+//			}
+//			segmentFL[segNum] = a;
+//			segTypeFL[segNum] = 1;
+//
+//		}
+//		segmentFL[segNumFL]=segmentF3[i];
+//		segTypeFL[segNumFL]=segTypeF3[i];
+//	}
+//	segNumFL++;
 
 
 	AnalyseCurve();
@@ -329,6 +367,7 @@ void AnalyseCurve(void) {
 				arcAngle[w]=angle;
 				radian=(int)(arcLength/(angle*3.142f/1800));
 				rad[w]=radian;
+//				angle = radian = 0; //if straight, clear angle and radius value
 				w++;
 				sum=0;
 			}
@@ -348,6 +387,9 @@ void AnalyseCurve(void) {
 			arcAngle[w]=angle;
 			radian=(int)arcLength/(angle*3.142f/1800);
 			rad[w]=radian;
+//			if(segTypeFL[w]==0){   //if straight, clear angle and radius value
+//				angle = radian =0;
+//			}
 			w++;
 			sum=0;
 		}
@@ -516,7 +558,7 @@ void LMarkerDetect(){
 		if ((tDist-disL)>25) {
 			JLState = 0;
 			LSumMarker ++;
-			left[leftNum] = timeCount;
+			left[leftNum] = timeCount/5;
 			leftNum++;
 			pulseLED(0,100);
 			//pulseBuzzer(1000, 50);

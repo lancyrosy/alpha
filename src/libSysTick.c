@@ -49,8 +49,8 @@ void Handler_SysTick(void){
 	sumoffset2 += sensoroffset2;
 	sumtOffset += tsensoroffset;
 	if(count==5){
-		//LogData(targetSpeed[0]/SPEED_mm_oc(1));
-		LogData(curSpeed[0] / SPEED_mm_oc(1));
+//		LogData(targetSpeed[0]/SPEED_mm_oc(1));
+//		LogData(curSpeed[0] / SPEED_mm_oc(1));
 		LogData(sumoffset / 5);
 //		LogData(sumoffset2 / 5);
 //		LogData(sumtOffset);
