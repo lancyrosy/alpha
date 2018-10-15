@@ -69,9 +69,9 @@ void PrintLog() {
 
 	for (i=0; i<logIndex; ) {
 		printf("\n%5d", logData[i++]);
-//		printf(" %5d", logData[i++]);
-//		printf(" %5d", logData[i++]);
-//		printf(" %5d", logData[i++]);
+		printf(" %5d", logData[i++]);
+		printf(" %5d", logData[i++]);
+		printf(" %5d", logData[i++]);
 	}
 }
 
@@ -170,13 +170,15 @@ void FindSegments(void) {
 		}
 		else  {
 			if((cFlag != 0)){
-				segment[segNum] = i;
-				segType[segNum++] = cFlag;
-				cFlag = 0;
+				if ( abs(offset<thres/2)) {
+					segment[segNum] = i;
+					segType[segNum++] = cFlag;
+					cFlag = 0;
+				}
 			}
 		}
 	}
-	segment[segNum] = i;
+	segment[segNum] = i-1;
 	segType[segNum++] = cFlag;
 	FilterSegments();
 }
@@ -245,7 +247,8 @@ void FilterSegments(void) {
 	segTypeFL[0] = segTypeF3[0];
 	for (i = 1; i < segNumF3; i++){
 		segNumFL++;
-		if(segmentF3[i] - segmentF3[i-1] > 400){
+		if(segmentF3[i] - segmentF3[i-1] > 4000){	//4000 to exclude this code
+//			if(segmentF3[i] - segmentF3[i-1] > 400){
 			int index,index2,sum,ave,num;
 			bool leftFlag = FALSE;
 			sum = ave = num =0;
@@ -396,7 +399,7 @@ void AnalyseCurve(void) {
 	}
 	for (i = 0; i < segNumFL; i++) {
 		//curveSpeed[i]= (int) ((0.7f) * sqrt((abs(rad[i]) + 712) * acc));
-		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10000.0f));
+		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
 	}
 	//finish analysing
 //	pulseBuzzer(5000,50);
@@ -423,7 +426,7 @@ void FastRun(void) {
 			else {
 				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3000, constSpeed, 3000, 8000);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3000, constSpeed, 5000, 8000);
 		} else {
 			int curveEndSpeed;
 			acc=2000;
@@ -536,7 +539,6 @@ void TestRun(void){
 	logFlag = FALSE;
 	StopRobot();
 	FindSegments();
-
 	WaitSW();
 }
 
