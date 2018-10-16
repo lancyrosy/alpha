@@ -356,7 +356,7 @@ void AnalyseCurve(void) {
 	int offset;
 	long sum=0;
 	//radian=arcength/angle to get arc--- adjust speed
-	for (i = 0; i <=segmentFL[0]; i++) {
+	for (i = 0; i < segmentFL[0]; i++) {
 			w=0;
 			offset=logData[i];
 			sum=sum+offset;
@@ -373,10 +373,10 @@ void AnalyseCurve(void) {
 			}
 	}
 
-	for (i = segmentFL[0]; i <logIndex; i++) {
+	for (i = segmentFL[0]; i < logIndex; i++) {
 
 		offset=logData[i];
-		if(i<segmentFL[w]){
+		if(i < segmentFL[w]){ //  <=
 			sum=sum+offset;
 		}
 		else {
@@ -424,7 +424,8 @@ void FastRun(void) {
 				constSpeed = endSpeed;
 			}
 			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3000, constSpeed, 3000, 8000);
-		} else {
+		}
+		else {
 			int curveEndSpeed;
 			acc=2000;
 			dec=3000;
