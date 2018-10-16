@@ -72,7 +72,9 @@ void MenuRun(){
 				"expR",
 				"fastR",
 				"dumbR",
-				"testR"
+				"testR",
+				"pLog",
+				"pSeg"
 	};
 	while(1) {
 		menuNum = 1;
@@ -108,6 +110,12 @@ void MenuRun(){
 			TestRun();
 			DisableSensor();
 			DisWheelMotor();
+			break;
+		case 5:
+			PrintLog();
+			break;
+		case 6:
+			PrintSegment();
 			break;
 	    case MENU_EXIT:
 			return;
