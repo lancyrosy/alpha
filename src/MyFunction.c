@@ -419,7 +419,7 @@ void FastRun(void) {
 			else {
 				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3000, constSpeed, 3000, 8000);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3000, constSpeed, 5000, 8000);
 		} else {
 			int curveEndSpeed;
 			acc=2000;
