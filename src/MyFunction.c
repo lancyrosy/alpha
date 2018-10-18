@@ -69,9 +69,9 @@ void PrintLog() {
 
 	for (i=0; i<logIndex; ) {
 		printf("\n%5d", logData[i++]);
-		printf(" %5d", logData[i++]);
-		printf(" %5d", logData[i++]);
-		printf(" %5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
 	}
 }
 
@@ -154,23 +154,23 @@ void FindSegments(void) {
 	for (i=0; i<logIndex; i++) {
 		offset = logData[i];
 
-		if(offset > thres) {
+		if(offset > thres) {            //Right
 			if(cFlag != 1 ){
 				segment[segNum] = i;
 				segType[segNum++] = cFlag;
 				cFlag = 1;
 			}
 		}
-		else if(offset < -thres) {
+		else if(offset < -thres) {		//Left
 			if(cFlag != -1 ){
 				segment[segNum] = i;
 				segType[segNum++] = cFlag;
 				cFlag = -1;
 			}
 		}
-		else  {
+		else  {							//Straight
 			if((cFlag != 0)){
-				if ( abs(offset<thres/2)) {
+				if ( abs(offset)<thres/2) {
 					segment[segNum] = i;
 					segType[segNum++] = cFlag;
 					cFlag = 0;
@@ -179,15 +179,14 @@ void FindSegments(void) {
 		}
 	}
 	segment[segNum] = i-1;
-	segType[segNum++] = cFlag;
+	segType[segNum] = cFlag;
 	FilterSegments();
 }
 void FilterSegments(void) {
 	int difNum, difType, i;
 
 	//Filter out spike. Make it straight
-
-	for (i = 1; i < segNum; i++) {
+	for (i = 1; i <= segNum; i++) {
 		difNum = segment[i] - segment[i-1];
 		if (difNum < 10) {
 			segType[i] = 0;
@@ -197,13 +196,14 @@ void FilterSegments(void) {
 	//Join all adjacent same segment types
 	segmentF1[0] = segment[0];
 	segTypeF1[0] = segType[0];
-	for (i = 1; i < segNum; i++) {
+	for (i = 1; i <= segNum; i++) {
 		difType = segType[i] - segType[i - 1];
-		if (difType != 0) {
+		if (difType != 0) {         //different type
 			segNumF1++;
 			segmentF1[segNumF1] = segment[i];
 			segTypeF1[segNumF1] = segType[i];
-		} else {
+		}
+		else {						// same type
 			segmentF1[segNumF1] = segment[i];
 		}
 	}
@@ -213,22 +213,24 @@ void FilterSegments(void) {
 	segNumF2 = 0;
 	segmentF2[0] = segmentF1[0];
 	segTypeF2[0] = segTypeF1[0];
-	for (i = 1; i < segNumF1; i++) {
+	for (i = 1; i <= segNumF1; i++) {
 		difNum = segmentF1[i] - segmentF1[i-1];
 		if (difNum > 20) {
 			segNumF2++;
 			segmentF2[segNumF2] = segmentF1[i];
 			segTypeF2[segNumF2] = segTypeF1[i];
-		} else {
+		}
+		else {
 			segmentF2[segNumF2] = segmentF1[i];
 		}
 	}
 	segNumF2++;
 
 	//Join all adjacent same segment types
+	segNumF3=0;
 	segmentF3[0] = segmentF2[0];
 	segTypeF3[0] = segTypeF2[0];
-	for (i = 1; i < segNumF2; i++) {
+	for (i = 1; i <= segNumF2; i++) {
 		difType = segTypeF2[i] - segTypeF2[i - 1];
 		if (difType != 0) {
 			segNumF3++;
@@ -241,11 +243,11 @@ void FilterSegments(void) {
 	}
 	segNumF3++;
 
-
 	//Filter Based on left marker
+	segNumFL=0;
 	segmentFL[0] = segmentF3[0];
 	segTypeFL[0] = segTypeF3[0];
-	for (i = 1; i < segNumF3; i++){
+	for (i = 1; i <= segNumF3; i++){
 		segNumFL++;
 		if(segmentF3[i] - segmentF3[i-1] > 4000){	//4000 to exclude this code
 //			if(segmentF3[i] - segmentF3[i-1] > 400){
@@ -279,79 +281,7 @@ void FilterSegments(void) {
 		segTypeFL[segNumFL] = segTypeF3[i];
 	}
 	segNumFL++;
-
-//FL
-//	int index,sum,num,ave,a;
-//	bool aFlag,bFlag;
-//	segmentFL[0] = segmentF3[0];
-//	segTypeFL[0] = segTypeF3[0];
-//	for (i = 1; i < segNumF3; i++) {
-//		segNumFL++;
-//		if((segmentF3[i]-segmentF3[i-1])>400){
-//			sum = 0;
-//			num = 0;
-//			ave = 0;
-//			a = 0;
-//			aFlag = FALSE;
-//			bFlag = FALSE;
-//			for(index=segmentF3[i-1]; index<(segmentF3[i]);index++){
-//				sum += logData[index];
-//				num++;
-//				ave = sum/num;
-//				if(ave > 50){
-//					if(logData[index] < 20){
-//						if(aFlag == FALSE){
-//							a = index;
-//							ave = sum = num =0;
-//							aFlag = TRUE;
-//							segNumFL++;
-//						}
-//						if(aFlag == TRUE && bFlag == TRUE){
-//							a = index;
-//							ave = sum = num =0;
-//							bFlag = FALSE;
-//							segNumFL++;
-//						}
-//
-//					}
-//					if(logData[index] > 70){
-//						bFlag = TRUE;
-//					}
-//				}
-//				else if(ave < -50){
-//					if(logData[index] > -20){
-//						if(aFlag == FALSE){
-//							a = index;
-//							ave = sum = num =0;
-//							aFlag = TRUE;
-//							segNumFL++;
-//						}
-//						if(aFlag == TRUE && bFlag == TRUE){
-//							a = index;
-//							ave = sum = num =0;
-//							bFlag = FALSE;
-//							segNumFL++;
-//						}
-//
-//					}
-//					if(logData[index] < -70){
-//						bFlag = TRUE;
-//					}
-//				}
-//
-//			}
-//			segmentFL[segNum] = a;
-//			segTypeFL[segNum] = 1;
-//
-//		}
-//		segmentFL[segNumFL]=segmentF3[i];
-//		segTypeFL[segNumFL]=segTypeF3[i];
-//	}
-//	segNumFL++;
-
-
 	AnalyseCurve();
-
 }
 void AnalyseCurve(void) {
 	int i,arcLength,radian,angle;
@@ -359,7 +289,7 @@ void AnalyseCurve(void) {
 	int offset;
 	long sum=0;
 	//radian=arcength/angle to get arc--- adjust speed
-	for (i = 0; i <=segmentFL[0]; i++) {
+	for (i = 0; i <=segmentFL[0]; i++) {		//for first segment
 			w=0;
 			offset=logData[i];
 			sum=sum+offset;
@@ -376,7 +306,7 @@ void AnalyseCurve(void) {
 			}
 	}
 
-	for (i = segmentFL[0]; i <logIndex; i++) {
+	for (i = segmentFL[0]; i <logIndex; i++) {		//for other segments
 
 		offset=logData[i];
 		if(i<segmentFL[w]){
@@ -397,13 +327,10 @@ void AnalyseCurve(void) {
 			sum=0;
 		}
 	}
-	for (i = 0; i < segNumFL; i++) {
+	for (i = 0; i <= segNumFL; i++) {
 		//curveSpeed[i]= (int) ((0.7f) * sqrt((abs(rad[i]) + 712) * acc));
 		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
 	}
-	//finish analysing
-//	pulseBuzzer(5000,50);
-//	DispDotMatrix("OK");
 }
 
 void FastRun(void) {
@@ -418,7 +345,7 @@ void FastRun(void) {
 
 	MoveRobotCheck(XSPEED, 1000, 50, 1500, 1200, 2000, 2000, 1); //before first marker
 	timeCount = 0;
-	for (i = 0; i < segNumFL; i++) {
+	for (i = 0; i <= segNumFL; i++) {
 		if (segTypeFL[i] == 0) {
 			if (i != (segNumFL-1) ) {
 				constSpeed = curveSpeed[i+1];
@@ -431,7 +358,6 @@ void FastRun(void) {
 			int curveEndSpeed;
 			acc=2000;
 			dec=3000;
-			//constSpeed=(int)((0.7f)*sqrt((abs(rad[i])+712)*acc));
 			curveEndSpeed = curveSpeed[i];
 			if (segTypeFL[i+1] != 0 ) {
 				if (curveEndSpeed > curveSpeed[i+1])

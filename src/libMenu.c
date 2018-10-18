@@ -17,7 +17,6 @@
 #define MENU_EXIT               0
 #define MENU_MAIN			  	0
 
-void MenuTest();
 void MenuRun();
 void MenuMotor();
 void MenuSensor();
