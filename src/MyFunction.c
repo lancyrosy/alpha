@@ -94,16 +94,13 @@ void PrintSegment() {
 		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
 	}
 	printf("\n\n\n");
+		for (i=0; i<leftNum; i++ ) {
+			printf("%5d\n ", left[i]);
+		}
+	printf("\n\n\n");
+	printf("          arcAngle  rad  dis  curveSpeed\n");
 	for (i=0; i<= segNumFL; i++ ) {
 		printf("%5d  %2d  %5d  %5d  %5d  %5d\n ", segmentFL[i], segTypeFL[i], arcAngle[i], rad[i], dis[i], curveSpeed[i]);
-	}
-	printf("\n\n\n");
-	for (i=0; i<segNumFL; i++ ) {
-		printf("%5d  %2d\n ", segmentFL[i], segTypeFL[i]);
-	}
-	printf("\n\n\n");
-	for (i=0; i<leftNum; i++ ) {
-		printf("%5d\n ", left[i]);
 	}
 }
 void pulseLED(int num, int duration){
@@ -154,26 +151,26 @@ void FindSegments(void) {
 	for (i=0; i<logIndex; i++) {
 		offset = logData[i];
 
-		if(offset > thres) {            //Right
+		if(offset > thres) {
 			if(cFlag != 1 ){
 				segment[segNum] = i;
 				segType[segNum++] = cFlag;
 				cFlag = 1;
 			}
 		}
-		else if(offset < -thres) {		//Left
+		else if(offset < -thres) {
 			if(cFlag != -1 ){
 				segment[segNum] = i;
 				segType[segNum++] = cFlag;
 				cFlag = -1;
 			}
 		}
-		else  {							//Straight
+		else  {
 			if((cFlag != 0)){
-				if ( abs(offset)<thres/2) {
-					segment[segNum] = i;
-					segType[segNum++] = cFlag;
-					cFlag = 0;
+				if(abs(offset)<thres/3){
+				segment[segNum] = i;
+				segType[segNum++] = cFlag;
+				cFlag = 0;
 				}
 			}
 		}
@@ -185,7 +182,6 @@ void FindSegments(void) {
 void FilterSegments(void) {
 	int difNum, difType, i;
 
-
 	//Filter out spike. Make it straight
 
 	for (i = 1; i <= segNum; i++) {
@@ -196,16 +192,16 @@ void FilterSegments(void) {
 	}
 
 	//Join all adjacent same segment types
+	segNumF1=0;
 	segmentF1[0] = segment[0];
 	segTypeF1[0] = segType[0];
 	for (i = 1; i <= segNum; i++) {
 		difType = segType[i] - segType[i - 1];
-		if (difType != 0) {         //different type
+		if (difType != 0) {
 			segNumF1++;
 			segmentF1[segNumF1] = segment[i];
 			segTypeF1[segNumF1] = segType[i];
-		}
-		else {						// same type
+		} else {
 			segmentF1[segNumF1] = segment[i];
 		}
 	}
@@ -220,8 +216,7 @@ void FilterSegments(void) {
 			segNumF2++;
 			segmentF2[segNumF2] = segmentF1[i];
 			segTypeF2[segNumF2] = segTypeF1[i];
-		}
-		else {
+		} else {
 			segmentF2[segNumF2] = segmentF1[i];
 		}
 	}
@@ -242,37 +237,72 @@ void FilterSegments(void) {
 		}
 	}
 
+
 	//Filter Based on left marker
 	segNumFL=0;
 	segmentFL[0] = segmentF3[0];
 	segTypeFL[0] = segTypeF3[0];
 	for (i = 1; i <= segNumF3; i++){
 		segNumFL++;
-		if(segmentF3[i] - segmentF3[i-1] > 400){
-			int index,index2,sum,ave,num;
-			bool leftFlag = FALSE;
-			sum = ave = num =0;
-			for(index = 0; index < leftNum; index++){
-				if((left[index] > segmentF3[i-1])&&(left[index] < segmentF3[i])){
-					//Assume only one left marker in one long seg
-					//if more than one leftmarker in a long segment, may cause problem
-					leftFlag = TRUE;
-					segmentFL[segNumFL] = left[index];
-					for(index2 = segmentF3[i-1]; index2 < segmentF3[i]; index2++){
-						sum += logData[index2];
-//						num++;
-//						ave = sum/num;
-					}
+
+		if(segmentF3[i] - segmentF3[i-1] > 200){ //if one segment more than 200(1000mm)
+			int index,index2,index3,sum,num,ave,leftmNum;
+			sum = ave = num = 0;
+			leftmNum = 0;
+			int leftm[5];
+			for(index = 0; index < leftNum; index++){ //check left marker inside this segment
+				if((left[index] > (segmentF3[i-1]+20))&&(left[index] < (segmentF3[i]-20))){
+					leftm[leftmNum] = left[index];
+					leftmNum++;
 				}
 			}
-			if(leftFlag){
-				if(sum >= 0){
-					segTypeFL[segNumFL] = 1;
+			if(leftmNum != 0){
+				for(index2=0;index2<leftmNum;index2++){
+					if(index2==0){
+						for(index3=segmentF3[i-1];index3<leftm[index2];index3++){
+							sum += logData[index3];
+							num++;
+							ave = sum/num;
+						}
+					}
+					else{
+						for(index3=leftm[index2-1];index3<leftm[index2];index3++){
+							sum += logData[index3];
+							num++;
+							ave = sum/num;
+						}
+					}
+					if(ave>35){
+						segmentFL[segNumFL] = leftm[index2];
+						segTypeFL[segNumFL] = 1;
+					}
+					else if(ave<-35){
+						segmentFL[segNumFL] = leftm[index2];
+						segTypeFL[segNumFL] = -1;
+					}
+					else{
+						segmentFL[segNumFL] = leftm[index2];
+						segTypeFL[segNumFL] = 0;
+					}
+					sum = ave = num = 0;
+					if(index2==(leftmNum-1)){
+						for(index3=leftm[index2];index3<segmentF3[i];index3++){
+							sum += logData[index3];
+							num++;
+							ave = sum/num;
+						}
+						if(ave>35){
+							segTypeF3[i] = 1;
+						}
+						else if(ave<-35){
+							segTypeF3[i] = -1;
+						}
+						else{
+							segTypeF3[i] = 0;
+						}
+					}
+					segNumFL++;
 				}
-				else{
-					segTypeFL[segNumFL] = -1;
-				}
-				segNumFL++;
 			}
 		}
 		segmentFL[segNumFL] = segmentF3[i];
@@ -286,7 +316,7 @@ void AnalyseCurve(void) {
 	int offset;
 	long sum=0;
 	//radian=arcength/angle to get arc--- adjust speed
-	for (i = 0; i <=segmentFL[0]; i++) {		//for first segment
+	for (i = 0; i <=segmentFL[0]; i++) {
 			w=0;
 			offset=logData[i];
 			sum=sum+offset;
@@ -303,7 +333,7 @@ void AnalyseCurve(void) {
 			}
 	}
 
-	for (i = segmentFL[0]; i <logIndex; i++) {		//for other segments
+	for (i = segmentFL[0]; i <logIndex; i++) {
 
 		offset=logData[i];
 		if(i<segmentFL[w]){
@@ -328,11 +358,14 @@ void AnalyseCurve(void) {
 		//curveSpeed[i]= (int) ((0.7f) * sqrt((abs(rad[i]) + 712) * acc));
 		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
 	}
+	//finish analysing
+//	pulseBuzzer(5000,50);
+//	DispDotMatrix("OK");
 }
 
 void FastRun(void) {
 	int i = 0;
-	int endSpeed=2000;
+	int endSpeed = 2500;
 	int acc, dec;
 	char s[8];
 	int constSpeed;
@@ -343,18 +376,20 @@ void FastRun(void) {
 	MoveRobotCheck(XSPEED, 1000, 50, 1500, 1200, 2000, 2000, 1); //before first marker
 	timeCount = 0;
 	for (i = 0; i <= segNumFL; i++) {
-		if (segTypeFL[i] == 0) {   				//Straight
-			if (i != segNumFL ) {
+		if (segTypeFL[i] == 0) {
+			if (i != segNumFL){
 				constSpeed = curveSpeed[i+1];
 			}
-			else {								//last segment
+			else {
 				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3000, constSpeed, 3000, 8000);
-		} else {								//Curve
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3300, constSpeed, 5000, 8000);
+		}
+		else {
 			int curveEndSpeed;
 			acc=2000;
 			dec=3000;
+			//constSpeed=(int)((0.7f)*sqrt((abs(rad[i])+712)*acc));
 			curveEndSpeed = curveSpeed[i];
 			if (segTypeFL[i+1] != 0 ) {
 				if (curveEndSpeed > curveSpeed[i+1])
@@ -363,12 +398,11 @@ void FastRun(void) {
 			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, acc, dec);
 		}
 	}
-	MoveRobotCheck(XSPEED, 1000, 0, endSpeed, endSpeed, 3000, 8000, 2);  //detect second marker
-
 	sprintf(s, "%4d", (int) (timeCount / 100));
 	DispDotMatrix(s);
 	pulseBuzzer(5000,100);
 
+	MoveRobotCheck(XSPEED, 1000, 0, endSpeed, endSpeed, 3000, 8000, 2);
 	MoveRobot(XSPEED, 400, 0, endSpeed, 40, 3000, 8000);
 	StopRobot();
 	pulseBuzzer(2000,100);
@@ -485,7 +519,7 @@ void LMarkerDetect(){
 		if ((tDist-disL)>25) {
 			JLState = 0;
 			LSumMarker ++;
-			left[leftNum] = timeCount/5;
+			left[leftNum] = (timeCount/5)-10;//-10(50mm) for distance between marker line and main sensor line
 			leftNum++;
 			pulseLED(0,100);
 			//pulseBuzzer(1000, 50);
