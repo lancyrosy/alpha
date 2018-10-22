@@ -231,7 +231,7 @@ void FilterSegments(void) {
 	segmentF3[0] = segmentF2[0];
 	segTypeF3[0] = segTypeF2[0];
 	for (i = 1; i <= segNumF2; i++) {
-		difType = segTypeF2[i] - segTypeF2[i - 1];
+		difType = segTypeF2[i] - segTypeF2[i-1];
 		if (difType != 0) {
 			segNumF3++;
 			segmentF3[segNumF3] = segmentF2[i];
