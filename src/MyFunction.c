@@ -10,7 +10,6 @@ void AnalyseCurve(void);
 
 
 #define LOGSIZE	10000
-
 #define SEGSIZE 300
 int logData[LOGSIZE];
 int t = 0;
@@ -23,18 +22,26 @@ int dis[SEGSIZE];
 int rad[SEGSIZE];
 int arcAngle[SEGSIZE];
 int curveSpeed[SEGSIZE];
+int junctionPos[SEGSIZE];
 int logIndex;
+
 bool logFlag = FALSE;
 bool exploreFlag=FALSE;
-
+volatile bool LMarkerFlag=FALSE;
+volatile bool JMarkerFlag=FALSE;
+volatile int LMarkerFlagPos;
+volatile int JMarkerFlagPos;
 unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
 
+unsigned int constSpeed;
 //for left marker
-int left[200];
-int leftNum = 0;
-
+//int left[200];
+//int leftNum = 0;
+//for left&Junction marker
+int MarkerPos[200];
+int MarkerNum = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
@@ -50,7 +57,7 @@ bool bJunFlag = FALSE;
 
 
 void pulseLED(int num, int duration);
-void pulseBuzzer( int per, int duration);
+
 void LMarkerDetect(void);
 void RMarkerDetect(void);
 void JMarkerDetect(void);
@@ -94,8 +101,8 @@ void PrintSegment() {
 		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
 	}
 	printf("\n\n\n");
-		for (i=0; i<leftNum; i++ ) {
-			printf("%5d\n ", left[i]);
+		for (i=0; i<MarkerNum; i++ ) {
+			printf("%5d\n ", MarkerPos[i]);
 		}
 	printf("\n\n\n");
 	printf("          arcAngle  rad  dis  curveSpeed\n");
@@ -138,7 +145,7 @@ void ExploreRun(){
 	StopRobot();
 	FindSegments();
 	exploreFlag=TRUE;
-	//DelaymSec(1000);
+	DelaymSec(1000);
 }
 
 #define thres 70
@@ -250,9 +257,9 @@ void FilterSegments(void) {
 			sum = ave = num = 0;
 			leftmNum = 0;
 			int leftm[5];
-			for(index = 0; index < leftNum; index++){ //check left marker inside this segment
-				if((left[index] > (segmentF3[i-1]+20))&&(left[index] < (segmentF3[i]-20))){
-					leftm[leftmNum] = left[index];
+			for(index = 0; index < MarkerNum; index++){ //check left marker inside this segment
+				if((MarkerPos[index] > (segmentF3[i-1]+20))&&(MarkerPos[index] < (segmentF3[i]-20))){
+					leftm[leftmNum] = MarkerPos[index];
 					leftmNum++;
 				}
 			}
@@ -368,7 +375,7 @@ void FastRun(void) {
 	int endSpeed = 2500;
 	int acc, dec;
 	char s[8];
-	int constSpeed;
+
 	DelaymSec(1000);
 	EnWheelMotor();
 	ClearMarkerFlag();
@@ -376,24 +383,27 @@ void FastRun(void) {
 	MoveRobotCheck(XSPEED, 1000, 50, 1500, 1200, 2000, 2000, 1); //before first marker
 	timeCount = 0;
 	for (i = 0; i <= segNumFL; i++) {
-		if (segTypeFL[i] == 0) {
+		if (segTypeFL[i] == 0) {		//Straight
 			if (i != segNumFL){
 				constSpeed = curveSpeed[i+1];
 			}
 			else {
 				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3300, constSpeed, 5000, 8000);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3300, constSpeed, 4000, 8000, 2);
 		}
-		else {
+		else {							//Curve
 			int curveEndSpeed;
 			acc=2000;
 			dec=3000;
-			//constSpeed=(int)((0.7f)*sqrt((abs(rad[i])+712)*acc));
 			curveEndSpeed = curveSpeed[i];
-			if (segTypeFL[i+1] != 0 ) {
+			if (segTypeFL[i+1] != 0 ) {			//Next segment is curve
 				if (curveEndSpeed > curveSpeed[i+1])
 					curveEndSpeed = curveSpeed[i+1];
+			}
+			else{								//Next segment is straight (Curve-Straight)
+				curveSpeed[i]=curveSpeed[i]*0.95;
+				dec=5000;
 			}
 			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, acc, dec);
 		}
@@ -409,9 +419,7 @@ void FastRun(void) {
 	WaitSW();
 }
 
-
 #define y0 1450
-
 #define a 250.0f
 #define b 600.0f
 void DumbRun(void){
@@ -430,14 +438,9 @@ void DumbRun(void){
 	char s[8];
 	while(RSumMarker!=2) {
 
-//		tmpOffset = sensoroffset2;
-//		tmpSpeed = curSpeed[0]/SPEED_mm_oc(1);
-//		if(tmpSpeed<y0) tmpSpeed = y0;
-//		tmpOffset = tmpOffset*(long)(tmpSpeed-600)/400;
-
-		if(abs(sensoroffset) > abs(sensoroffset2))
+		if(abs(sensoroffset) > abs(sensoroffset2))  //entering the curve
 			tsensoroffset = sensoroffset;
-		else
+		else										// straight
 			tsensoroffset = sensoroffset2;
 
 		if(tsensoroffset<-a) tsensoroffset = -a;
@@ -519,8 +522,12 @@ void LMarkerDetect(){
 		if ((tDist-disL)>25) {
 			JLState = 0;
 			LSumMarker ++;
-			left[leftNum] = (timeCount/5)-10;//-10(50mm) for distance between marker line and main sensor line
-			leftNum++;
+			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
+			LMarkerFlag=TRUE;
+			//Left[MarkerNum] = (timeCount/5)-10;//-10(50mm) for distance between marker line and main sensor line
+			//MarkerNum++;
+			MarkerPos[MarkerNum] = (timeCount/5)-10;//-10(50mm) for distance between marker line and main sensor line
+			MarkerNum++;
 			pulseLED(0,100);
 			//pulseBuzzer(1000, 50);
 		}
@@ -551,8 +558,8 @@ void JMarkerDetect(){
 	if ((JLState == 1) && (JRState == 1)) {
 		if (abs(disL - disR) < 20) {
 			sumJunction++;
-			//LSumMarker--;
-			//RSumMarker--;
+			JMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
+			JMarkerFlag=TRUE;
 			pulseBuzzer(2500, 50);
 		}
 		JLState=JRState=0;

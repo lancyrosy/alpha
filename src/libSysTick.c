@@ -46,7 +46,7 @@ void Handler_SysTick(void){
 		timeCount++;
 	}
 	count++;
-	fOffset = (sensoroffset*2+fOffset*8)/10;
+	fOffset = (sensoroffset*2+fOffset*8)/10; //filtering
 	sumoffset += sensoroffset;
 	sumoffset2 += sensoroffset2;
 	sumtOffset += tsensoroffset;
