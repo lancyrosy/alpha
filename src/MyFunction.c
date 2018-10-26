@@ -138,7 +138,7 @@ void ExploreRun(){
 	StopRobot();
 	FindSegments();
 	exploreFlag=TRUE;
-	//DelaymSec(1000);
+	DelaymSec(1000);
 }
 
 #define thres 70
