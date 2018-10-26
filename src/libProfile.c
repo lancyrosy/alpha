@@ -30,6 +30,7 @@ volatile int16_t targetSpeed[NUM_OF_SPEED];
 volatile int16_t targetEndSpeed[NUM_OF_SPEED];
 volatile int16_t curSpeed[NUM_OF_SPEED];
 volatile int16_t moveState[2];
+long curSpeedPercent=100;
 
 bool bDistDirFlag[NUM_OF_SPEED];
 int16_t afterBrakeDist[NUM_OF_SPEED];
@@ -105,7 +106,7 @@ void UpdateWheelPos() {
 
 	for (i=0; i<NUM_OF_SPEED; i++) {
 
-		robotPosInc[i] += curSpeed[i];
+		robotPosInc[i] += (curSpeed[i]*curSpeedPercent)/100;
 
 		curPos[i] += robotPosInc[i]/FIXED_PT_SCALING;	// add the whole number
 
@@ -264,7 +265,6 @@ void StopRobot(void)
 // 			rotational(in degree)
 // @param  see SetMoveCommand()
 void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc) {
-	char s[8];
 
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
@@ -284,15 +284,11 @@ void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSp
 	}
 }
 void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc) {
-	char s[8];
 
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
 	while(!EndOfMove(speedType)) {
 
-
-//		sprintf(s,"%4d", RSumMarker);
-//		DispDotMatrix(s);
 		if (bSWFlag) {
 			break;
 		}
@@ -300,25 +296,51 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 }
 
 
-void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc) {
-	char s[8];
+#define CHECK_DIST	300
+void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t marker) {
+	int diff,range;
 
+	if (dist > CHECK_DIST) {
+		dist += dist/10 + 100;
+		brakeDist += dist/10 + 100;
+	}
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc ,dcc);
+	curSpeedPercent = 100;
+	LMarkerFlag=JMarkerFlag=FALSE;
 
 	while(!EndOfMove(speedType)) {
+		if(abs(sensoroffset2)>100){
+			//targetSpeed[0]=targetSpeed[0]-100;
+			curSpeedPercent = 90;
+			//curSpeed[0]=curSpeed[0]-100;
+		}
+		if (dist > CHECK_DIST) {			//For long distance straight
 
-//		sprintf(s,"%4d", RSumMarker);
-//		DispDotMatrix(s);
+			if (LMarkerFlag == TRUE) {
+				//pulseBuzzer(700,100);
+				diff=dist-LMarkerFlagPos;
+				range=100+dist/10;
+				if((diff>-range)&&(diff<range)){
+					pulseBuzzer(1000,100);
+					pulseLED(0,100);
+					pulseLED(1,100);
+					break;
+				}
+				else {
+					LMarkerFlag = FALSE;
+				}
+			}
+		}
+		if (RSumMarker == marker) {
+			break;
+		}
 		if (bSWFlag) {
 			break;
 		}
 	}
-
-
-
+	curSpeedPercent = 100;
 }
 void MoveRobotCheck(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc, int16_t marker) {
-	char s[8];
 
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
@@ -326,8 +348,6 @@ void MoveRobotCheck(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 		if (RSumMarker == marker) {
 			break;
 		}
-//		sprintf(s,"%4d", RSumMarker);
-//		DispDotMatrix(s);
 		if (bSWFlag) {
 			break;
 		}

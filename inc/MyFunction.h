@@ -2,13 +2,20 @@ extern unsigned pulseDuration[2];
 extern int pulseBuzzerDuration;
 extern int xSpeed;
 extern int tsensoroffset;
+unsigned int constSpeed;
 extern volatile int RSumMarker;
 extern bool logFlag;
 extern bool exploreFlag;
+extern volatile bool LMarkerFlag;
+extern volatile bool JMarkerFlag;
+extern volatile int LMarkerFlagPos;
+extern volatile int JMarkerFlagPos;
+
 
 #define L_MARKER_SEN sensorBlack[13]
 #define R_MARKER_SEN sensorBlack[14]
 
+void pulseBuzzer( int per, int duration);
 void LMarkerDetect();
 void RMarkerDetect();
 void ClearMarkerFlag();
