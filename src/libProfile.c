@@ -314,23 +314,23 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 			curSpeedPercent = 90;
 			//curSpeed[0]=curSpeed[0]-100;
 		}
-		if (dist > CHECK_DIST) {			//For long distance straight
-
-			if (LMarkerFlag == TRUE) {
-				//pulseBuzzer(700,100);
-				diff=dist-LMarkerFlagPos;
-				range=100+dist/10;
-				if((diff>-range)&&(diff<range)){
-					pulseBuzzer(1000,100);
-					pulseLED(0,100);
-					pulseLED(1,100);
-					break;
-				}
-				else {
-					LMarkerFlag = FALSE;
-				}
-			}
-		}
+//		if (dist > CHECK_DIST) {			//For long distance straight
+//
+//			if (LMarkerFlag == TRUE) {
+//				//pulseBuzzer(700,100);
+//				diff=dist-LMarkerFlagPos;
+//				range=100+dist/10;
+//				if((diff>-range)&&(diff<range)){
+//					pulseBuzzer(1000,100);
+//					pulseLED(0,100);
+//					pulseLED(1,100);
+//					break;
+//				}
+//				else {
+//					LMarkerFlag = FALSE;
+//				}
+//			}
+//		}
 		if (RSumMarker == marker) {
 			break;
 		}

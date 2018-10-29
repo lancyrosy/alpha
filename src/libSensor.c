@@ -16,7 +16,7 @@
 #include "project.h"
 
 volatile int16_t  sensorCal[NUM_SENSOR];
-volatile int16_t  sensorBlack[NUM_SENSOR]={78,96,87,121,174,197,194,166,171,201,178,192,158,91,103};
+volatile int16_t  sensorBlack[NUM_SENSOR]={150,155,170,135,185,135,160,160,165,170,190,170,160,95,90};
 volatile uint16_t sensor[NUM_SENSOR];
 volatile uint16_t sensorOld[NUM_SENSOR];
 volatile uint16_t sensorMin[NUM_SENSOR];
@@ -376,7 +376,7 @@ int16_t Cen1(){
 		if (sensorCal[i] <= 0) sensorCal[i] = 0;
 
 	}
-	for (i=3; i<12; i++) {
+	for (i=4; i<12; i++) {
 		if (sensorCal[i] > 1000) sum++;
 
 	}
@@ -400,14 +400,15 @@ int16_t Cen1(){
 
 
 
-	sensoroffset = (sensorCal[3] * (-1800l) + sensorCal[4] * (-1400l) + sensorCal[5] * (-1000l)+ sensorCal[6] * (-600l) + sensorCal[7]* (-200l)+
-			sensorCal[8] * (200l) + sensorCal[9] * (600l) + sensorCal[10] * (1000l) + sensorCal[11] * (1400l) + sensorCal[12] * (1800l))/
-			(sensorCal[3] + sensorCal[4]+ sensorCal[5] + sensorCal[6] + sensorCal[7] +
-			sensorCal[8] + sensorCal[9]+ sensorCal[10] + sensorCal[11] + sensorCal[12]);
+	sensoroffset = (sensorCal[4]*(-1600l) + sensorCal[5]*(-1200l) + sensorCal[6]*(-800l) + sensorCal[7]*(-400l)
+			+ sensorCal[9]*(400l) + sensorCal[10]*(800l) + sensorCal[11]*(1200l) + sensorCal[12]*(1600l))
+			/(sensorCal[4]+sensorCal[5]+sensorCal[6]+sensorCal[7]+sensorCal[9]+sensorCal[10]+sensorCal[11]
+			+sensorCal[12]);
 
 	if (sum>6) sensoroffset = 0;
 	prevSensoroffset = sensoroffset;
-	sensoroffset2 = (sensorCal[0] * (-200l) + sensorCal[2] * (200l))/(sensorCal[0]+sensorCal[1]+sensorCal[2]);
+	sensoroffset2 = (sensorCal[0]*(-600l) + sensorCal[1]*(-200l) + sensorCal[2] * (200l) + sensorCal[3]*(600l))
+			/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
 
 
 
