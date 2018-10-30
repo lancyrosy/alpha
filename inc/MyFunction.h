@@ -10,7 +10,8 @@ extern volatile bool LMarkerFlag;
 extern volatile bool JMarkerFlag;
 extern volatile int LMarkerFlagPos;
 extern volatile int JMarkerFlagPos;
-
+extern volatile int JMarker[200];
+extern volatile int MarkerNum;
 
 #define L_MARKER_SEN sensorBlack[13]
 #define R_MARKER_SEN sensorBlack[14]

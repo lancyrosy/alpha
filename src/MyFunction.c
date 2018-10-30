@@ -24,6 +24,7 @@ int arcAngle[SEGSIZE];
 int curveSpeed[SEGSIZE];
 int junctionPos[SEGSIZE];
 int logIndex;
+volatile int junction[SEGSIZE];
 
 bool logFlag = FALSE;
 bool exploreFlag=FALSE;
@@ -31,17 +32,18 @@ volatile bool LMarkerFlag=FALSE;
 volatile bool JMarkerFlag=FALSE;
 volatile int LMarkerFlagPos;
 volatile int JMarkerFlagPos;
+
 unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
 
 unsigned int constSpeed;
 //for left marker
-//int left[200];
-//int leftNum = 0;
-//for left&Junction marker
-int MarkerPos[200];
-int MarkerNum = 0;
+volatile int LeftMarker[200];
+volatile int LeftNum = 0;
+//for Junction marker
+volatile int JMarker[200];
+volatile int MarkerNum = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
@@ -102,7 +104,7 @@ void PrintSegment() {
 	}
 	printf("\n\n\n");
 		for (i=0; i<MarkerNum; i++ ) {
-			printf("%5d\n ", MarkerPos[i]);
+			printf("%5d\n ", LeftMarker[i]);
 		}
 	printf("\n\n\n");
 	printf("          arcAngle  rad  dis  curveSpeed\n");
@@ -208,8 +210,15 @@ void FilterSegments(void) {
 			segNumF1++;
 			segmentF1[segNumF1] = segment[i];
 			segTypeF1[segNumF1] = segType[i];
-		} else {
+		}
+		else {
 			segmentF1[segNumF1] = segment[i];
+//			if (JMarkerFlag == TRUE) {					//detect junction
+//				junction[i] = 1;
+//			}
+//			else
+//				junction[i] = 0;
+//			}
 		}
 	}
 
@@ -241,6 +250,7 @@ void FilterSegments(void) {
 		}
 		else {
 			segmentF3[segNumF3] = segmentF2[i];
+
 		}
 	}
 
@@ -257,9 +267,9 @@ void FilterSegments(void) {
 			sum = ave = num = 0;
 			leftmNum = 0;
 			int leftm[5];
-			for(index = 0; index < MarkerNum; index++){ //check left marker inside this segment
-				if((MarkerPos[index] > (segmentF3[i-1]+20))&&(MarkerPos[index] < (segmentF3[i]-20))){
-					leftm[leftmNum] = MarkerPos[index];
+			for(index = 0; index < LeftNum; index++){ //check left marker inside this segment
+				if((LeftMarker[index] > (segmentF3[i-1]+20))&&(LeftMarker[index] < (segmentF3[i]-20))){
+					leftm[leftmNum] = LeftMarker[index];
 					leftmNum++;
 				}
 			}
@@ -362,12 +372,9 @@ void AnalyseCurve(void) {
 		}
 	}
 	for (i = 0; i <= segNumFL; i++) {
-		//curveSpeed[i]= (int) ((0.7f) * sqrt((abs(rad[i]) + 712) * acc));
-		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
+		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10000.0f));
 	}
-	//finish analysing
-//	pulseBuzzer(5000,50);
-//	DispDotMatrix("OK");
+
 }
 
 void FastRun(void) {
@@ -384,36 +391,36 @@ void FastRun(void) {
 	timeCount = 0;
 	for (i = 0; i <= segNumFL; i++) {
 		if (segTypeFL[i] == 0) {		//Straight
-			if (i != segNumFL){
+			if (i != segNumFL){					//Not last segment
 				constSpeed = curveSpeed[i+1];
 			}
-			else {
+			else {								//Last segment
 				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3300, constSpeed, 4000, 8000, 2);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3500, constSpeed, 4000, 8000, 2, segmentFL[i],segmentFL[i+1]);
 		}
 		else {							//Curve
 			int curveEndSpeed;
 			acc=2000;
 			dec=3000;
 			curveEndSpeed = curveSpeed[i];
-			if (segTypeFL[i+1] != 0 ) {			//Next segment is curve
+			if (segTypeFL[i+1] != 0 ) {			//Next segment is curve(Curve-Curve)
 				if (curveEndSpeed > curveSpeed[i+1])
 					curveEndSpeed = curveSpeed[i+1];
 			}
 			else{								//Next segment is straight (Curve-Straight)
-				curveSpeed[i]=curveSpeed[i]*0.95;
-				dec=5000;
+				//curveSpeed[i]=curveSpeed[i]*0.95;
+				acc=4000;
 			}
 			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, acc, dec);
 		}
 	}
+
 	sprintf(s, "%4d", (int) (timeCount / 100));
 	DispDotMatrix(s);
 	pulseBuzzer(5000,100);
 
-	MoveRobotCheck(XSPEED, 1000, 0, endSpeed, endSpeed, 3000, 8000, 2);
-	MoveRobot(XSPEED, 400, 0, endSpeed, 40, 3000, 8000);
+	MoveRobot(XSPEED, 400, 0, endSpeed, 40, 3000, 8000);  // enter start-finish area
 	StopRobot();
 	pulseBuzzer(2000,100);
 	WaitSW();
@@ -507,11 +514,11 @@ void TestRun(void){
 
 //Marker detection
 void LMarkerDetect(){
-	if (sensorCal[13] >= 600) {
+	if (sensorCal[13] >= 500) {
 		LState = 1;
 		JLState = 0;
 	}
-	if (sensorCal[13] <= 400 && LState == 1){
+	if (sensorCal[13] <= 300 && LState == 1){
 		LState = 0;
 		JLState = 1;
 		disL = curPos[0]/DIST_mm_oc(1);
@@ -524,21 +531,19 @@ void LMarkerDetect(){
 			LSumMarker ++;
 			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			LMarkerFlag=TRUE;
-			//Left[MarkerNum] = (timeCount/5)-10;//-10(50mm) for distance between marker line and main sensor line
-			//MarkerNum++;
-			MarkerPos[MarkerNum] = (timeCount/5)-10;//-10(50mm) for distance between marker line and main sensor line
-			MarkerNum++;
+			LeftMarker[LeftNum] = (timeCount/5)-10;//-10(50mm) for distance between marker line and main sensor line
+			LeftNum++;
 			pulseLED(0,100);
 			//pulseBuzzer(1000, 50);
 		}
 	}
 }
 void RMarkerDetect(){
-	if (sensorCal[14] >= 600){
+	if (sensorCal[14] >= 500){
 		RState = 1;
 		JRState = 0;
 	}
-	if (sensorCal[14] <= 400 && RState == 1){
+	if (sensorCal[14] <= 300 && RState == 1){
 		RState = 0;
 		JRState = 1;
 		disR = curPos[0]/DIST_mm_oc(1);
@@ -560,6 +565,8 @@ void JMarkerDetect(){
 			sumJunction++;
 			JMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			JMarkerFlag=TRUE;
+			JMarker[MarkerNum] = (timeCount/5)-10;
+			MarkerNum++;
 			pulseBuzzer(2500, 50);
 		}
 		JLState=JRState=0;
