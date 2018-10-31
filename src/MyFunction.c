@@ -531,7 +531,7 @@ void LMarkerDetect(){
 			LSumMarker ++;
 			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			LMarkerFlag=TRUE;
-			LeftMarker[LeftNum] = (timeCount/5)-10;//-10(50mm) for distance between marker line and main sensor line
+			LeftMarker[LeftNum] = (timeCount/5)-15;
 			LeftNum++;
 			pulseLED(0,100);
 			//pulseBuzzer(1000, 50);
@@ -565,7 +565,7 @@ void JMarkerDetect(){
 			sumJunction++;
 			JMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			JMarkerFlag=TRUE;
-			JMarker[MarkerNum] = (timeCount/5)-10;
+			JMarker[MarkerNum] = timeCount/5;
 			MarkerNum++;
 			pulseBuzzer(2500, 50);
 		}

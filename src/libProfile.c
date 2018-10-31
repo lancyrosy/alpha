@@ -304,8 +304,6 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 		dist += dist/10 + 100;
 		brakeDist += dist/10 + 100;
 //		topSpeed=topSpeed+200;
-//		acc=acc+200;
-//		dcc=dcc+200;
 	}
 	curSpeedPercent = 100;
 	LMarkerFlag=JMarkerFlag=FALSE;
@@ -316,7 +314,6 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 	while (!EndOfMove(speedType)) {
 		if (abs(sensoroffset2) > 100) {   // Entering the curve (Straight-Curve)
 			curSpeedPercent = 90;
-			//curAcc[0]=curAcc[0]+400;
 		}
 		if (dist > CHECK_DIST) {			 //For long distance straight
 
