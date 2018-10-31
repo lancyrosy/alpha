@@ -32,6 +32,7 @@ volatile bool LMarkerFlag=FALSE;
 volatile bool JMarkerFlag=FALSE;
 volatile int LMarkerFlagPos;
 volatile int JMarkerFlagPos;
+volatile int JunctionTotal=0;
 
 unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
@@ -145,9 +146,11 @@ void ExploreRun(){
 	logFlag = FALSE;
 	MoveRobot(XSPEED, 400, 0, 1500, 0, 4000, 4000);
 	StopRobot();
+	JunctionTotal=sumJunction;
 	FindSegments();
 	exploreFlag=TRUE;
 	DelaymSec(1000);
+
 }
 
 #define thres 70
