@@ -238,13 +238,13 @@ void DispAllSensorValues() {
 			char a[10];
 	        sprintf(a,"%4u",ReadBatteryVolt() );
 			gotoxy(COL1, ROW1+2);
-			printf(" S1   S2   S3");		// dc value
+			printf(" S1   S2   S3   S4");		// dc value
 			gotoxy(COL1, ROW1+4);
-			printf("%4u %4u %4u", sensor[0], sensor[1], sensor[2]);
+			printf("%4u %4u %4u %4u", sensor[0], sensor[1], sensor[2], sensor[3]);
 	        gotoxy(COL1, ROW1+6);
-	        printf(" S4   S5   S6   S7   S8   S9   S10   S11   S12   S13");
+	        printf(" S5   S6   S7   S8   S9   S10   S11   S12   S13");
 	        gotoxy(COL1, ROW1+8);
-			printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u %4u",sensor[3], sensor[4], sensor[5], sensor[6], sensor[7],
+			printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u",sensor[4], sensor[5], sensor[6], sensor[7],
 					sensor[8], sensor[9], sensor[10], sensor[11], sensor[12]);
 	        gotoxy(COL1, ROW1+10);
 			printf(" S14  S15");
@@ -259,13 +259,13 @@ void DispAllSensorValues() {
 		   	printf("Sensor Offset 1: %5d,  2: %5d", sensoroffset, sensoroffset2);
 
 		   	gotoxy(COL1, ROW1+20);
-		   	printf(" S1   S2   S3");		// dc value
+		   	printf(" S1   S2   S3   S4");		// dc value
 		   	gotoxy(COL1, ROW1+22);
-		   	printf("%4u %4u %4u", sensorBlack[0], sensorBlack[1], sensorBlack[2]);
+		   	printf("%4u %4u %4u %4u", sensorBlack[0], sensorBlack[1], sensorBlack[2], sensorBlack[3]);
 		   	gotoxy(COL1, ROW1+24);
-		   	printf(" S4   S5   S6   S7   S8   S9   S10   S11   S12   S13");
+		   	printf(" S5   S6   S7   S8   S9   S10   S11   S12   S13");
 		   	gotoxy(COL1, ROW1+26);
-		   	printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u %4u",sensorBlack[3], sensorBlack[4], sensorBlack[5], sensorBlack[6], sensorBlack[7],
+		   	printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u",sensorBlack[4], sensorBlack[5], sensorBlack[6], sensorBlack[7],
 		   			sensorBlack[8], sensorBlack[9], sensorBlack[10], sensorBlack[11], sensorBlack[12]);
 		   	gotoxy(COL1, ROW1+28);
 		   	printf(" S14  S15");
@@ -398,18 +398,15 @@ int16_t Cen1(){
 //	}
 
 
-
-
 	sensoroffset = (sensorCal[4]*(-1600l) + sensorCal[5]*(-1200l) + sensorCal[6]*(-800l) + sensorCal[7]*(-400l)
 			+ sensorCal[9]*(400l) + sensorCal[10]*(800l) + sensorCal[11]*(1200l) + sensorCal[12]*(1600l))
-			/(sensorCal[4]+sensorCal[5]+sensorCal[6]+sensorCal[7]+sensorCal[9]+sensorCal[10]+sensorCal[11]
-			+sensorCal[12]);
+						/(sensorCal[4]+sensorCal[5]+sensorCal[6]+sensorCal[7]+sensorCal[9]+sensorCal[10]+sensorCal[11]
+																												   +sensorCal[12]);
 
 	if (sum>6) sensoroffset = 0;
 	prevSensoroffset = sensoroffset;
 	sensoroffset2 = (sensorCal[0]*(-600l) + sensorCal[1]*(-200l) + sensorCal[2] * (200l) + sensorCal[3]*(600l))
-			/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
-
+						/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
 
 
 //	if (sensoroffset2<80 && sensoroffset2>-80 && sum > 400) {
