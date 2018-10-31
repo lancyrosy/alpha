@@ -16,7 +16,7 @@
 #include "project.h"
 
 volatile int16_t  sensorCal[NUM_SENSOR];
-volatile int16_t  sensorBlack[NUM_SENSOR]={78,96,87,121,174,197,194,166,171,201,178,192,158,91,103};
+volatile int16_t  sensorBlack[NUM_SENSOR]={97,142,163,137,87,115,71,49,111,152,166,163,164,75,91};
 volatile uint16_t sensor[NUM_SENSOR];
 volatile uint16_t sensorOld[NUM_SENSOR];
 volatile uint16_t sensorMin[NUM_SENSOR];
@@ -26,14 +26,12 @@ volatile uint16_t adc2_dma_buf[16];
 volatile uint16_t adc3_dma_buf[16];
 
 volatile int senfla;
-volatile int sensoroffset, sensoroffset2, sensoroffsetold, cenval;
+volatile int sensoroffset, prevSensoroffset, sensoroffset2, sensoroffsetold, cenval;
 volatile int state, substate;
 volatile int adcCnt;
 
 bool bDispSensorValue;
 bool bEndSensorISRFlag;
-bool slowFlag=FALSE;
-bool fastFlag=FALSE;
 
 
 bool bSensorEnableFlag;
@@ -238,18 +236,18 @@ void DispAllSensorValues() {
 			char a[10];
 	        sprintf(a,"%4u",ReadBatteryVolt() );
 			gotoxy(COL1, ROW1+2);
-			printf(" S1   S2   S3");		// dc value
+			printf(" S1   S2   S3  S4");		// dc value
 			gotoxy(COL1, ROW1+4);
-			printf("%4u %4u %4u", sensor[0], sensor[1], sensor[2]);
+			printf("%4u %4u %4u %4u", sensorCal[0], sensorCal[1], sensorCal[2], sensorCal[3]);
 	        gotoxy(COL1, ROW1+6);
-	        printf(" S4   S5   S6   S7   S8   S9   S10   S11   S12   S13");
+	        printf(" S5   S6   S7   S8   S9   S10   S11   S12   S13");
 	        gotoxy(COL1, ROW1+8);
-			printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u %4u",sensor[3], sensor[4], sensor[5], sensor[6], sensor[7],
-					sensor[8], sensor[9], sensor[10], sensor[11], sensor[12]);
+			printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u",sensorCal[4], sensorCal[5], sensorCal[6], sensorCal[7],
+					sensorCal[8], sensorCal[9], sensorCal[10], sensorCal[11], sensorCal[12]);
 	        gotoxy(COL1, ROW1+10);
 			printf(" S14  S15");
 			gotoxy(COL1, ROW1+12);
-			printf("%4u %4u",sensor[13], sensor[14]);
+			printf("%4u %4u",sensorCal[13], sensorCal[14]);
 	        gotoxy(COL1, ROW1+14);
 
 			gotoxy(COL1, ROW1+16);
@@ -259,13 +257,13 @@ void DispAllSensorValues() {
 		   	printf("Sensor Offset 1: %5d,  2: %5d", sensoroffset, sensoroffset2);
 
 		   	gotoxy(COL1, ROW1+20);
-		   	printf(" S1   S2   S3");		// dc value
+		   	printf(" S1   S2   S3  S4");		// dc value
 		   	gotoxy(COL1, ROW1+22);
-		   	printf("%4u %4u %4u", sensorBlack[0], sensorBlack[1], sensorBlack[2]);
+		   	printf("%4u %4u %4u %4u", sensorBlack[0], sensorBlack[1], sensorBlack[2], sensorBlack[3]);
 		   	gotoxy(COL1, ROW1+24);
 		   	printf(" S4   S5   S6   S7   S8   S9   S10   S11   S12   S13");
 		   	gotoxy(COL1, ROW1+26);
-		   	printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u %4u",sensorBlack[3], sensorBlack[4], sensorBlack[5], sensorBlack[6], sensorBlack[7],
+		   	printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u", sensorBlack[4], sensorBlack[5], sensorBlack[6], sensorBlack[7],
 		   			sensorBlack[8], sensorBlack[9], sensorBlack[10], sensorBlack[11], sensorBlack[12]);
 		   	gotoxy(COL1, ROW1+28);
 		   	printf(" S14  S15");
@@ -370,30 +368,28 @@ uint16_t ReadBatteryVolt() {
 
 int16_t Cen1(){
 	int i=0;
-	int sum;
+	int sum=0;
 	for (i=0; i<15; i++) {
 		sensorCal[i] = sensor[i] - sensorBlack[i];
 		if (sensorCal[i] <= 0) sensorCal[i] = 0;
 
 	}
+	for (i=4; i<12; i++) {
+		if (sensorCal[i] > 1000) sum++;
 
-	sensoroffset = (sensorCal[3] * (-1800l) + sensorCal[4] * (-1400l) + sensorCal[5] * (-1000l)+ sensorCal[6] * (-600l) + sensorCal[7]* (-200l)+
-			sensorCal[8] * (200l) + sensorCal[9] * (600l) + sensorCal[10] * (1000l) + sensorCal[11] * (1400l) + sensorCal[12] * (1800l))/
-			(sensorCal[3] + sensorCal[4]+ sensorCal[5] + sensorCal[6] + sensorCal[7] +
+	}
+
+
+	sensoroffset = (sensorCal[4] * (-1600l) + sensorCal[5] * (-1200l)+ sensorCal[6] * (-800l) + sensorCal[7]* (-400l)+
+			sensorCal[9] * (400l) + sensorCal[10] * (800l) + sensorCal[11] * (1200l) + sensorCal[12] * (1600l))/
+			(sensorCal[4]+ sensorCal[5] + sensorCal[6] + sensorCal[7] +
 			sensorCal[8] + sensorCal[9]+ sensorCal[10] + sensorCal[11] + sensorCal[12]);
 
-	sensoroffset2 = (sensorCal[0] * (-200l) + sensorCal[2] * (200l))/(sensorCal[0]+sensorCal[1]+sensorCal[2]);
+	if (sum>6) sensoroffset = 0;
+	prevSensoroffset = sensoroffset;
+	sensoroffset2 = (sensorCal[1] * (-200l) + sensorCal[2] * (200l)+ sensorCal[3] * (600l) + sensorCal[0] * (-600l) )
+			/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
 
-
-
-//	if (sensoroffset2<80 && sensoroffset2>-80 && sum > 400) {
-//		fastFlag = TRUE;
-//		slowFlag = FALSE;
-//	}
-//	else{
-//		slowFlag = TRUE;
-//		fastFlag = FALSE;
-//	}
 
     return sensoroffset;
 
