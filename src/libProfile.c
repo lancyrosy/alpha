@@ -297,40 +297,49 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 
 
 #define CHECK_DIST	300
-void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t marker) {
+void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t marker,int16_t segmentNow,int16_t segmentNext) {
 	int diff,range;
 
-	if (dist > CHECK_DIST) {
+	if (dist > CHECK_DIST){				  //For long distance straight
 		dist += dist/10 + 100;
 		brakeDist += dist/10 + 100;
+//		topSpeed=topSpeed+200;
 	}
-	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc ,dcc);
 	curSpeedPercent = 100;
 	LMarkerFlag=JMarkerFlag=FALSE;
+	LMarkerFlagPos=0;
+	JMarkerFlagPos=0;
+	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc, dcc);
 
-	while(!EndOfMove(speedType)) {
-		if(abs(sensoroffset2)>100){
-			//targetSpeed[0]=targetSpeed[0]-100;
+	while (!EndOfMove(speedType)) {
+		if (abs(sensoroffset2) > 100) {   // Entering the curve (Straight-Curve)
 			curSpeedPercent = 90;
-			//curSpeed[0]=curSpeed[0]-100;
 		}
-//		if (dist > CHECK_DIST) {			//For long distance straight
-//
-//			if (LMarkerFlag == TRUE) {
-//				//pulseBuzzer(700,100);
-//				diff=dist-LMarkerFlagPos;
-//				range=100+dist/10;
-//				if((diff>-range)&&(diff<range)){
-//					pulseBuzzer(1000,100);
-//					pulseLED(0,100);
-//					pulseLED(1,100);
-//					break;
-//				}
-//				else {
-//					LMarkerFlag = FALSE;
-//				}
-//			}
-//		}
+		if (dist > CHECK_DIST) {			 //For long distance straight
+
+			if (LMarkerFlag == TRUE) {
+				//pulseBuzzer(700,100);
+				diff = dist - LMarkerFlagPos;
+				range = 100 + dist / 10;
+				if ((diff > -range) && (diff < range)) {
+					pulseBuzzer(1000, 100);
+					pulseLED(0, 100);
+					pulseLED(1, 100);
+					break;
+				} else {
+					LMarkerFlag = FALSE;
+				}
+			}
+
+			else if ((JMarker[sumJunction]>segmentNow)&&(JMarker[sumJunction]<segmentNext)) {
+				if (JMarkerFlag == TRUE) {
+					curPos[0] = (JMarker[sumJunction]-segmentNow)*5*DIST_mm_oc(1);
+				}
+				else{
+					JMarkerFlag = FALSE;
+				}
+			}
+		}
 		if (RSumMarker == marker) {
 			break;
 		}

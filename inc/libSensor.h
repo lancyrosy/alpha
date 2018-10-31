@@ -88,9 +88,6 @@ extern bool	bDispSensorValue;
 extern bool bSensorEnableFlag;
 extern bool bFlashDetectFlag;
 extern bool bEndSensorISRFlag;
-extern bool slowFlag;
-extern bool fastFlag;
-
 // ---------------------------------------------------------------------------------
 //  Function prototypes
 // ---------------------------------------------------------------------------------

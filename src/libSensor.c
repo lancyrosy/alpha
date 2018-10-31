@@ -16,7 +16,7 @@
 #include "project.h"
 
 volatile int16_t  sensorCal[NUM_SENSOR];
-volatile int16_t  sensorBlack[NUM_SENSOR]={150,155,170,135,185,135,160,160,165,170,190,170,160,95,90};
+volatile int16_t  sensorBlack[NUM_SENSOR]={97,142,163,137,87,115,71,49,111,152,166,163,164,75,91};
 volatile uint16_t sensor[NUM_SENSOR];
 volatile uint16_t sensorOld[NUM_SENSOR];
 volatile uint16_t sensorMin[NUM_SENSOR];
@@ -32,8 +32,6 @@ volatile int adcCnt;
 
 bool bDispSensorValue;
 bool bEndSensorISRFlag;
-bool slowFlag=FALSE;
-bool fastFlag=FALSE;
 
 
 bool bSensorEnableFlag;
@@ -249,15 +247,13 @@ void DispAllSensorValues() {
 	        gotoxy(COL1, ROW1+10);
 			printf(" S14  S15");
 			gotoxy(COL1, ROW1+12);
-			printf("%4u %4u",sensor[13], sensor[14]);
+			printf("%4u %4u",sensorCal[13], sensorCal[14]);
 	        gotoxy(COL1, ROW1+14);
-
-			gotoxy(COL1, ROW1+16);
-			printf("Battery %4uV ", ReadBatteryVolt());
-			sprintf(a,"%4uV", ReadBatteryVolt());
-		   	gotoxy(COL1, ROW1+18);
-		   	printf("Sensor Offset 1: %5d,  2: %5d", sensoroffset, sensoroffset2);
-
+			printf("Battery voltage: %4uV ", ReadBatteryVolt());
+		   	gotoxy(COL1, ROW1+16);
+		   	printf("Sensor Offset: second row: %5d,  first row: %5d", sensoroffset, sensoroffset2);
+		 	gotoxy(COL1, ROW1+18);
+		 	printf("Black sensor value:");
 		   	gotoxy(COL1, ROW1+20);
 		   	printf(" S1   S2   S3   S4");		// dc value
 		   	gotoxy(COL1, ROW1+22);
@@ -381,23 +377,6 @@ int16_t Cen1(){
 
 	}
 
-//	if (prevSensoroffset<-450) {
-//		sensorCal[9]=sensorCal[10]=sensorCal[11]=sensorCal[12]=0;
-//	}
-//	else if (prevSensoroffset<-200) {
-//		sensorCal[12]=sensorCal[10]=sensorCal[11]=sensorCal[3]=0;
-//	}
-//	else if (prevSensoroffset<200) {
-//		sensorCal[11]=sensorCal[12]=sensorCal[4]=sensorCal[3]=0;
-//	}
-//	else if (prevSensoroffset<450) {
-//		sensorCal[12]=sensorCal[5]=sensorCal[4]=sensorCal[3]=0;
-//	}
-//	else {
-//		sensorCal[6]=sensorCal[5]=sensorCal[4]=sensorCal[3]=0;
-//	}
-
-
 	sensoroffset = (sensorCal[4]*(-1600l) + sensorCal[5]*(-1200l) + sensorCal[6]*(-800l) + sensorCal[7]*(-400l)
 			+ sensorCal[9]*(400l) + sensorCal[10]*(800l) + sensorCal[11]*(1200l) + sensorCal[12]*(1600l))
 						/(sensorCal[4]+sensorCal[5]+sensorCal[6]+sensorCal[7]+sensorCal[9]+sensorCal[10]+sensorCal[11]
@@ -408,15 +387,6 @@ int16_t Cen1(){
 	sensoroffset2 = (sensorCal[0]*(-600l) + sensorCal[1]*(-200l) + sensorCal[2] * (200l) + sensorCal[3]*(600l))
 						/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
 
-
-//	if (sensoroffset2<80 && sensoroffset2>-80 && sum > 400) {
-//		fastFlag = TRUE;
-//		slowFlag = FALSE;
-//	}
-//	else{
-//		slowFlag = TRUE;
-//		fastFlag = FALSE;
-//	}
 
     return sensoroffset;
 
