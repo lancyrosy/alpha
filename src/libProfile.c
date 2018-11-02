@@ -283,7 +283,7 @@ void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSp
 		}
 	}
 }
-void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc) {
+void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t segmentNum) {
 
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
@@ -292,6 +292,17 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 		if (bSWFlag) {
 			break;
 		}
+		while (junction[JIndex] == segmentNum) {
+			DispDotMatrix("JJJJ");
+			if (JMarkerFlag == TRUE) {
+				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum]) * 5
+						* DIST_mm_oc(1);
+				JIndex++;
+				JMarkerFlag = FALSE;
+				pulseBuzzer(500, 50);
+			}
+		}
+		DispDotMatrix("    ");
 	}
 }
 
@@ -304,7 +315,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 	if (dist > CHECK_DIST){				  //For long distance straight
 		dist += dist/10 + 100;
 		brakeDist += dist/10 + 100;
-//		topSpeed=topSpeed+200;
+		topSpeed=topSpeed+200;
 	}
 	curSpeedPercent = 100;
 	LMarkerFlag=JMarkerFlag=FALSE;
@@ -330,21 +341,22 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 					LMarkerFlag = FALSE;
 				}
 			}
-			while (junction[JIndex]==segmentNum) {
-				if (JMarkerFlag == TRUE) {
-					curPos[0] = (JMarker[sumJunction] - segmentFL[segmentNum]) * 5 * DIST_mm_oc(1);
-					JIndex++;
-					JMarkerFlag = FALSE;
-					pulseBuzzer(500, 100);
-				}
+		}
+		while (junction[JIndex] == segmentNum) {
+			DispDotMatrix("JJJJ");
+			if (JMarkerFlag == TRUE) {
+				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum]) * 5 * DIST_mm_oc(1);
+				JIndex++;
+				JMarkerFlag = FALSE;
+				pulseBuzzer(500, 50);
 			}
-
-			if (RSumMarker == marker) {
-				break;
-			}
-			if (bSWFlag) {
-				break;
-			}
+		}
+		DispDotMatrix("    ");
+		if (RSumMarker == marker) {
+			break;
+		}
+		if (bSWFlag) {
+			break;
 		}
 		curSpeedPercent = 100;
 	}
