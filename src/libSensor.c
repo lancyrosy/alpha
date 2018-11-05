@@ -17,9 +17,9 @@
 
 volatile int16_t  sensorCal[NUM_SENSOR];
 volatile int16_t  sensorBlack[NUM_SENSOR]={97,142,163,137,87,115,71,49,111,152,166,163,164,75,91};
-volatile uint16_t sensor[NUM_SENSOR];
-volatile uint16_t sensorOld[NUM_SENSOR];
-volatile uint16_t sensorMin[NUM_SENSOR];
+volatile int16_t sensor[NUM_SENSOR];
+volatile int16_t sensorOld[NUM_SENSOR];
+volatile int16_t sensorMin[NUM_SENSOR];
 volatile uint16_t sensorMax[NUM_SENSOR];
 volatile uint16_t adc1_dma_buf[16];
 volatile uint16_t adc2_dma_buf[16];
@@ -137,7 +137,7 @@ void StartSensorISR() {
 	substate = 0;
 	bEndSensorISRFlag = FALSE;
 
-	TIM_Cmd(TIM_SensorISR, ENABLE);
+	//TIM_Cmd(TIM_SensorISR, ENABLE);
 	ADC_SoftwareStartConvCmd(ADC1, ENABLE);	//Start ADC1 conversion
 }
 
@@ -153,7 +153,7 @@ void DMA1_Channel1_IRQHandler(void) {
 
 
 	for(a=0;a<16;a++){
-    	 sensor[a] = adc1_dma_buf[a];
+    	 sensor[a] = (adc1_dma_buf[a]+sensor[a])/2;
      }
 
 

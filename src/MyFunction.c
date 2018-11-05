@@ -13,21 +13,27 @@ void AnalyseJunction(void);
 #define SEGSIZE 300
 int logData[LOGSIZE];
 int t = 0;
-volatile int segment[SEGSIZE], segType[SEGSIZE], segNum;
-volatile int segmentF1[SEGSIZE], segTypeF1[SEGSIZE], segNumF1;
-volatile int segmentF2[SEGSIZE], segTypeF2[SEGSIZE], segNumF2;
-volatile int segmentF3[SEGSIZE], segTypeF3[SEGSIZE], segNumF3;
-volatile int segmentFL[SEGSIZE], segTypeFL[SEGSIZE], segNumFL;
-int dis[SEGSIZE];
-int rad[SEGSIZE];
-int arcAngle[SEGSIZE];
-int curveSpeed[SEGSIZE];
-int junctionPos[SEGSIZE];
-int logIndex;
-volatile int junction[100];
-volatile int numJunction;
-volatile int JunctionTotal;
-volatile int JIndex=0;
+volatile uint16_t segment[SEGSIZE], segNum;
+volatile uint16_t segmentF1[SEGSIZE], segNumF1;
+volatile uint16_t segmentF2[SEGSIZE], segNumF2;
+volatile uint16_t segmentF3[SEGSIZE], segNumF3;
+volatile uint16_t segmentFL[SEGSIZE], segNumFL;
+volatile int16_t segType[SEGSIZE];
+volatile int16_t segTypeF1[SEGSIZE];
+volatile int16_t segTypeF2[SEGSIZE];
+volatile int16_t segTypeF3[SEGSIZE];
+volatile int16_t segTypeFL[SEGSIZE];
+uint16_t dis[SEGSIZE];
+int16_t rad[SEGSIZE];
+int16_t arcAngle[SEGSIZE];
+uint16_t curveSpeed[SEGSIZE];
+uint16_t junctionPos[SEGSIZE];
+uint16_t logIndex;
+int junction[100];
+int numJunction;
+int JunctionTotal;
+int Index=0;
+int JIndex=0;
 bool fastFlag=FALSE;
 
 bool logFlag = FALSE;
@@ -43,11 +49,11 @@ int pulseBuzzerDuration = 0;
 
 unsigned int constSpeed;
 //for left marker
-volatile int LeftMarker[300];
+volatile uint16_t  LeftMarker[300];
 volatile int LeftNum = 0;
 //for Junction marker
-volatile int JMarker[100];
-volatile int MarkerNum = 0;
+volatile uint16_t  JMarker[100];
+int MarkerNum = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
@@ -120,7 +126,6 @@ void PrintSegment() {
 	for (i=0; i<JunctionTotal; i++ ) {
 		printf("%5d %5d\n ", JMarker[i],junction[i]);
 	}
-
 
 }
 void pulseLED(int num, int duration){
@@ -409,11 +414,11 @@ void FastRun(void) {
 	char s[8];
 	int SegmentNum=0;
 	JIndex = 0;
-
 	DelaymSec(1000);
 	EnWheelMotor();
 	ClearMarkerFlag();
 	fastFlag=TRUE;
+
 	MoveRobotCheck(XSPEED, 1000, 50, 1500, 1200, 2000, 2000, 1); //before first marker
 	timeCount = 0;
 	for (i = 0; i <= segNumFL; i++) {
@@ -437,7 +442,6 @@ void FastRun(void) {
 					curveEndSpeed = curveSpeed[i+1];
 			}
 			else{								//Next segment is straight (Curve-Straight)
-				//curveSpeed[i]=curveSpeed[i]*0.95;
 				acc=4000;
 			}
 			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, acc, dec , SegmentNum);
@@ -496,6 +500,7 @@ void DumbRun(void){
 }
 
 void TestRun(void){
+	//Run as constant speed
 	timeCount = 0;
 	DelaymSec(1000);
 	EnWheelMotor();

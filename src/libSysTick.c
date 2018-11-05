@@ -72,11 +72,12 @@ void Handler_SysTick(void){
 		sumtOffset = 0;
 	}
 	StartSensorISR();
+
+	DoSpeedProfile();
+
 	if (bAlignFlag)
 		Cen1();
 	else sensoroffset = 0;
-
-	DoSpeedProfile();
 	MotorPID();
 
 	LMarkerDetect();
