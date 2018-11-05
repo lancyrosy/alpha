@@ -293,13 +293,12 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 			break;
 		}
 		while (junction[JIndex] == segmentNum) {
-			DispDotMatrix("JJJJ");
+			DispDotMatrix("JJCC");
 			if (JMarkerFlag == TRUE) {
-				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum]) * 5
-						* DIST_mm_oc(1);
+				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
 				JIndex++;
 				JMarkerFlag = FALSE;
-				pulseBuzzer(500, 50);
+				//pulseBuzzer(500, 50);
 			}
 		}
 		DispDotMatrix("    ");
@@ -307,7 +306,7 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 }
 
 
-#define CHECK_DIST	300
+#define CHECK_DIST	200
 void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t marker,int16_t segmentNum) {
 	int diff,range;
 	int i=0;
@@ -318,7 +317,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 		topSpeed=topSpeed+200;
 	}
 	curSpeedPercent = 100;
-	LMarkerFlag=JMarkerFlag=FALSE;
+	//LMarkerFlag=JMarkerFlag=FALSE;
 	LMarkerFlagPos=0;
 	JMarkerFlagPos=0;
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc, dcc);
@@ -343,12 +342,12 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 			}
 		}
 		while (junction[JIndex] == segmentNum) {
-			DispDotMatrix("JJJJ");
+			DispDotMatrix("JJSS");
 			if (JMarkerFlag == TRUE) {
-				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum]) * 5 * DIST_mm_oc(1);
+				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
 				JIndex++;
 				JMarkerFlag = FALSE;
-				pulseBuzzer(500, 50);
+				//pulseBuzzer(500, 50);
 			}
 		}
 		DispDotMatrix("    ");

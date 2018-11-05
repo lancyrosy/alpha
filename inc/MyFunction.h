@@ -13,9 +13,7 @@ extern volatile int JMarkerFlagPos;
 extern volatile int LeftMarker[300];
 extern volatile int JMarker[100];
 extern volatile int MarkerNum;
-extern volatile int JunctionTotal;
 extern volatile int JIndex;
-extern volatile int Index;
 extern volatile int junction[100];
 
 #define SEGSIZE 300

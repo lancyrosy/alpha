@@ -27,7 +27,6 @@ int logIndex;
 volatile int junction[100];
 volatile int numJunction;
 volatile int JunctionTotal;
-volatile int Index=0;
 volatile int JIndex=0;
 bool fastFlag=FALSE;
 
@@ -119,7 +118,7 @@ void PrintSegment() {
 	}
 	printf("\n\n\n");
 	for (i=0; i<JunctionTotal; i++ ) {
-		printf("%5d %5d\n ", JMarker[i],junction[i]+1);
+		printf("%5d %5d\n ", JMarker[i],junction[i]);
 	}
 
 
@@ -380,23 +379,25 @@ void AnalyseCurve(void) {
 		}
 	}
 	for (i = 0; i <= segNumFL; i++) {
-		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10000.0f));
+		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
 	}
 	AnalyseJunction();
 }
 
 void AnalyseJunction(void){
-	int r=0;
+	int index,i;
 	int numJunction=0;
-	for (Index = 0; Index < segNumFL; Index++) {
-		for (r = numJunction; r < JunctionTotal; r++) { // Check junctions
-			if ((JMarker[r] > segmentFL[Index]) && (JMarker[r] < segmentFL[Index + 1])) {
-				junction[r] = Index;	 //store junction segment index
+	unsigned int startSeg = 0;
+	for (index = 0; index <= segNumFL; index++) {
+		for (i = numJunction;i < JunctionTotal;i++) { // Check junctions
+			if ((JMarker[i] >= startSeg) && (JMarker[i] < segmentFL[index+1])) {
+				junction[i] = index+1;	 //store junction segment index
 			}
 			else
 				break;
 		}
-		numJunction=r;
+		startSeg = segmentFL[index];
+		numJunction=i;
 	}
 	junction[numJunction] = -1;
 }
@@ -505,7 +506,7 @@ void TestRun(void){
 
 	while(RSumMarker!=2)
 	{
-		SetRobotSpeedX(1000);
+		SetRobotSpeedX(1500);
 		sprintf(s, "%4d", (int) (timeCount / 100));
 		DispDotMatrix(s);
 		if (bSWFlag ) {

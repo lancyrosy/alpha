@@ -61,6 +61,7 @@ int main(void){
 
 
 	MainMenu();
+	//IO_Write(LED1_PIN,1);
 	//pulseBuzzer(1000,1);
 
 	return 0;

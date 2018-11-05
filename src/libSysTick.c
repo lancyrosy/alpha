@@ -19,15 +19,24 @@ float timeCount=0;
 bool bAlignFlag = TRUE;
 
 void LED_ISR(void){
+//	if(JMarkerFlag==TRUE){
+//		IO_Write(LED1_PIN,1);
+//	}
+//	else{
+//		IO_Write(LED1_PIN,0);
+//	}
 
 	if(pulseDuration[0]){
 		pulseDuration[0]--;
 		IO_Write(LED0_PIN,1);
-	}else IO_Write(LED0_PIN,0);
+	}
+	else IO_Write(LED0_PIN,0);
+
 	if(pulseDuration[1]){
 		pulseDuration[1]--;
 		IO_Write(LED1_PIN,1);
-	}else IO_Write(LED1_PIN,0);
+	}
+	else IO_Write(LED1_PIN,0);
 
 	if(pulseBuzzerDuration) pulseBuzzerDuration--;
 	else     TIM2->CCR2 = 0;
