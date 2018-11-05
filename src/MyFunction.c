@@ -9,7 +9,7 @@ void FilterSegments(void);
 void AnalyseCurve(void);
 void AnalyseJunction(void);
 
-#define LOGSIZE	10000
+#define LOGSIZE	12200
 #define SEGSIZE 300
 int logData[LOGSIZE];
 int t = 0;
@@ -121,10 +121,10 @@ void PrintSegment() {
 	for (i=0; i<= segNumFL; i++ ) {
 		printf("%5d  %2d  %5d  %5d  %5d  %5d\n ", segmentFL[i], segTypeFL[i], arcAngle[i], rad[i], dis[i], curveSpeed[i]);
 	}
-//	printf("\n\n\n");
-//	for (i=0; i<JunctionTotal; i++ ) {
-//		printf("%5d %5d\n ", JMarker[i],junction[i]);
-//	}
+	printf("\n\n\n");
+	for (i=0; i<JunctionTotal; i++ ) {
+		printf("%5d %5d\n ", JMarker[i],junction[i]);
+	}
 
 }
 void pulseLED(int num, int duration){
@@ -429,7 +429,7 @@ void FastRun(void) {
 			else {								//Last segment
 				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3500, constSpeed, 4000, 8000, 2, SegmentNum);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 2500, constSpeed, 4000, 8000, 2, SegmentNum);
 		}
 		else {							//Curve
 			int curveEndSpeed;
