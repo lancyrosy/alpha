@@ -158,8 +158,8 @@ void SetRobotAccW( int16_t acc);
 // to the speed and acceleration parameters.
 // ---------------------------------------------------------------------------------
 void MoveRobot(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
-void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t marker);
-void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
+void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t marker,int16_t segmentNum);
+void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc, int16_t segmentNum);
 void MoveRobotCheck(int16_t speedType, int16_t dist, int16_t brakeDistAllowance, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc, int16_t marker);
 // ---------------------------------------------------------------------------------
 // Wait for the robot to travel certain distance. Must make sure the distance is less than

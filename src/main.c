@@ -61,6 +61,7 @@ int main(void){
 
 
 	MainMenu();
+	//pulseBuzzer(1000,1);
 
 	return 0;
 }
