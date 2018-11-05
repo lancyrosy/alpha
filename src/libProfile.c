@@ -297,7 +297,7 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 
 
 #define CHECK_DIST	300
-void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t marker,int16_t segmentNow,int16_t segmentNext) {
+void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t marker) {
 	int diff,range;
 	int i=0;
 
@@ -331,24 +331,12 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 					LMarkerFlag = FALSE;
 				}
 			}
-		int JSeg=0;
-		if ((JMarker[sumJunction] > segmentNow)&& (JMarker[sumJunction] < segmentNext)) { //Check Junction
-				JSeg++;
-				for (i = sumJunction+1; i < JunctionTotal; i++) {   // Check whether got next junction
-					if ((JMarker[i] > segmentNow)&& (JMarker[i] < segmentNext)){
-						JSeg++;
-					}
-					else
-						break;
-				}
-				if (JMarkerFlag == TRUE) {
-					curPos[0] = (JMarker[sumJunction] - segmentNow) * 5
-							* DIST_mm_oc(1);
-				} else {
-					JMarkerFlag = FALSE;
-				}
-
-			}
+//			if (JMarkerFlag == TRUE) {
+//				curPos[0] = (JMarker[sumJunction] - segmentNow) * 5
+//						* DIST_mm_oc(1);
+//			} else {
+//				JMarkerFlag = FALSE;
+//			}
 		}
 		if (RSumMarker == marker) {
 			break;

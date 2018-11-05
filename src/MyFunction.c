@@ -22,9 +22,7 @@ int dis[SEGSIZE];
 int rad[SEGSIZE];
 int arcAngle[SEGSIZE];
 int curveSpeed[SEGSIZE];
-int junctionPos[SEGSIZE];
 int logIndex;
-volatile int junction[SEGSIZE];
 
 bool logFlag = FALSE;
 bool exploreFlag=FALSE;
@@ -377,6 +375,10 @@ void AnalyseCurve(void) {
 	for (i = 0; i <= segNumFL; i++) {
 		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10000.0f));
 	}
+	AnalyseJunction();
+}
+
+void AnalyseJunction(){
 
 }
 
@@ -400,7 +402,7 @@ void FastRun(void) {
 			else {								//Last segment
 				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3500, constSpeed, 4000, 8000, 2, segmentFL[i],segmentFL[i+1]);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3500, constSpeed, 4000, 8000, 2);
 		}
 		else {							//Curve
 			int curveEndSpeed;
@@ -568,8 +570,8 @@ void JMarkerDetect(){
 			sumJunction++;
 			JMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			JMarkerFlag=TRUE;
-			JMarker[MarkerNum] = timeCount/5;
-			MarkerNum++;
+			JMarker[MarkerNum] = timeCount/5-5;
+			MarkerNum=MarkerNum+2;
 			pulseBuzzer(2500, 50);
 		}
 		JLState=JRState=0;
