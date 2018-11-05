@@ -596,9 +596,10 @@ void ClearMarkerFlag(){
 
 //Collect black value
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc, int16_t dcc) {
+
+	bAlignFlag = FALSE;
 	DelaymSec(1000);
 	int i;
-	bAlignFlag = FALSE;
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
 	while(!EndOfMove(speedType)) {
@@ -608,9 +609,7 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 		DispDotMatrix("Black");
 
 		for (i=0; i<15; i++) {
-			if(aveSensorBlack[i] == 0) aveSensorBlack[i] = sensor[i];
-			else aveSensorBlack[i] = (aveSensorBlack[i] + sensor[i])/2;
-			sensorBlack[i] = aveSensorBlack[i];
+			sensorBlack[i] = (sensorBlack[i]+sensor[i])/2;
 		}
 
 		// Do other stuff here!!!

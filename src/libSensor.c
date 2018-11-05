@@ -238,12 +238,12 @@ void DispAllSensorValues() {
 			gotoxy(COL1, ROW1+2);
 			printf(" S1   S2   S3   S4");		// dc value
 			gotoxy(COL1, ROW1+4);
-			printf("%4u %4u %4u %4u", sensor[0], sensor[1], sensor[2], sensor[3]);
+			printf("%4u %4u %4u %4u", sensorCal[0], sensorCal[1], sensorCal[2], sensorCal[3]);
 	        gotoxy(COL1, ROW1+6);
 	        printf(" S5   S6   S7   S8   S9   S10   S11   S12   S13");
 	        gotoxy(COL1, ROW1+8);
-			printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u",sensor[4], sensor[5], sensor[6], sensor[7],
-					sensor[8], sensor[9], sensor[10], sensor[11], sensor[12]);
+			printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u",sensorCal[4], sensorCal[5], sensorCal[6], sensorCal[7],
+					sensorCal[8], sensorCal[9], sensorCal[10], sensorCal[11], sensorCal[12]);
 	        gotoxy(COL1, ROW1+10);
 			printf(" S14  S15");
 			gotoxy(COL1, ROW1+12);
@@ -366,14 +366,14 @@ uint16_t ReadBatteryVolt() {
 
 int16_t Cen1(){
 	int i=0;
-	int sum=0;
+	int sumHigh=0;
 	for (i=0; i<15; i++) {
 		sensorCal[i] = sensor[i] - sensorBlack[i];
 		if (sensorCal[i] <= 0) sensorCal[i] = 0;
 
 	}
 	for (i=4; i<12; i++) {
-		if (sensorCal[i] > 1000) sum++;
+		if (sensorCal[i] > 1000) sumHigh++;
 
 	}
 
@@ -382,7 +382,7 @@ int16_t Cen1(){
 						/(sensorCal[4]+sensorCal[5]+sensorCal[6]+sensorCal[7]+sensorCal[9]+sensorCal[10]+sensorCal[11]
 																												   +sensorCal[12]);
 
-	if (sum>6) sensoroffset = 0;
+	if (sumHigh>6) sensoroffset = 0;
 	prevSensoroffset = sensoroffset;
 	sensoroffset2 = (sensorCal[0]*(-600l) + sensorCal[1]*(-200l) + sensorCal[2] * (200l) + sensorCal[3]*(600l))
 						/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
