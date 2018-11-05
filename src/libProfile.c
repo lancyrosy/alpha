@@ -347,7 +347,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum-1]) * 5 * DIST_mm_oc(1);
 				JIndex++;
 				JMarkerFlag = FALSE;
-				pulseBuzzer(500, 50);
+				//pulseBuzzer(500, 50);
 			}
 		}
 		DispDotMatrix("    ");
