@@ -317,7 +317,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 		topSpeed=topSpeed+200;
 	}
 	curSpeedPercent = 100;
-	//LMarkerFlag=JMarkerFlag=FALSE;
+	LMarkerFlag=FALSE;
 	LMarkerFlagPos=0;
 	JMarkerFlagPos=0;
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc, dcc);
@@ -347,7 +347,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
 				JIndex++;
 				JMarkerFlag = FALSE;
-				//pulseBuzzer(500, 50);
+				pulseBuzzer(500, 50);
 			}
 		}
 		DispDotMatrix("    ");

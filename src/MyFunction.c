@@ -108,7 +108,7 @@ void PrintSegment() {
 		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
 	}
 	printf("\n\n\n");
-		for (i=0; i<MarkerNum; i++ ) {
+		for (i=0; i<LeftNum; i++ ) {
 			printf("%5d\n ", LeftMarker[i]);
 		}
 	printf("\n\n\n");
@@ -506,9 +506,12 @@ void TestRun(void){
 
 	while(RSumMarker!=2)
 	{
-		SetRobotSpeedX(1500);
+		MoveRobot(XSPEED, 3800, 240, 3500, 2500, 4000, 8000);
 		sprintf(s, "%4d", (int) (timeCount / 100));
 		DispDotMatrix(s);
+		if(RSumMarker == 1){
+			break;
+		}
 		if (bSWFlag ) {
 			break;
 		}
