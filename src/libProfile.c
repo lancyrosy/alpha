@@ -302,6 +302,18 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 			}
 		}
 		DispDotMatrix("    ");
+		while((segTypeFL[segmentNum+1] != 0)&&(segTypeFL[segmentNum]!=segTypeFL[segmentNum+1])){		//Next segment is curve
+			if(segTypeFL[segmentNum]==-1){			// Left-Right
+				if(sensoroffset>0)
+					pulseBuzzer(1500, 50);
+					break;
+			}
+			else{									// Right-Left
+				if(sensoroffset<0)
+					pulseBuzzer(1500, 50);
+					break;
+			}
+		}
 	}
 }
 

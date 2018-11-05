@@ -35,7 +35,6 @@ int JunctionTotal;
 int Index=0;
 int JIndex=0;
 bool fastFlag=FALSE;
-
 bool logFlag = FALSE;
 bool exploreFlag=FALSE;
 volatile bool LMarkerFlag=FALSE;
@@ -154,7 +153,7 @@ void ExploreRun(){
 		SetRobotSpeedX(1000);
 		sprintf(s, "%4d", (int) (timeCount / 100));
 		DispDotMatrix(s);
-		if (bSWFlag ) {	// user switch break!
+		if (bSWFlag ) {
 			break;
 		}
 	}
