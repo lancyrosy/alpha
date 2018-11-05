@@ -307,10 +307,9 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 }
 
 
-#define CHECK_DIST	300
+#define CHECK_DIST	250
 void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t marker,int16_t segmentNum) {
 	int diff,range;
-	int i=0;
 
 	if (dist > CHECK_DIST){				  //For long distance straight
 		dist += dist/10 + 100;
@@ -318,15 +317,15 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 		topSpeed=topSpeed+200;
 	}
 	curSpeedPercent = 100;
-	LMarkerFlag=JMarkerFlag=FALSE;
+	LMarkerFlag=FALSE;
 	LMarkerFlagPos=0;
 	JMarkerFlagPos=0;
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc, dcc);
 
 	while (!EndOfMove(speedType)) {
-		if (abs(sensoroffset2) > 100) {   // Entering the curve (Straight-Curve)
-			curSpeedPercent = 90;
-		}
+//		if (abs(sensoroffset2) > 100) {   // Entering the curve (Straight-Curve)
+//			curSpeedPercent = 90;
+//		}
 		if (dist > CHECK_DIST) {			 //For long distance straight
 
 			if (LMarkerFlag == TRUE) {
@@ -345,7 +344,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 		while (junction[JIndex] == segmentNum) {
 			DispDotMatrix("JJJJ");
 			if (JMarkerFlag == TRUE) {
-				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum]) * 5 * DIST_mm_oc(1);
+				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum-1]) * 5 * DIST_mm_oc(1);
 				JIndex++;
 				JMarkerFlag = FALSE;
 				pulseBuzzer(500, 50);

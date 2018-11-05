@@ -77,8 +77,8 @@ extern volatile uint16_t adc1_dma_buf[16];	// For adc->dma buffer
 
 
 
-extern volatile uint16_t sensor[NUM_SENSOR];		// actual sensor values
-extern volatile uint16_t sensorOld[NUM_SENSOR];
+extern volatile int16_t sensor[NUM_SENSOR];		// actual sensor values
+extern volatile int16_t sensorOld[NUM_SENSOR];
 extern volatile int sensoroffset, sensoroffset2, sensoroffsetold, senfla, cenval;
 extern volatile int16_t  sensorCal[NUM_SENSOR];
 extern volatile int16_t  sensorBlack[NUM_SENSOR];
