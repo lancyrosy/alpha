@@ -98,23 +98,23 @@ void PrintLog() {
 
 void PrintSegment() {
 	int i;
-	for (i=0; i<= segNum; i++ ) {
-		printf("%5d  %2d\n", segment[i], segType[i]);
-	}
+//	for (i=0; i<= segNum; i++ ) {
+//		printf("%5d  %2d\n", segment[i], segType[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF1; i++ ) {
+//		printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF2; i++ ) {
+//		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF3; i++ ) {
+//		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
+//	}
 	printf("\n\n\n");
-	for (i=0; i<= segNumF1; i++ ) {
-		printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
-	}
-	printf("\n\n\n");
-	for (i=0; i<= segNumF2; i++ ) {
-		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
-	}
-	printf("\n\n\n");
-	for (i=0; i<= segNumF3; i++ ) {
-		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
-	}
-	printf("\n\n\n");
-		for (i=0; i<MarkerNum; i++ ) {
+		for (i=0; i<LeftNum; i++ ) {
 			printf("%5d\n ", LeftMarker[i]);
 		}
 	printf("\n\n\n");
@@ -122,10 +122,10 @@ void PrintSegment() {
 	for (i=0; i<= segNumFL; i++ ) {
 		printf("%5d  %2d  %5d  %5d  %5d  %5d\n ", segmentFL[i], segTypeFL[i], arcAngle[i], rad[i], dis[i], curveSpeed[i]);
 	}
-	printf("\n\n\n");
-	for (i=0; i<JunctionTotal; i++ ) {
-		printf("%5d %5d\n ", JMarker[i],junction[i]);
-	}
+//	printf("\n\n\n");
+//	for (i=0; i<JunctionTotal; i++ ) {
+//		printf("%5d %5d\n ", JMarker[i],junction[i]);
+//	}
 
 }
 void pulseLED(int num, int duration){
