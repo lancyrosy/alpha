@@ -386,22 +386,23 @@ void AnalyseCurve(void) {
 	for (i = 0; i <= segNumFL; i++) {
 		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
 	}
-
+	AnalyseJunction();
 }
+
 void AnalyseJunction(void){
-	int r=0;
+	int index,i;
 	int numJunction=0;
-	unsigned int startSeg=0;
-	for (Index = 0; Index < segNumFL; Index++) {
-		for (r = numJunction; r < JunctionTotal; r++) { // Check junctions
-			if ((JMarker[r] >= startSeg) && (JMarker[r] < segmentFL[Index])) {
-				junction[r] = Index;	 //store junction segment index
+	unsigned int startSeg = 0;
+	for (index = 0; index <= segNumFL; index++) {
+		for (i = numJunction;i < JunctionTotal;i++) { // Check junctions
+			if ((JMarker[i] >= startSeg) && (JMarker[i] < segmentFL[index+1])) {
+				junction[i] = index+1;	 //store junction segment index
 			}
 			else
 				break;
 		}
-		startSeg = segmentFL[Index];
-		numJunction=r;
+		startSeg = segmentFL[index];
+		numJunction=i;
 	}
 	junction[numJunction] = -1;
 }
@@ -457,6 +458,7 @@ void FastRun(void) {
 	WaitSW();
 }
 
+
 #define y0 1450
 #define a 250.0f
 #define b 600.0f
@@ -509,7 +511,7 @@ void TestRun(void){
 
 	while(RSumMarker!=2)
 	{
-		SetRobotSpeedX(1000);
+		SetRobotSpeedX(1500);
 		sprintf(s, "%4d", (int) (timeCount / 100));
 		DispDotMatrix(s);
 		if (bSWFlag ) {
