@@ -28,7 +28,7 @@ int main(void){
 
 	clrscr();
 
-   	puts("I'm alive!12345999");
+   	printf("I'm alive!12345999 %u", DIST_mm_oc(3655/20 + 3655/10 + 150));
 
 
    	InitDataCold();

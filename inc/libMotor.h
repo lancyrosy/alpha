@@ -121,7 +121,7 @@ extern volatile int16_t targetSpeed[NUM_OF_SPEED];
 extern volatile int16_t alignSpeed;
 extern int16_t curAcc[NUM_OF_SPEED];
 extern int16_t curDec[NUM_OF_SPEED];
-extern int16_t afterBrakeDist[NUM_OF_SPEED];	// Speed profile use
+extern int32_t afterBrakeDist[NUM_OF_SPEED];	// Speed profile use
 											// after brake(deceleration) distance
 											// In case there is not enough distance to brake
 extern bool bDistDirFlag[NUM_OF_SPEED];		// To indicate direction of move in speed profile
@@ -217,7 +217,7 @@ void UpdateRobotPos();
 
 
 // Calculate the deceleration required based on input parameters.
-unsigned GetDecRequired(int32_t dist, int16_t brakeDist, int16_t curSpeed, int16_t endSpeed) __attribute__ ((noinline));
+unsigned GetDecRequired(int32_t dist, int32_t brakeDist, int16_t curSpeed, int16_t endSpeed) __attribute__ ((noinline));
 
 // ---------------------------------------------------------------------------------
 // Set the PWM output for the 2 drive motors.

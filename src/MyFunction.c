@@ -9,7 +9,7 @@ void FilterSegments(void);
 void AnalyseCurve(void);
 void AnalyseJunction(void);
 
-#define LOGSIZE	10000
+#define LOGSIZE	12200
 #define SEGSIZE 300
 int logData[LOGSIZE];
 int t = 0;
@@ -94,23 +94,23 @@ void PrintLog() {
 
 void PrintSegment() {
 	int i;
-	for (i=0; i<= segNum; i++ ) {
-		printf("%5d  %2d\n", segment[i], segType[i]);
-	}
+//	for (i=0; i<= segNum; i++ ) {
+//		printf("%5d  %2d\n", segment[i], segType[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF1; i++ ) {
+//		printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF2; i++ ) {
+//		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF3; i++ ) {
+//		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
+//	}
 	printf("\n\n\n");
-	for (i=0; i<= segNumF1; i++ ) {
-		printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
-	}
-	printf("\n\n\n");
-	for (i=0; i<= segNumF2; i++ ) {
-		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
-	}
-	printf("\n\n\n");
-	for (i=0; i<= segNumF3; i++ ) {
-		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
-	}
-	printf("\n\n\n");
-		for (i=0; i<MarkerNum; i++ ) {
+		for (i=0; i<LeftNum; i++ ) {
 			printf("%5d\n ", LeftMarker[i]);
 		}
 	printf("\n\n\n");
@@ -426,7 +426,7 @@ void FastRun(void) {
 			else {								//Last segment
 				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3500, constSpeed, 4000, 8000, 2, SegmentNum);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 2500, constSpeed, 4000, 8000, 2, SegmentNum);
 		}
 		else {							//Curve
 			int curveEndSpeed;
@@ -592,9 +592,10 @@ void ClearMarkerFlag(){
 
 //Collect black value
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc, int16_t dcc) {
+
+	bAlignFlag = FALSE;
 	DelaymSec(1000);
 	int i;
-	bAlignFlag = FALSE;
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
 	while(!EndOfMove(speedType)) {
@@ -604,9 +605,7 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 		DispDotMatrix("Black");
 
 		for (i=0; i<15; i++) {
-			if(aveSensorBlack[i] == 0) aveSensorBlack[i] = sensor[i];
-			else aveSensorBlack[i] = (aveSensorBlack[i] + sensor[i])/2;
-			sensorBlack[i] = aveSensorBlack[i];
+			sensorBlack[i] = (sensorBlack[i]+sensor[i])/2;
 		}
 
 		// Do other stuff here!!!

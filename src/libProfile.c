@@ -33,7 +33,7 @@ volatile int16_t moveState[2];
 long curSpeedPercent=100;
 
 bool bDistDirFlag[NUM_OF_SPEED];
-int16_t afterBrakeDist[NUM_OF_SPEED];
+int32_t afterBrakeDist[NUM_OF_SPEED];
 volatile int uncertainty;
 
 void ResetSpeedProfileData() {
@@ -153,7 +153,7 @@ void UpdateCurSpeed() {
 // Hence when speed*speed, the decimal pt position is doubled and needs to be
 // shifted back (i.e. the result of speed*speed is 12 bit fixed point).
 // ---------------------------------------------------------------------------------
-unsigned GetDecRequired(int32_t dist, int16_t afterBrakeDist, int16_t curSpeed, int16_t endSpeed) {
+unsigned GetDecRequired(int32_t dist, int32_t afterBrakeDist, int16_t curSpeed, int16_t endSpeed) {
 
 	if (dist<0 && curSpeed>=0) return 0;
 	if (dist>0 && curSpeed<=0) return 0;
@@ -326,7 +326,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 	if (dist > CHECK_DIST){				  //For long distance straight
 		dist += dist/10 + 100;
 		brakeDist += dist/10 + 100;
-		topSpeed=topSpeed+200;
+		//topSpeed=topSpeed+200;
 	}
 	curSpeedPercent = 100;
 	LMarkerFlag=FALSE;
@@ -427,10 +427,10 @@ void WaitDist(int16_t speedType, int16_t dist) {
 // ---------------------------------------------------------------------------------
 void SetMoveCommand(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc, int16_t dcc) {
 
-	int32_t dist32;
+	int32_t dist32, brakeDist32;
 	if (speedType == XSPEED) {
 		dist32 = DIST_mm_oc(dist);
-		brakeDist = DIST_mm_oc(brakeDist);
+		brakeDist32 = DIST_mm_oc(brakeDist);
 		topSpeed = SPEED_mm_oc(topSpeed);
 		endSpeed = SPEED_mm_oc(endSpeed);
 		acc 	 = ACC_mm_oc(acc);
@@ -438,7 +438,7 @@ void SetMoveCommand(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 	}
 	else {
 		dist32 = DIST_deg_oc(dist);
-		brakeDist = DIST_deg_oc(brakeDist);
+		brakeDist32 = DIST_deg_oc(brakeDist);
 		topSpeed = SPEED_deg_oc(topSpeed);
 		endSpeed = SPEED_deg_oc(endSpeed);
 		acc 	 = ACC_deg_oc(acc);
@@ -454,7 +454,7 @@ void SetMoveCommand(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 	DI;
 	finalPos[speedType] = dist32;
 	curPos[speedType] = 0;
-	afterBrakeDist[speedType]=brakeDist;
+	afterBrakeDist[speedType]=brakeDist32;
 
 	if (dist<0) {
 		topSpeed = -topSpeed;
