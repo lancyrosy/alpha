@@ -74,8 +74,6 @@ void RMarkerDetect(void);
 void JMarkerDetect(void);
 void ClearMarkerFlag(void);
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
-
-
 void LogData(int data) {
 	if (logFlag==TRUE && logIndex<LOGSIZE) {
 		logData[logIndex] = data;
@@ -93,7 +91,6 @@ void PrintLog() {
 //		printf(" %5d", logData[i++]);
 	}
 }
-
 
 void PrintSegment() {
 	int i;
@@ -423,7 +420,7 @@ void FastRun(void) {
 	for (i = 0; i <= segNumFL; i++) {
 		SegmentNum=i;
 		if (segTypeFL[i] == 0) {		//Straight
-			if (i != segNumFL){					//Not last segment
+			if (i != segNumFL){					//Not last segment (Straight-Curve)
 				constSpeed = curveSpeed[i+1];
 			}
 			else {								//Last segment
