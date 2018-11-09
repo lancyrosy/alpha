@@ -24,8 +24,8 @@ volatile int16_t segTypeF2[SEGSIZE];
 volatile int16_t segTypeF3[SEGSIZE];
 volatile int16_t segTypeFL[SEGSIZE];
 uint16_t dis[SEGSIZE];
-int32_t rad[SEGSIZE];            //Negative&Positive value
-int32_t arcAngle[SEGSIZE];
+int16_t rad[SEGSIZE];
+int16_t arcAngle[SEGSIZE];
 uint16_t curveSpeed[SEGSIZE];
 uint16_t junctionPos[SEGSIZE];
 uint16_t logIndex;
@@ -46,13 +46,13 @@ unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
 
+unsigned int constSpeed;
 //for left marker
 volatile uint16_t  LeftMarker[300];
-int LeftNum = 0;
+volatile int LeftNum = 0;
 //for Junction marker
 volatile uint16_t  JMarker[100];
 int MarkerNum = 0;
-
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
@@ -74,6 +74,8 @@ void RMarkerDetect(void);
 void JMarkerDetect(void);
 void ClearMarkerFlag(void);
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
+
+
 void LogData(int data) {
 	if (logFlag==TRUE && logIndex<LOGSIZE) {
 		logData[logIndex] = data;
@@ -86,13 +88,30 @@ void PrintLog() {
 
 	for (i=0; i<logIndex; ) {
 		printf("\n%5d", logData[i++]);
-
+//		printf(" %5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
 	}
 }
 
+
 void PrintSegment() {
 	int i;
-
+//	for (i=0; i<= segNum; i++ ) {
+//		printf("%5d  %2d\n", segment[i], segType[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF1; i++ ) {
+//		printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF2; i++ ) {
+//		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF3; i++ ) {
+//		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
+//	}
 	printf("\n\n\n");
 		for (i=0; i<LeftNum; i++ ) {
 			printf("%5d\n ", LeftMarker[i]);
@@ -132,16 +151,16 @@ void ExploreRun(){
 		if (RSumMarker==1)
 			logFlag = TRUE;
 		SetRobotSpeedX(1000);
-		if (bSWFlag) {
+		sprintf(s, "%4d", (int) (timeCount / 100));
+		DispDotMatrix(s);
+		if (bSWFlag ) {
 			break;
 		}
 	}
 	logFlag = FALSE;
-	sprintf(s, "%4d", (int) (timeCount / 100));
-	DispDotMatrix(s);
 	MoveRobot(XSPEED, 400, 0, 1500, 0, 4000, 4000);
 	StopRobot();
-	JunctionTotal=sumJunction;				  //store the sum of junction
+	JunctionTotal=sumJunction;				//store the sum of junction
 	FindSegments();
 	exploreFlag=TRUE;
 	DelaymSec(1000);
@@ -390,8 +409,7 @@ void AnalyseJunction(void){
 void FastRun(void) {
 	int i = 0;
 	int endSpeed = 2500;
-	int accStr=4000, decStr=8000;
-	int accCur=2000, decCur=3000;
+	int acc, dec;
 	char s[8];
 	int SegmentNum=0;
 	JIndex = 0;
@@ -405,26 +423,27 @@ void FastRun(void) {
 	for (i = 0; i <= segNumFL; i++) {
 		SegmentNum=i;
 		if (segTypeFL[i] == 0) {		//Straight
-			int strEndSpeed;
-			if (i != segNumFL){					//Not last segment (Straight-Curve)
-				strEndSpeed = curveSpeed[i+1];
+			if (i != segNumFL){					//Not last segment
+				constSpeed = curveSpeed[i+1];
 			}
 			else {								//Last segment
-				strEndSpeed = endSpeed;
+				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3500, strEndSpeed, accStr, decStr, 2, SegmentNum);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 2500, constSpeed, 4000, 8000, 2, SegmentNum);
 		}
 		else {							//Curve
 			int curveEndSpeed;
+			acc=2000;
+			dec=3000;
 			curveEndSpeed = curveSpeed[i];
 			if (segTypeFL[i+1] != 0 ) {			//Next segment is curve(Curve-Curve)
 				if (curveEndSpeed > curveSpeed[i+1])
 					curveEndSpeed = curveSpeed[i+1];
 			}
 			else{								//Next segment is straight (Curve-Straight)
-				accCur=4000;
+				acc=4000;
 			}
-			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, accCur, decCur , SegmentNum);
+			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, acc, dec , SegmentNum);
 		}
 	}
 	fastFlag=FALSE;
@@ -443,14 +462,17 @@ void FastRun(void) {
 #define a 250.0f
 #define b 600.0f
 void DumbRun(void){
+	logIndex = 0;
 	timeCount = 0;
 	DelaymSec(1000);
 	EnWheelMotor();
 	SetRobotAccX(4000,10000);
+	logIndex = 0;
+	logFlag = FALSE;
 	ClearMarkerFlag();
 	int ty0=y0;
-	char s[8];
 
+	char s[8];
 	while(RSumMarker!=2) {
 
 		if(abs(sensoroffset) > abs(sensoroffset2))  //entering the curve
@@ -472,8 +494,6 @@ void DumbRun(void){
 	}
 	sprintf(s,"%4d", (int)(timeCount/100));
 	DispDotMatrix(s);
-	MoveRobot(XSPEED, 400, 0, curSpeed[1], 40, 3000, 8000);
-	pulseBuzzer(2000,100);
 	StopRobot();
 	WaitSW();
 }
@@ -485,19 +505,22 @@ void TestRun(void){
 	EnWheelMotor();
 	ClearMarkerFlag();
 	char s[8];
+	logIndex = 0;
+	logFlag = FALSE;
 
 	while(RSumMarker!=2)
 	{
 		SetRobotSpeedX(1500);
+		sprintf(s, "%4d", (int) (timeCount / 100));
+		DispDotMatrix(s);
 		if (bSWFlag ) {
 			break;
 		}
 	}
-	sprintf(s, "%4d", (int) (timeCount / 100));
-	DispDotMatrix(s);
-	MoveRobot(XSPEED, 400, 0, curSpeed[1], 40, 3000, 8000);
-	pulseBuzzer(2000,100);
+	logFlag = FALSE;
 	StopRobot();
+	FindSegments();
+
 	WaitSW();
 }
 
