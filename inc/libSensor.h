@@ -82,6 +82,7 @@ extern volatile int16_t sensorOld[NUM_SENSOR];
 extern volatile int sensoroffset, sensoroffset2, sensoroffsetold, senfla, cenval;
 extern volatile int16_t  sensorCal[NUM_SENSOR];
 extern volatile int16_t  sensorBlack[NUM_SENSOR];
+extern volatile int16_t  sensorCalMax[NUM_SENSOR];
 
 extern char dispBuffer[256];
 extern bool	bDispSensorValue;

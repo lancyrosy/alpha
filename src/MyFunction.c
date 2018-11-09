@@ -599,6 +599,9 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 	bAlignFlag = FALSE;
 	DelaymSec(1000);
 	int i;
+	for (i=0; i<15; i++) {
+		sensorBlack[i] = 0;
+	}
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
 	while(!EndOfMove(speedType)) {
