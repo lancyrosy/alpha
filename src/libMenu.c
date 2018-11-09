@@ -78,7 +78,7 @@ void MenuRun(){
 	};
 	while(1) {
 		menuNum = 1;
-	     selectedItem=SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
+	    selectedItem=SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
 
 		switch(selectedItem) {
 		case 1:
