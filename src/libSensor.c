@@ -166,10 +166,6 @@ void DMA1_Channel1_IRQHandler(void) {
      }
 
 
-
-			// store dc values of IR sensors
-
-
 }
 
 
