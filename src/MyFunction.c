@@ -97,21 +97,6 @@ void PrintLog() {
 
 void PrintSegment() {
 	int i;
-//	for (i=0; i<= segNum; i++ ) {
-//		printf("%5d  %2d\n", segment[i], segType[i]);
-//	}
-//	printf("\n\n\n");
-//	for (i=0; i<= segNumF1; i++ ) {
-//		printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
-//	}
-//	printf("\n\n\n");
-//	for (i=0; i<= segNumF2; i++ ) {
-//		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
-//	}
-//	printf("\n\n\n");
-//	for (i=0; i<= segNumF3; i++ ) {
-//		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
-//	}
 	printf("\n\n\n");
 		for (i=0; i<LeftNum; i++ ) {
 			printf("%5d\n ", LeftMarker[i]);
