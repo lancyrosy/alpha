@@ -491,7 +491,7 @@ void TestRun(void){
 	}
 	sprintf(s, "%4d", (int) (timeCount / 100));
 	DispDotMatrix(s);
-	StopRobot();
+	StopRobot()
 	WaitSW();
 }
 
