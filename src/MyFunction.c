@@ -608,7 +608,10 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 		DispDotMatrix("Black");
 
 		for (i=0; i<15; i++) {
-			sensorBlack[i] = (sensorBlack[i]+sensor[i])/2;
+			if(sensor[i] > sensorCalMax[i])
+				sensorCalMax[i] = sensor[i]-(sensor[i]-sensorCalMax[i])/10;
+			if(sensor[i] < sensorBlack[i])
+				sensorBlack[i] = sensor[i]+(sensorBlack[i]-sensor[i])/10;;
 		}
 
 		// Do other stuff here!!!

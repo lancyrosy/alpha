@@ -15,8 +15,17 @@
 
 #include "project.h"
 
-volatile int16_t  sensorCal[NUM_SENSOR];
-volatile int16_t  sensorBlack[NUM_SENSOR]={97,142,163,137,87,115,71,49,111,152,166,163,164,75,91};
+#define RobotNumber 1
+volatile int16_t sensorCal[NUM_SENSOR];
+#if RobotNumber == 1
+volatile int16_t sensorCalMax[NUM_SENSOR]={1788,1955,2500,2200,2000,2000,2000,2000,2000,2000,2000,2000,2000,2000,2000};
+volatile int16_t sensorBlack[NUM_SENSOR]={97,142,163,137,87,115,71,49,111,152,166,163,164,75,91};
+#elif RobotNumber == 2
+volatile const int16_t sensorCalMax[NUM_SENSOR]={1788,1955,2500,2200,2000,2000,2000,2000,2000,2000,2000,2000,2000,2000,2000};
+volatile int16_t sensorBlack[NUM_SENSOR]={97,142,163,137,87,115,71,49,111,152,166,163,164,75,91};
+#endif
+
+volatile int16_t sensorCal[NUM_SENSOR];
 volatile int16_t sensor[NUM_SENSOR];
 volatile int16_t sensorOld[NUM_SENSOR];
 volatile int16_t sensorMin[NUM_SENSOR];
@@ -368,7 +377,7 @@ int16_t Cen1(){
 	int i=0;
 	int sumHigh=0;
 	for (i=0; i<15; i++) {
-		sensorCal[i] = sensor[i] - sensorBlack[i];
+		sensorCal[i] = sensor[i]*2000l/sensorCalMax[i] - sensorBlack[i];
 		if (sensorCal[i] <= 0) sensorCal[i] = 0;
 
 	}
