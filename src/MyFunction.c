@@ -46,7 +46,7 @@ unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
 
-unsigned int constSpeed;
+unsigned int strEndSpeed;
 //for left marker
 volatile uint16_t  LeftMarker[300];
 volatile int LeftNum = 0;
@@ -388,7 +388,8 @@ void AnalyseJunction(void){
 void FastRun(void) {
 	int i = 0;
 	int endSpeed = 2500;
-	int acc, dec;
+	int accStr=4000, decStr=8000;
+	int accCur=2000, decCur=3000;
 	char s[8];
 	int SegmentNum=0;
 	JIndex = 0;
@@ -403,36 +404,32 @@ void FastRun(void) {
 		SegmentNum=i;
 		if (segTypeFL[i] == 0) {		//Straight
 			if (i != segNumFL){					//Not last segment
-				constSpeed = curveSpeed[i+1];
+				strEndSpeed = curveSpeed[i+1];
 			}
 			else {								//Last segment
-				constSpeed = endSpeed;
+				strEndSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 2500, constSpeed, 4000, 8000, 2, SegmentNum);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 2500, strEndSpeed, accStr, decStr, 2, SegmentNum);
 		}
 		else {							//Curve
 			int curveEndSpeed;
-			acc=2000;
-			dec=3000;
 			curveEndSpeed = curveSpeed[i];
 			if (segTypeFL[i+1] != 0 ) {			//Next segment is curve(Curve-Curve)
 				if (curveEndSpeed > curveSpeed[i+1])
 					curveEndSpeed = curveSpeed[i+1];
 			}
 			else{								//Next segment is straight (Curve-Straight)
-				acc=4000;
+				accCur=4000;
 			}
-			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, acc, dec , SegmentNum);
+			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, accCur, decCur , SegmentNum);
 		}
 	}
 	fastFlag=FALSE;
 	sprintf(s, "%4d", (int) (timeCount / 100));
 	DispDotMatrix(s);
 	pulseBuzzer(5000,100);
-
 	MoveRobot(XSPEED, 400, 0, endSpeed, 40, 3000, 8000);  // enter start-finish area
 	StopRobot();
-	pulseBuzzer(2000,100);
 	WaitSW();
 }
 
