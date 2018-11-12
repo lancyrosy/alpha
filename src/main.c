@@ -58,10 +58,9 @@ int main(void){
 	}
 #endif
 
-//444
 
 
-	MainMenu();//111222
+	MainMenu();
 	//IO_Write(LED1_PIN,1);
 	//pulseBuzzer(1000,1);
 
