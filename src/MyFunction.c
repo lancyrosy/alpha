@@ -75,7 +75,6 @@ void JMarkerDetect(void);
 void ClearMarkerFlag(void);
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
 
-
 void LogData(int data) {
 	if (logFlag==TRUE && logIndex<LOGSIZE) {
 		logData[logIndex] = data;
@@ -88,13 +87,8 @@ void PrintLog() {
 
 	for (i=0; i<logIndex; ) {
 		printf("\n%5d", logData[i++]);
-//		printf(" %5d", logData[i++]);
-//		printf(" %5d", logData[i++]);
-//		printf(" %5d", logData[i++]);
 	}
 }
-
-
 void PrintSegment() {
 	int i;
 	printf("\n\n\n");
@@ -136,12 +130,12 @@ void ExploreRun(){
 		if (RSumMarker==1)
 			logFlag = TRUE;
 		SetRobotSpeedX(1000);
-		sprintf(s, "%4d", (int) (timeCount / 100));
-		DispDotMatrix(s);
 		if (bSWFlag ) {
 			break;
 		}
 	}
+	sprintf(s, "%4d", (int) (timeCount / 100));
+	DispDotMatrix(s);
 	logFlag = FALSE;
 	MoveRobot(XSPEED, 400, 0, 1500, 0, 4000, 4000);
 	StopRobot();
@@ -447,13 +441,10 @@ void FastRun(void) {
 #define a 250.0f
 #define b 600.0f
 void DumbRun(void){
-	logIndex = 0;
 	timeCount = 0;
 	DelaymSec(1000);
 	EnWheelMotor();
 	SetRobotAccX(4000,10000);
-	logIndex = 0;
-	logFlag = FALSE;
 	ClearMarkerFlag();
 	int ty0=y0;
 
@@ -490,22 +481,17 @@ void TestRun(void){
 	EnWheelMotor();
 	ClearMarkerFlag();
 	char s[8];
-	logIndex = 0;
-	logFlag = FALSE;
 
 	while(RSumMarker!=2)
 	{
 		SetRobotSpeedX(1500);
-		sprintf(s, "%4d", (int) (timeCount / 100));
-		DispDotMatrix(s);
 		if (bSWFlag ) {
 			break;
 		}
 	}
-	logFlag = FALSE;
-	StopRobot();
-	FindSegments();
-
+	sprintf(s, "%4d", (int) (timeCount / 100));
+	DispDotMatrix(s);
+	StopRobot()
 	WaitSW();
 }
 
