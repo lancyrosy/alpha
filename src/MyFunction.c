@@ -46,7 +46,7 @@ unsigned pulseDuration[2];
 unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
 
-unsigned int strEndSpeed;
+unsigned int constSpeed;
 //for left marker
 volatile uint16_t  LeftMarker[300];
 volatile int LeftNum = 0;
@@ -75,6 +75,7 @@ void JMarkerDetect(void);
 void ClearMarkerFlag(void);
 void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
 
+
 void LogData(int data) {
 	if (logFlag==TRUE && logIndex<LOGSIZE) {
 		logData[logIndex] = data;
@@ -87,10 +88,30 @@ void PrintLog() {
 
 	for (i=0; i<logIndex; ) {
 		printf("\n%5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
+//		printf(" %5d", logData[i++]);
 	}
 }
+
+
 void PrintSegment() {
 	int i;
+//	for (i=0; i<= segNum; i++ ) {
+//		printf("%5d  %2d\n", segment[i], segType[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF1; i++ ) {
+//		printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF2; i++ ) {
+//		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
+//	}
+//	printf("\n\n\n");
+//	for (i=0; i<= segNumF3; i++ ) {
+//		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
+//	}
 	printf("\n\n\n");
 		for (i=0; i<LeftNum; i++ ) {
 			printf("%5d\n ", LeftMarker[i]);
@@ -130,12 +151,12 @@ void ExploreRun(){
 		if (RSumMarker==1)
 			logFlag = TRUE;
 		SetRobotSpeedX(1000);
+		sprintf(s, "%4d", (int) (timeCount / 100));
+		DispDotMatrix(s);
 		if (bSWFlag ) {
 			break;
 		}
 	}
-	sprintf(s, "%4d", (int) (timeCount / 100));
-	DispDotMatrix(s);
 	logFlag = FALSE;
 	MoveRobot(XSPEED, 400, 0, 1500, 0, 4000, 4000);
 	StopRobot();
@@ -388,8 +409,7 @@ void AnalyseJunction(void){
 void FastRun(void) {
 	int i = 0;
 	int endSpeed = 2500;
-	int accStr=4000, decStr=8000;
-	int accCur=2000, decCur=3000;
+	int acc, dec;
 	char s[8];
 	int SegmentNum=0;
 	JIndex = 0;
@@ -404,32 +424,36 @@ void FastRun(void) {
 		SegmentNum=i;
 		if (segTypeFL[i] == 0) {		//Straight
 			if (i != segNumFL){					//Not last segment
-				strEndSpeed = curveSpeed[i+1];
+				constSpeed = curveSpeed[i+1];
 			}
 			else {								//Last segment
-				strEndSpeed = endSpeed;
+				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 2500, strEndSpeed, accStr, decStr, 2, SegmentNum);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 2500, constSpeed, 4000, 8000, 2, SegmentNum);
 		}
 		else {							//Curve
 			int curveEndSpeed;
+			acc=2000;
+			dec=3000;
 			curveEndSpeed = curveSpeed[i];
 			if (segTypeFL[i+1] != 0 ) {			//Next segment is curve(Curve-Curve)
 				if (curveEndSpeed > curveSpeed[i+1])
 					curveEndSpeed = curveSpeed[i+1];
 			}
 			else{								//Next segment is straight (Curve-Straight)
-				accCur=4000;
+				acc=4000;
 			}
-			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, accCur, decCur , SegmentNum);
+			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, acc, dec , SegmentNum);
 		}
 	}
 	fastFlag=FALSE;
 	sprintf(s, "%4d", (int) (timeCount / 100));
 	DispDotMatrix(s);
 	pulseBuzzer(5000,100);
+
 	MoveRobot(XSPEED, 400, 0, endSpeed, 40, 3000, 8000);  // enter start-finish area
 	StopRobot();
+	pulseBuzzer(2000,100);
 	WaitSW();
 }
 
@@ -438,10 +462,13 @@ void FastRun(void) {
 #define a 250.0f
 #define b 600.0f
 void DumbRun(void){
+	logIndex = 0;
 	timeCount = 0;
 	DelaymSec(1000);
 	EnWheelMotor();
 	SetRobotAccX(4000,10000);
+	logIndex = 0;
+	logFlag = FALSE;
 	ClearMarkerFlag();
 	int ty0=y0;
 
@@ -478,17 +505,22 @@ void TestRun(void){
 	EnWheelMotor();
 	ClearMarkerFlag();
 	char s[8];
+	logIndex = 0;
+	logFlag = FALSE;
 
 	while(RSumMarker!=2)
 	{
 		SetRobotSpeedX(1500);
+		sprintf(s, "%4d", (int) (timeCount / 100));
+		DispDotMatrix(s);
 		if (bSWFlag ) {
 			break;
 		}
 	}
-	sprintf(s, "%4d", (int) (timeCount / 100));
-	DispDotMatrix(s);
+	logFlag = FALSE;
 	StopRobot();
+	FindSegments();
+
 	WaitSW();
 }
 
@@ -576,10 +608,7 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 		DispDotMatrix("Black");
 
 		for (i=0; i<15; i++) {
-			if(sensor[i] > sensorCalMax[i])
-				sensorCalMax[i] = sensor[i]-(sensor[i]-sensorCalMax[i])/10;
-			if(sensor[i] < sensorBlack[i])
-				sensorBlack[i] = sensor[i]+(sensorBlack[i]-sensor[i])/10;;
+			sensorBlack[i] = (sensorBlack[i]+sensor[i])/2;
 		}
 
 		// Do other stuff here!!!
