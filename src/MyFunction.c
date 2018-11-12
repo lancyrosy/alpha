@@ -429,7 +429,7 @@ void FastRun(void) {
 			else {								//Last segment
 				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 2500, constSpeed, 4000, 8000, 2, SegmentNum);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3000, constSpeed, 4000, 8000, 2, SegmentNum);
 		}
 		else {							//Curve
 			int curveEndSpeed;
@@ -523,14 +523,15 @@ void TestRun(void){
 
 	WaitSW();
 }
-
+#define LEFT_SEN	14
+#define RIGHT_SEN	13
 //Marker detection
 void LMarkerDetect(){
-	if (sensorCal[13] >= 400) {
+	if (sensorCal[LEFT_SEN] >= 400) {
 		LState = 1;
 		JLState = 0;
 	}
-	if (sensorCal[13] <= 300 && LState == 1){
+	if (sensorCal[LEFT_SEN] <= 300 && LState == 1){
 		LState = 0;
 		JLState = 1;
 		disL = curPos[0]/DIST_mm_oc(1);
@@ -551,11 +552,11 @@ void LMarkerDetect(){
 	}
 }
 void RMarkerDetect(){
-	if (sensorCal[14] >= 400){
+	if (sensorCal[RIGHT_SEN] >= 400){
 		RState = 1;
 		JRState = 0;
 	}
-	if (sensorCal[14] <= 300 && RState == 1){
+	if (sensorCal[RIGHT_SEN] <= 300 && RState == 1){
 		RState = 0;
 		JRState = 1;
 		disR = curPos[0]/DIST_mm_oc(1);

@@ -287,76 +287,81 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
-	while(!EndOfMove(speedType)) {
+	while(!EndOfMove(speedType) ) {
 
 		if (bSWFlag) {
 			break;
 		}
-		while (junction[JIndex] == segmentNum) {
+		while(junction[JIndex] == segmentNum && !bSWFlag) {
 			DispDotMatrix("JJCC");
 			if (JMarkerFlag == TRUE) {
-				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
+				curPos[0] = (JMarker[JIndex]-segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
 				JIndex++;
 				JMarkerFlag = FALSE;
 				//pulseBuzzer(500, 50);
 			}
 		}
 		DispDotMatrix("    ");
-		while((segTypeFL[segmentNum+1] != 0)&&(segTypeFL[segmentNum]!=segTypeFL[segmentNum+1])){		//Next segment is curve
-			if(segTypeFL[segmentNum]==-1){			// Left-Right
-				if(sensoroffset>0)
+
+	}
+		while((curPos[0]< (finalPos[0]+DIST_mm_oc(25))) && (segTypeFL[segmentNum+1] != 0)&&(segTypeFL[segmentNum]!=segTypeFL[segmentNum+1])){//Next segment is curve
+			if(segTypeFL[segmentNum]==-1){// Left-Right
+				if(sensoroffset>0){
 					pulseBuzzer(1500, 50);
 					break;
+				}
 			}
-			else{									// Right-Left
-				if(sensoroffset<0)
+			else{						// Right-Left
+				if(sensoroffset<0){
 					pulseBuzzer(1500, 50);
 					break;
+				}
 			}
 		}
-	}
 }
 
 
 #define CHECK_DIST	250
 void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc,int16_t marker,int16_t segmentNum) {
 
-	int diff,range;
+	int diff,range, dist2=dist;
 
 	if (dist > CHECK_DIST){				  //For long distance straight
-		dist += dist/10 + 100;
+		dist2 = dist + dist/10 + 100;
 		brakeDist += dist/10 + 100;
 		//topSpeed=topSpeed+200;
 	}
 	curSpeedPercent = 100;
 	LMarkerFlag=FALSE;
 	LMarkerFlagPos=0;
-	JMarkerFlagPos=0;
-	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc, dcc);
 
-	while (!EndOfMove(speedType)) {
+	SetMoveCommand(speedType, dist2, brakeDist,  topSpeed, endSpeed, acc, dcc);
+
+	while(!EndOfMove(speedType)) {
 //		if (abs(sensoroffset2) > 100) {   // Entering the curve (Straight-Curve)
 //			curSpeedPercent = 90;
 //		}
-		if (dist > CHECK_DIST) {			 //For long distance straight
+		if(dist > CHECK_DIST) {			 //For long distance straight
 
 			if (LMarkerFlag == TRUE) {
 				//pulseBuzzer(700,100);
+				pulseLED(1, 100);
 				diff = dist - LMarkerFlagPos;
 				range = 100 + dist / 10;
-				if ((diff > -range) && (diff < range)) {
+				if ((diff > -range) && (diff < range)){
 					pulseBuzzer(1000, 100);
-					pulseLED(1, 100);
+					//pulseLED(1, 100);
 					break;
-				} else {
+				}
+				else{
 					LMarkerFlag = FALSE;
 				}
 			}
 		}
-		while (junction[JIndex] == segmentNum) {
+		while(junction[JIndex] == segmentNum && !bSWFlag) {
 			DispDotMatrix("JJSS");
 			if (JMarkerFlag == TRUE) {
-				curPos[0] = (JMarker[JIndex] - segmentFL[segmentNum-1]) * 5 * DIST_mm_oc(1);
+				curPos[0] = (JMarker[JIndex]-segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
 				JIndex++;
 				JMarkerFlag = FALSE;
 				//pulseBuzzer(500, 50);
