@@ -166,8 +166,6 @@ void MotorPID(void)
 	}
 
 	EI;
-
-
 	bMotorISRFlag = TRUE;
 
 }

@@ -335,7 +335,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 	LMarkerFlag=FALSE;
 	LMarkerFlagPos=0;
 
-	SetMoveCommand(speedType, dist2, brakeDist,  topSpeed, endSpeed, acc, dcc);
+	SetMoveCommand(speedType, dist2, brakeDist, topSpeed, endSpeed, acc, dcc);
 
 	while(!EndOfMove(speedType)) {
 //		if (abs(sensoroffset2) > 100) {   // Entering the curve (Straight-Curve)
