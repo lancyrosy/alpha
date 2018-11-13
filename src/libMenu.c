@@ -291,8 +291,7 @@ void MyTest(){
 				"PLog",
 				"pExpl",
 				"ColBlack",
-				"DispSen",
-				"Bat"
+				"pBlack"
 		};
 		while(1) {
 		    switch(SelectMenuItem(&sensorNum, MENU_SIZE, menuStrg)) {
@@ -312,21 +311,12 @@ void MyTest(){
 			case 4:
 				EnableSensor();
 				EnWheelMotor();
-				MoveRobotCalibrate(XSPEED, 200, 0, 200, 0, 1000,1000);
+				MoveRobotCalibrate(XSPEED, 500, 0, 200, 0, 1000,1000);
 				DisableSensor();
 				DisWheelMotor();
 				break;
 			case 5:
-				DispAllSensorValues();
-				break;
-			case 6:
-				while(1){
-					char a[10];
-					sprintf(a,"%4u",ReadBatteryVolt() );
-					DispDotMatrix(a);
-					if(bSWFlag)
-						break;
-				}
+				PrintBlackValue();
 				break;
 			case MENU_EXIT:
 				return;

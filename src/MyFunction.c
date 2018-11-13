@@ -43,7 +43,6 @@ volatile int LMarkerFlagPos;
 volatile int JMarkerFlagPos;
 
 unsigned pulseDuration[2];
-unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
 
 unsigned int constSpeed;
@@ -63,15 +62,6 @@ int LState,RState,JLState,JRState;
 
 bool bPulseFlag = FALSE;
 bool bJunFlag = FALSE;
-
-
-void pulseLED(int num, int duration);
-
-void LMarkerDetect(void);
-void RMarkerDetect(void);
-void JMarkerDetect(void);
-void ClearMarkerFlag(void);
-void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
 
 
 void LogData(int data) {
@@ -598,6 +588,11 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 	bAlignFlag = FALSE;
 	DelaymSec(1000);
 	int i;
+	for(i=0; i<15; i++){
+		sensorCalMax[i] = 1000;
+		sensorBlack[i] = 1000;
+	}
+
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
 	while(!EndOfMove(speedType)) {
@@ -608,9 +603,9 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 
 		for (i=0; i<15; i++) {
 			if(sensor[i] > sensorCalMax[i])
-				sensorCalMax[i] = sensor[i]-(sensor[i]-sensorCalMax[i])/10;
+				sensorCalMax[i] = sensor[i];//-(sensor[i]-sensorCalMax[i])/10;
 			if(sensor[i] < sensorBlack[i])
-				sensorBlack[i] = sensor[i]+(sensorBlack[i]-sensor[i])/10;;
+				sensorBlack[i] = sensor[i];//+(sensorBlack[i]-sensor[i])/10;;
 		}
 
 		// Do other stuff here!!!
@@ -621,51 +616,20 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 			break;
 		}
 	}
-
-#define ROW1	4
-#define COL1	8
-	while (1) {
-		gotoxy(COL1, ROW1+2);
-		printf(" S1   S2   S3   S4");		// dc value
-		gotoxy(COL1, ROW1+4);
-		printf("%4u %4u %4u %4u", sensorCal[0], sensorCal[1], sensorCal[2], sensorCal[3]);
-		gotoxy(COL1, ROW1+6);
-		printf(" S5   S6   S7   S8   S9   S10   S11   S12   S13");
-		gotoxy(COL1, ROW1+8);
-		printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u",sensorCal[4], sensorCal[5], sensorCal[6], sensorCal[7],
-				sensorCal[8], sensorCal[9], sensorCal[10], sensorCal[11], sensorCal[12]);
-		gotoxy(COL1, ROW1+10);
-		printf(" S14  S15");
-		gotoxy(COL1, ROW1+12);
-		printf("%4u %4u",sensorCal[13], sensorCal[14]);
-		gotoxy(COL1, ROW1+14);
-		printf("Battery voltage: %4uV ", ReadBatteryVolt());
-		gotoxy(COL1, ROW1+16);
-		printf("Sensor Offset: second row: %5d,  first row: %5d", sensoroffset, sensoroffset2);
-		gotoxy(COL1, ROW1+18);
-		printf("Black sensor value:");
-		gotoxy(COL1, ROW1+20);
-		printf(" S1   S2   S3   S4");		// dc value
-		gotoxy(COL1, ROW1+22);
-		printf("%4u %4u %4u %4u", sensorBlack[0], sensorBlack[1], sensorBlack[2], sensorBlack[3]);
-		gotoxy(COL1, ROW1+24);
-		printf(" S5   S6   S7   S8   S9   S10   S11   S12   S13");
-		gotoxy(COL1, ROW1+26);
-		printf("%4u %4u %4u %4u %4u %4u %4u %4u %4u",sensorBlack[4], sensorBlack[5], sensorBlack[6], sensorBlack[7],
-				sensorBlack[8], sensorBlack[9], sensorBlack[10], sensorBlack[11], sensorBlack[12]);
-		gotoxy(COL1, ROW1+28);
-		printf(" S14  S15");
-		gotoxy(COL1, ROW1+30);
-		printf("%4u %4u",sensorBlack[13], sensorBlack[14]);
-
-		if (bSWFlag) {
-			bSWFlag = FALSE;
-			DelaymSec(200);
-			break;
-		}
-	}
-
 	bAlignFlag = TRUE;
+}
+
+void PrintBlackValue(){
+	int i;
+	clrscr();
+	printf("\n\nSensorCalMax value:\n");
+	for(i=0; i<15; i++){
+		printf("S%2u   %4u\n",i+1,sensorCalMax[i]);
+	}
+	printf("\n\nSensorBlack value:\n");
+	for(i=0; i<15; i++){
+		printf("S%2u   %4u\n",i+1,sensorBlack[i]);
+	}
 }
 
 void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist,int16_t topSpeed, int16_t endSpeed, int16_t acc) {
