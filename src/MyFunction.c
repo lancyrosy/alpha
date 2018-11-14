@@ -63,6 +63,10 @@ int LState,RState,JLState,JRState;
 bool bPulseFlag = FALSE;
 bool bJunFlag = FALSE;
 
+void LMarkerDetect();
+void RMarkerDetect();
+void JMarkerDetect();
+
 
 void LogData(int data) {
 	if (logFlag==TRUE && logIndex<LOGSIZE) {
@@ -417,7 +421,7 @@ void FastRun(void) {
 			else {								//Last segment
 				constSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3000, constSpeed, 4000, 8000, 2, SegmentNum);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3000, constSpeed, 5000, 9000, 2, SegmentNum);
 		}
 		else {							//Curve
 			int curveEndSpeed;
@@ -511,8 +515,8 @@ void TestRun(void){
 
 	WaitSW();
 }
-#define LEFT_SEN	14
-#define RIGHT_SEN	13
+#define LEFT_SEN	13
+#define RIGHT_SEN	14
 //Marker detection
 void LMarkerDetect(){
 	if (sensorCal[LEFT_SEN] >= 400) {
@@ -624,11 +628,11 @@ void PrintBlackValue(){
 	clrscr();
 	printf("\n\nSensorCalMax value:\n");
 	for(i=0; i<15; i++){
-		printf("S%2u   %4u\n",i+1,sensorCalMax[i]);
+		printf("S %2u   %4u\n",i+1,sensorCalMax[i]);
 	}
 	printf("\n\nSensorBlack value:\n");
 	for(i=0; i<15; i++){
-		printf("S%2u   %4u\n",i+1,sensorBlack[i]);
+		printf("S %2u   %4u\n",i+1,sensorBlack[i]);
 	}
 }
 

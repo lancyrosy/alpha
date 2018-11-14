@@ -33,6 +33,7 @@ extern volatile int16_t segTypeFL[SEGSIZE];
 
 
 void pulseBuzzer( int per, int duration);
+void pulseLED(int num, int duration);
 void LMarkerDetect();
 void RMarkerDetect();
 void ClearMarkerFlag();
@@ -46,3 +47,4 @@ void TestRun();
 void DumbRun();
 void ExploreRun();
 void FastRun();
+void PrintBlackValue();

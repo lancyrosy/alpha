@@ -177,6 +177,7 @@ void UART1_init(int baudrate);
 void UART3_init(int baudrate);
 void UART4_init(int baudrate);
 void UART5_init(int baudrate);
+void UART_init(int16_t uartNum, int baudrate);
 int RxCharISR(int16_t uartNum);
 int CheckRxBuf(int16_t uartNum);
 int TxCharISR(int16_t uartNum, char c);
@@ -198,10 +199,12 @@ int TxChar(USART_TypeDef* usart, char c);
 
 // timer stuff
 void InitTimer2_PhaseCountingRemap(void);
+void InitTimer3_PhaseCountingRemap(void);
 void InitTimer4_PhaseCounting(void);
 void InitTimer1_PWM(void);
 void InitTimer3_servoPWM(bool bCH1, bool bCH2, bool bCH3, bool bCH4);
 void InitTimer8_servoPWM(bool bCH1, bool bCH2, bool bCH3, bool bCH4);
+void InitTimer2Buzzer(void);
 void SetTimer3PWM(int16_t ch, int16_t pwm);
 void SetTimer8PWM(int16_t ch, int16_t pwm);
 void InitTimer6_1msISR(void);
