@@ -22,7 +22,7 @@
 
 
 int main(void){
-	int pwm=0;
+
 
 	InitIO();	// Must be initialised before any printf()
 
@@ -44,6 +44,7 @@ int main(void){
 	//CAM_to_WinM3();
 	//TestMotorMenu();
 #ifdef xxx
+	int pwm=0;
 	while(1){
 		char c;
 		gotoxy(5,5);

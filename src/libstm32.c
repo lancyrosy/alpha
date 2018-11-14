@@ -16,8 +16,6 @@
 
 int32_t	SYSCLK, APB1CLK, APB1TIMERCLK, APB2CLK;
 
-void stm32_TIM_Configuration(void);
-void stm32_GPIO_Configuration(void);
 void stm32_NVIC_Configuration(void);
 void stm32_RCC_Configuration(bool bHSEFlag);
 

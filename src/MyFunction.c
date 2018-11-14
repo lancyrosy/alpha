@@ -43,7 +43,6 @@ volatile int LMarkerFlagPos;
 volatile int JMarkerFlagPos;
 
 unsigned pulseDuration[2];
-unsigned aveSensorBlack[15];
 int pulseBuzzerDuration = 0;
 
 unsigned int strEndSpeed;
@@ -60,20 +59,13 @@ int xSpeed = 0;
 volatile int LSumMarker,RSumMarker,sumJunction,disL,disR;
 int LState,RState,JLState,JRState;
 
-#define L_MARKER_SEN sensorBlack[13]
-#define R_MARKER_SEN sensorBlack[14]
 
 bool bPulseFlag = FALSE;
 bool bJunFlag = FALSE;
 
-
-void pulseLED(int num, int duration);
-
-void LMarkerDetect(void);
-void RMarkerDetect(void);
-void JMarkerDetect(void);
-void ClearMarkerFlag(void);
-void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t topSpeed, int16_t endSpeed, int16_t acc,int16_t dcc);
+void LMarkerDetect();
+void RMarkerDetect();
+void JMarkerDetect();
 
 
 void LogData(int data) {
@@ -574,6 +566,11 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 	bAlignFlag = FALSE;
 	DelaymSec(1000);
 	int i;
+	for(i=0; i<15; i++){
+		sensorCalMax[i] = 1000;
+		sensorBlack[i] = 1000;
+	}
+
 	SetMoveCommand(speedType, dist, brakeDist,  topSpeed, endSpeed, acc,dcc);
 
 	while(!EndOfMove(speedType)) {
@@ -583,7 +580,10 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 		DispDotMatrix("Black");
 
 		for (i=0; i<15; i++) {
-			sensorBlack[i] = (sensorBlack[i]+sensor[i])/2;
+			if(sensor[i] > sensorCalMax[i])
+				sensorCalMax[i] = sensor[i];//-(sensor[i]-sensorCalMax[i])/10;
+			if(sensor[i] < sensorBlack[i])
+				sensorBlack[i] = sensor[i];//+(sensorBlack[i]-sensor[i])/10;;
 		}
 
 		// Do other stuff here!!!
@@ -594,8 +594,20 @@ void MoveRobotCalibrate(int16_t speedType, int16_t dist, int16_t brakeDist, int1
 			break;
 		}
 	}
-
 	bAlignFlag = TRUE;
+}
+
+void PrintBlackValue(){
+	int i;
+	clrscr();
+	printf("\n\nSensorCalMax value:\n");
+	for(i=0; i<15; i++){
+		printf("S %2u   %4u\n",i+1,sensorCalMax[i]);
+	}
+	printf("\n\nSensorBlack value:\n");
+	for(i=0; i<15; i++){
+		printf("S %2u   %4u\n",i+1,sensorBlack[i]);
+	}
 }
 
 void MoveRobotExplore(int16_t speedType, int16_t dist, int16_t brakeDist,int16_t topSpeed, int16_t endSpeed, int16_t acc) {

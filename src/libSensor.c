@@ -15,8 +15,16 @@
 
 #include "project.h"
 
+#define RobotNumber 2
+#if RobotNumber == 1
+volatile int16_t sensorCalMax[NUM_SENSOR]={1700,2000,2450,2250,2850,2300,2350,2350,2450,2650,2750,2700,2950,1400,1750};
+volatile int16_t sensorBlack[NUM_SENSOR]={80,65,90,75,140,100,115,120,125,120,125,125,120,60,60};
+#elif RobotNumber == 2
+volatile int16_t sensorCalMax[NUM_SENSOR]={2700,3400,3700,3550,2050,3050,2900,2900,2950,3250,3400,3550,3400,1350,2000};
+volatile int16_t sensorBlack[NUM_SENSOR]={85,130,150,125,85,135,140,130,130,150,170,165,125,55,70};
+#endif
+
 volatile int16_t  sensorCal[NUM_SENSOR];
-volatile int16_t  sensorBlack[NUM_SENSOR]={97,142,163,137,87,115,71,49,111,152,166,163,164,75,91};
 volatile int16_t sensor[NUM_SENSOR];
 volatile int16_t sensorOld[NUM_SENSOR];
 volatile int16_t sensorMin[NUM_SENSOR];
@@ -26,7 +34,7 @@ volatile uint16_t adc2_dma_buf[16];
 volatile uint16_t adc3_dma_buf[16];
 
 volatile int senfla;
-volatile int sensoroffset, prevSensoroffset, sensoroffset2, sensoroffsetold, cenval;
+volatile int sensoroffset, sensoroffset2, sensoroffsetold, cenval;
 volatile int state, substate;
 volatile int adcCnt;
 
@@ -367,26 +375,32 @@ uint16_t ReadBatteryVolt() {
 int16_t Cen1(){
 	int i=0;
 	int sumHigh=0;
+	int sumLowFst=0;
+	int sumLowScd =0;
 	for (i=0; i<15; i++) {
-		sensorCal[i] = sensor[i] - sensorBlack[i];
+		sensorCal[i] = sensor[i]*2000l/sensorCalMax[i]-sensorBlack[i];
 		if (sensorCal[i] <= 0) sensorCal[i] = 0;
 
 	}
-	for (i=4; i<12; i++) {
+	for (i=0; i<4; i++){
+		if (sensorCal[i] < 150) sumLowFst++;
+	}
+	for (i=4; i<13; i++) {
 		if (sensorCal[i] > 1000) sumHigh++;
-
+		if (sensorCal[i] < 150) sumLowScd++;
 	}
 
-	sensoroffset = (sensorCal[4]*(-1600l) + sensorCal[5]*(-1200l) + sensorCal[6]*(-800l) + sensorCal[7]*(-400l)
-			+ sensorCal[9]*(400l) + sensorCal[10]*(800l) + sensorCal[11]*(1200l) + sensorCal[12]*(1600l))
-						/(sensorCal[4]+sensorCal[5]+sensorCal[6]+sensorCal[7]+sensorCal[9]+sensorCal[10]+sensorCal[11]
-																												   +sensorCal[12]);
+	sensoroffset = (sensorCal[4]*(-1600l)+sensorCal[5]*(-1200l)+sensorCal[6]*(-800l)+sensorCal[7]*(-400l)+sensorCal[9]*(400l)
+						+sensorCal[10]*(800l)+sensorCal[11]*(1200l)+sensorCal[12]*(1600l))
+					/(sensorCal[4]+sensorCal[5]+sensorCal[6]+sensorCal[7]+sensorCal[9]+sensorCal[10]
+						+sensorCal[11]+sensorCal[12]);
 
-	if (sumHigh>6) sensoroffset = 0;
-	prevSensoroffset = sensoroffset;
-	sensoroffset2 = (sensorCal[0]*(-600l) + sensorCal[1]*(-200l) + sensorCal[2] * (200l) + sensorCal[3]*(600l))
-						/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
+	sensoroffset2 = (sensorCal[0]*(-600l)+sensorCal[1]*(-200l)+sensorCal[2]*(200l)+sensorCal[3]*(600l))
+					/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
 
+	if (sumHigh >= 7) sensoroffset = 0;// meet junction
+	if (sumLowFst == 4) sensoroffset2 = 0;
+	if (sumLowScd == 9) sensoroffset = 0;
 
     return sensoroffset;
 
