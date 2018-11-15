@@ -383,7 +383,7 @@ void AnalyseJunction(void){
 void FastRun(void) {
 	int i = 0;
 	int endSpeed = 2500;
-	int accStr=8000, decStr=8000;
+	int accStr=9000, decStr=9000;
 	int accCur=2000, decCur=3000;
 	char s[8];
 	int SegmentNum=0;
@@ -404,7 +404,7 @@ void FastRun(void) {
 			else {								//Last segment
 				strEndSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3000, strEndSpeed, accStr, decStr, 2, SegmentNum);
+			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3300, strEndSpeed, accStr, decStr, 2, SegmentNum);
 		}
 		else {							//Curve
 			int curveEndSpeed;
