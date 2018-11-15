@@ -304,7 +304,7 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 		DispDotMatrix("    ");
 
 	}
-		while((curPos[0]< (finalPos[0]+DIST_mm_oc(25))) && (segTypeFL[segmentNum+1] != 0)&&(segTypeFL[segmentNum]!=segTypeFL[segmentNum+1])){//Next segment is curve
+		while((curPos[0]< (finalPos[0]+DIST_mm_oc(40))) && (segTypeFL[segmentNum+1] != 0)&&(segTypeFL[segmentNum]!=segTypeFL[segmentNum+1]) && !bSWFlag){//Next segment is curve
 			if(segTypeFL[segmentNum]==-1){// Left-Right
 				if(sensoroffset>0){
 					pulseBuzzer(1500, 50);
@@ -318,6 +318,11 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 				}
 			}
 		}
+	while((curPos[0]< (finalPos[0]+DIST_mm_oc(40))) && (segTypeFL[segmentNum+1] == 0) && !bSWFlag){//Next segment is curve
+		if(abs(sensoroffset)<200) {
+			break;
+		}
+	}
 }
 
 
