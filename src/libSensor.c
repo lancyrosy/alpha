@@ -34,7 +34,7 @@ volatile uint16_t adc2_dma_buf[16];
 volatile uint16_t adc3_dma_buf[16];
 
 volatile int senfla;
-volatile int sensoroffset, sensoroffset2, sensoroffsetold, cenval;
+volatile int sensoroffset, sensoroffsetX2, sensoroffset2, sensoroffsetold, cenval;
 volatile int state, substate;
 volatile int adcCnt;
 
@@ -390,11 +390,11 @@ int16_t Cen1(){
 		if (sensorCal[i] < 150) sumLowScd++;
 	}
 
-	sensoroffset = (sensorCal[4]*(-1600l)+sensorCal[5]*(-1200l)+sensorCal[6]*(-800l)+sensorCal[7]*(-400l)+sensorCal[9]*(400l)
-						+sensorCal[10]*(800l)+sensorCal[11]*(1200l)+sensorCal[12]*(1600l))
+	sensoroffsetX2 = (sensorCal[4]*(-1600l)+sensorCal[5]*(-1200l)+sensorCal[6]*(-800l)+sensorCal[7]*(-400l)+sensorCal[9]*(400l)
+						+sensorCal[10]*(800l)+sensorCal[11]*(1200l)+sensorCal[12]*(1600l))*2
 					/(sensorCal[4]+sensorCal[5]+sensorCal[6]+sensorCal[7]+sensorCal[9]+sensorCal[10]
 						+sensorCal[11]+sensorCal[12]);
-
+	sensoroffset = sensoroffsetX2/2;
 	sensoroffset2 = (sensorCal[0]*(-600l)+sensorCal[1]*(-200l)+sensorCal[2]*(200l)+sensorCal[3]*(600l))
 					/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
 

@@ -383,7 +383,7 @@ void AnalyseJunction(void){
 void FastRun(void) {
 	int i = 0;
 	int endSpeed = 2500;
-	int accStr=4000, decStr=8000;
+	int accStr=8000, decStr=8000;
 	int accCur=2000, decCur=3000;
 	char s[8];
 	int SegmentNum=0;
@@ -489,8 +489,8 @@ void TestRun(void){
 	StopRobot();
 	WaitSW();
 }
-#define LEFT_SEN	13
-#define RIGHT_SEN	14
+#define LEFT_SEN	14
+#define RIGHT_SEN	13
 //Marker detection
 void LMarkerDetect(){
 	if (sensorCal[LEFT_SEN] >= 400) {
