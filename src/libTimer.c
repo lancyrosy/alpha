@@ -90,7 +90,7 @@ void InitTimer1_PWM(){
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
 
      /* Time base configuration */
-    TIM_TimeBaseStructure.TIM_Period = 1000;
+    TIM_TimeBaseStructure.TIM_Period = 999;
     TIM_TimeBaseStructure.TIM_Prescaler = (4-1);
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;

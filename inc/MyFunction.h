@@ -31,10 +31,9 @@ extern volatile int16_t segTypeF3[SEGSIZE];
 extern volatile int16_t segTypeFL[SEGSIZE];
 
 
-#define L_MARKER_SEN sensorBlack[13]
-#define R_MARKER_SEN sensorBlack[14]
 
 void pulseBuzzer( int per, int duration);
+void pulseLED(int num, int duration);
 void LMarkerDetect();
 void RMarkerDetect();
 void ClearMarkerFlag();
@@ -48,3 +47,4 @@ void TestRun();
 void DumbRun();
 void ExploreRun();
 void FastRun();
+void PrintBlackValue();

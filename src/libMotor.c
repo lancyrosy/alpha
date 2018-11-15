@@ -41,7 +41,7 @@ bool bUseEncoderClickFlag;
 #define LEFTMOTORPWM		TIM1->CCR1
 #define RIGHTMOTORPWM		TIM1->CCR4
 
-#define MAXPWMVALUE			1000
+#define MAXPWMVALUE			999
 
 
 int16_t tmplog1, tmplog2, tmplog3, tmplog4;
@@ -132,7 +132,7 @@ void MotorPID(void)
 	long  speed = curSpeed[0];
 	if (speed < SPEED_mm_oc(1000)) speed = SPEED_mm_oc(1000);
 	if (speed > SPEED_mm_oc(2000)) speed = SPEED_mm_oc(2000);
-	posPWM[1] = (0-sensoroffset)/2 + ((sensoroffsetold-sensoroffset)*6)*speed/SPEED_mm_oc(1000);
+	posPWM[1] = (0-sensoroffset)/2 + ((sensoroffsetold-sensoroffset)*6);//*speed/SPEED_mm_oc(1000);
 	sensoroffsetold = sensoroffset;
 	/////////////////////////////////////////////////////////
 	// Calculate individual wheels PWM from X & W components
