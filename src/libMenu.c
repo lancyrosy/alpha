@@ -187,11 +187,11 @@ void MenuMotor(){
 	          break;
 
 		case 3:
-
+			fastFlag = logFlag = 1;
 			MoveRobot(XSPEED, 500, 0, 1300, 1300, 2000,3000);
-			MoveRobot(XSPEED, 3600, 0, 3000, 0, 9000,9000);
+			MoveRobot(XSPEED, 3600, 0, 3300, 0, 9000,9000);
 			StopRobot();
-
+			fastFlag = logFlag = 0;
 
 			break;
      	case 4:
@@ -210,30 +210,26 @@ void MenuSensor(){
 	static const char *const menuStrg[] = {
 				"----",
 				"All ",
+				"sOff",
 				"sen1",
 				"sen2",
 				"sen3",
 				"sen4",
 				"sen5",
-				"L1  ",
-				"L2  ",
-				"ADC8",
-				"ADC9",
-				"AlignValue",
-				"Compass",
-				"Sharp",		// sharp sensor
-				"CAM3",
-				"0color",
-				"1color",
-				"2color",
+
 	};
 	while(1) {
 	    switch(SelectMenuItem(&sensorNum, MENU_SIZE, menuStrg)) {
 		case 1:
 			DispAllSensorValues();
 			break;
-
 		case 2:
+			while(!bSWFlag) {
+				sprintf(s,"%4d", sensoroffsetX2);
+				DispDotMatrix(s);
+			}
+			break;
+
 		case 3:
 		case 4:
 		case 5:
@@ -244,40 +240,8 @@ void MenuSensor(){
 		case 10:
 			DisplaySensorOnDotMatrix(sensorNum-1);
 			break;
-		case 11 :
-			bAlignLineFlag = TRUE;
-			DispDotMatrixInt16((int16_t*)&alignSpeed);
-			bAlignLineFlag = FALSE;
-			break;
 
-		case 12:
-			  //PrintCompass();
- 	          break;
-		case 13:
-			while(1) {
-//				unsigned num= GetSharpGP2D12Dist(senADC9);
-//				sprintf(s,"%4d", num);
-				DispDotMatrix(s);
-				DelaymSec(50);
 
-				if (bSWFlag) {
-					bSWFlag=FALSE;
-					break;
-				}
-			}
-			 break;
-		case 14:
-//			PrintCamValues();
-			break;
-		case 15:
-//			MenuDispCAM3Value(0);
-			break;
-		case 16:
-//			MenuDispCAM3Value(1);
-			break;
-		case 17:
-//			MenuDispCAM3Value(2);
-			break;
         case MENU_EXIT:
         case MENU_SPECIAL:
 			return;

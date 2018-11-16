@@ -15,7 +15,7 @@
 
 #include "project.h"
 
-#define RobotNumber 2
+#define RobotNumber 1
 #if RobotNumber == 1
 volatile int16_t sensorCalMax[NUM_SENSOR]={1700,2000,2450,2250,2850,2300,2350,2350,2450,2650,2750,2700,2950,1400,1750};
 volatile int16_t sensorBlack[NUM_SENSOR]={80,65,90,75,140,100,115,120,125,120,125,125,120,60,60};
@@ -371,14 +371,14 @@ uint16_t ReadBatteryVolt() {
 	// The 2nd parameter needs to be calibrated
 	return (senBattery * 840) / 1980;
 }
-
+volatile bool senLowFlag = FALSE;
 int16_t Cen1(){
 	int i=0;
 	int sumHigh=0;
 	int sumLowFst=0;
 	int sumLowScd =0;
 	for (i=0; i<15; i++) {
-		sensorCal[i] = sensor[i]*2000l/sensorCalMax[i]-sensorBlack[i];
+		sensorCal[i] = (sensor[i]-0)*2000l/sensorCalMax[i]; //sensorBlack[i]
 		if (sensorCal[i] <= 0) sensorCal[i] = 0;
 
 	}
@@ -398,9 +398,15 @@ int16_t Cen1(){
 	sensoroffset2 = (sensorCal[0]*(-600l)+sensorCal[1]*(-200l)+sensorCal[2]*(200l)+sensorCal[3]*(600l))
 					/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
 
-	if (sumHigh >= 7) sensoroffset = 0;// meet junction
+	if (sumHigh >= 7) {
+		sensoroffset = sensoroffsetX2 = -1;// meet junction
+	}
 	if (sumLowFst == 4) sensoroffset2 = 0;
-	if (sumLowScd == 9) sensoroffset = 0;
+	if (sumLowScd == 9) sensoroffset = 1;
+	if (sumLowFst == 4 && sumLowScd == 9)
+		senLowFlag = TRUE;
+	else
+		senLowFlag = FALSE;
 
     return sensoroffset;
 

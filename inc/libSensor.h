@@ -88,6 +88,7 @@ extern bool	bDispSensorValue;
 extern bool bSensorEnableFlag;
 extern bool bFlashDetectFlag;
 extern bool bEndSensorISRFlag;
+extern volatile bool senLowFlag;
 // ---------------------------------------------------------------------------------
 //  Function prototypes
 // ---------------------------------------------------------------------------------

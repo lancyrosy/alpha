@@ -298,7 +298,7 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 				curPos[0] = (JMarker[JIndex]-segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
 				JIndex++;
 				JMarkerFlag = FALSE;
-				//pulseBuzzer(500, 50);
+				pulseBuzzer(500, 50);
 			}
 		}
 		DispDotMatrix("    ");
@@ -355,12 +355,12 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 
 			if (LMarkerFlag == TRUE) {
 				//pulseBuzzer(700,100);
-				pulseLED(1, 100);
+				//pulseLED(1, 100);
 				diff = dist - LMarkerFlagPos;
 				range = 100 + dist / 10;
 				if ((diff > -range) && (diff < range)){
 					pulseBuzzer(1000, 100);
-					//pulseLED(1, 100);
+					pulseLED(1, 100);
 					break;
 				}
 				else{
@@ -374,7 +374,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 				curPos[0] = (JMarker[JIndex]-segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
 				JIndex++;
 				JMarkerFlag = FALSE;
-				//pulseBuzzer(500, 50);
+				pulseBuzzer(500, 50);
 			}
 		}
 		DispDotMatrix("    ");

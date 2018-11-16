@@ -122,6 +122,8 @@ void MotorPID(void)
 	{
 		// Accumulate the speed error to get position error
 		posErr[i] += PIDInput[i]-PIDFeedback[i];
+		if (posErr[i] > 850/kp[i])
+			posErr[i] = 850/kp[i];
 
 		// Simple PD control
 		posPWM[i] = (kp[i]*posErr[i] + kd[i]*(posErr[i]-posErrOld[i]));
@@ -133,7 +135,11 @@ void MotorPID(void)
 	if (speed < SPEED_mm_oc(1000)) speed = SPEED_mm_oc(1000);
 	if (speed > SPEED_mm_oc(2000)) speed = SPEED_mm_oc(2000);
 
-	posPWM[1] = (0-sensoroffsetX2)/4 + ((sensoroffsetold-sensoroffsetX2)*3);//*speed/SPEED_mm_oc(1000);
+	//Kp=/5 robot2
+	if (fastFlag==TRUE)
+		posPWM[1] = ((0-sensoroffsetX2)/5 + (sensoroffsetold-sensoroffsetX2)*6);//*speed/SPEED_mm_oc(1000);
+	else
+		posPWM[1] = ((0-sensoroffsetX2)/4 + (sensoroffsetold-sensoroffsetX2)*6);//*speed/SPEED_mm_oc(1000);
 	sensoroffsetold = sensoroffsetX2;
 	/////////////////////////////////////////////////////////
 	// Calculate individual wheels PWM from X & W components

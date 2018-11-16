@@ -15,6 +15,7 @@ int fOffset;
 int sumoffset2 = 0;
 int sumtOffset=0;
 float timeCount=0;
+int senLowCount = 0;
 
 bool bAlignFlag = TRUE;
 
@@ -58,13 +59,20 @@ void Handler_SysTick(void){
 		count = 0;
 	}
 	if(fastFlag == TRUE){
-		//LogData(targetSpeed[0]/SPEED_mm_oc(1));
-		//LogData(curSpeed[0] / SPEED_mm_oc(1));
-		//LogData(sensoroffset);
-		//LogData(posPWM[0]);
-		//LogData(curAcc[0]);
+		LogData(SegmentNum*100);
+		LogData(curSpeed[0] / SPEED_mm_oc(1));
+		LogData(sensoroffset);
+		LogData(wheelPWM[0]);
+		LogData(wheelPWM[1]);
 		logFastFlag = TRUE;
 	}
+	if(senLowFlag)
+		senLowCount++;
+	else
+		senLowCount =0;
+	if(senLowCount >= 100)
+		bSWFlag = TRUE;
+
 	StartSensorISR();
 
 	DoSpeedProfile();

@@ -85,6 +85,7 @@ void PrintLog() {
 		for (i=0; i<LOGSIZE; ) {
 			printf("\n%5d   %5d   %5d   %5d   %5d",logData[i++],logData[i++],logData[i++],logData[i++],logData[i++]);
 		}
+		printf("\n %5d",logIndex);
 	}
 	else{
 		for (i=0; i<logIndex; ) {
@@ -389,14 +390,14 @@ void AnalyseJunction(void){
 	}
 	junction[numJunction] = -1;
 }
-
+int SegmentNum=0;
 void FastRun(void) {
 	int i = 0;
 	int endSpeed = 2500;
 	int accStr=9000, decStr=9000;
 	int accCur=2000, decCur=3000;
 	char s[8];
-	int SegmentNum=0;
+
 	JIndex = 0;
 	logIndex = 0;
 	DelaymSec(1000);
@@ -433,7 +434,7 @@ void FastRun(void) {
 			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, accCur, decCur, SegmentNum);
 		}
 	}
-	fastFlag=FALSE;
+	logFlag = fastFlag=FALSE;
 	sprintf(s, "%4d", (int) (timeCount / 100));
 	DispDotMatrix(s);
 	pulseBuzzer(5000,100);
@@ -441,6 +442,7 @@ void FastRun(void) {
 	MoveRobot(XSPEED, 400, 0, endSpeed, 40, 3000, 8000);  // enter start-finish area
 	StopRobot();
 	pulseBuzzer(2000,100);
+
 	WaitSW();
 }
 
@@ -518,7 +520,7 @@ void LMarkerDetect(){
 	}
 	if (JLState==1) {
 		uint16_t tDist = curPos[0]/DIST_mm_oc(1);
-		if ((tDist-disL)>30) {
+		if ((tDist-disL)>40) {
 			JLState = 0;
 			LSumMarker ++;
 			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
@@ -543,7 +545,7 @@ void RMarkerDetect(){
 	}
 	if (JRState==1) {
 		uint16_t tDist = curPos[0]/DIST_mm_oc(1);
-		if ((tDist-disR)>30) {
+		if ((tDist-disR)>40) {
 			JRState = 0;
 			RSumMarker ++;
 			pulseLED(1,100);
