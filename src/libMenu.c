@@ -188,7 +188,8 @@ void MenuMotor(){
 
 		case 3:
 
-
+			MoveRobot(XSPEED, 500, 0, 1300, 1300, 2000,3000);
+			MoveRobot(XSPEED, 3600, 0, 3000, 0, 9000,9000);
 			StopRobot();
 
 

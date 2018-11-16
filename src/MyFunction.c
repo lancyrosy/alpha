@@ -34,9 +34,10 @@ int numJunction;
 int JunctionTotal;
 int Index=0;
 int JIndex=0;
-bool fastFlag=FALSE;
-bool logFlag = FALSE;
-bool exploreFlag=FALSE;
+volatile bool fastFlag=FALSE;
+volatile bool exploreFlag=FALSE;
+volatile bool logFlag = FALSE;
+volatile bool logFastFlag = FALSE;
 volatile bool LMarkerFlag=FALSE;
 volatile bool JMarkerFlag=FALSE;
 volatile int LMarkerFlagPos;
@@ -72,14 +73,23 @@ void LogData(int data) {
 	if (logFlag==TRUE && logIndex<LOGSIZE) {
 		logData[logIndex] = data;
 		logIndex++;
+		if (logIndex==LOGSIZE)
+			logIndex=0;
 	}
 }
 void PrintLog() {
 	int i;
 	logFlag=FALSE;
-
-	for (i=0; i<logIndex; ) {
-		printf("\n%5d", logData[i++]);
+	if(logFastFlag == TRUE){
+		printf("\nTargetspeed   CurrentSpeed   sensoroffset   pwm   currentAcc\n");
+		for (i=0; i<LOGSIZE; ) {
+			printf("\n%5d   %5d   %5d   %5d   %5d",logData[i++],logData[i++],logData[i++],logData[i++],logData[i++]);
+		}
+	}
+	else{
+		for (i=0; i<logIndex; ) {
+			printf("\n%5d", logData[i++]);
+		}
 	}
 }
 
@@ -388,12 +398,16 @@ void FastRun(void) {
 	char s[8];
 	int SegmentNum=0;
 	JIndex = 0;
+	logIndex = 0;
 	DelaymSec(1000);
 	EnWheelMotor();
 	ClearMarkerFlag();
 	fastFlag=TRUE;
 
 	MoveRobotCheck(XSPEED, 1000, 50, 1500, 1200, 2000, 2000, 1); //before first marker
+	if(RSumMarker == 1){
+		logFlag = TRUE;
+	}
 	timeCount = 0;
 	for (i = 0; i <= segNumFL; i++) {
 		SegmentNum=i;
@@ -485,7 +499,6 @@ void TestRun(void){
 	}
 	sprintf(s, "%4d", (int) (timeCount / 100));
 	DispDotMatrix(s);
-	logFlag = FALSE;
 	StopRobot();
 	WaitSW();
 }

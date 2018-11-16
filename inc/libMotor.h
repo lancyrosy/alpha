@@ -107,6 +107,7 @@ extern bool bWheelMotorEnable;
 volatile extern sPos robotPos;
 volatile extern int uncertainty;
 
+extern volatile int16_t posPWM[NUM_OF_SPEED];
 extern volatile int16_t posErr[NUM_OF_SPEED];
 extern volatile int16_t posErrOld[NUM_OF_SPEED];
 extern volatile int16_t PIDFeedback[NUM_OF_SPEED];

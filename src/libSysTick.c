@@ -50,20 +50,20 @@ void Handler_SysTick(void){
 	}
 	count++;
 	fOffset = (sensoroffset*2+fOffset*8)/10; //filtering
-	sumoffset += sensoroffset;
-	sumoffset2 += sensoroffset2;
-	sumtOffset += tsensoroffset;
 	if(count==5){
-//		LogData(targetSpeed[0]/SPEED_mm_oc(1));
-//		LogData(curSpeed[0] / SPEED_mm_oc(1));
-//		LogData(sumoffset / 5);
-		LogData(fOffset);
-//		LogData(sumoffset2 / 5);
-//		LogData(sumtOffset);
+
+		if(fastFlag == FALSE){ //Explore run
+			LogData(fOffset);
+		}
 		count = 0;
-		sumoffset = 0;
-		sumoffset2 = 0;
-		sumtOffset = 0;
+	}
+	if(fastFlag == TRUE){
+		//LogData(targetSpeed[0]/SPEED_mm_oc(1));
+		//LogData(curSpeed[0] / SPEED_mm_oc(1));
+		//LogData(sensoroffset);
+		//LogData(posPWM[0]);
+		//LogData(curAcc[0]);
+		logFastFlag = TRUE;
 	}
 	StartSensorISR();
 
