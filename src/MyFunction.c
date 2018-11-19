@@ -30,7 +30,6 @@ uint16_t curveSpeed[SEGSIZE];
 uint16_t junctionPos[SEGSIZE];
 uint16_t logIndex;
 int junction[100];
-int numJunction;
 int JunctionTotal;
 int Index=0;
 int JIndex=0;
@@ -110,6 +109,7 @@ void PrintSegment() {
 	for (i=0; i<JunctionTotal; i++ ) {
 		printf("%5d %5d\n ", JMarker[i],junction[i]);
 	}
+	printf("JunctionTotal = %3d\n",JunctionTotal);
 
 }
 void pulseLED(int num, int duration){
@@ -370,7 +370,6 @@ void AnalyseCurve(void) {
 	for (i = 0; i <= segNumFL; i++) {
 		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
 	}
-	AnalyseJunction();
 }
 
 void AnalyseJunction(void){
@@ -380,7 +379,7 @@ void AnalyseJunction(void){
 	for (index = 0; index <= segNumFL; index++) {
 		for (i = numJunction;i < JunctionTotal;i++) { // Check junctions
 			if ((JMarker[i] >= startSeg) && (JMarker[i] < segmentFL[index+1])) {
-				junction[i] = index+1;	 //store junction segment index
+				junction[i] = index;	 //store junction segment index
 			}
 			else
 				break;
@@ -420,6 +419,7 @@ void FastRun(void) {
 				strEndSpeed = endSpeed;
 			}
 			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3300, strEndSpeed, accStr, decStr, 2, SegmentNum);
+			//pulseBuzzer(250,50);
 		}
 		else {							//Curve
 			int curveEndSpeed;
@@ -432,6 +432,7 @@ void FastRun(void) {
 				accCur=4000;
 			}
 			MoveRobotCurve(XSPEED, dis[i], 50, curveSpeed[i], curveEndSpeed, accCur, decCur, SegmentNum);
+			//pulseBuzzer(250,50);
 		}
 	}
 	logFlag = fastFlag=FALSE;
@@ -520,12 +521,12 @@ void LMarkerDetect(){
 	}
 	if (JLState==1) {
 		uint16_t tDist = curPos[0]/DIST_mm_oc(1);
-		if ((tDist-disL)>40) {
+		if ((tDist-disL)>30) {
 			JLState = 0;
 			LSumMarker ++;
 			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			LMarkerFlag=TRUE;
-			LeftMarker[LeftNum] = (timeCount/5)-15;
+			LeftMarker[LeftNum] = (timeCount-30)/5;
 			LeftNum++;
 			pulseLED(0,100);
 			//pulseBuzzer(1000, 50);
@@ -545,7 +546,7 @@ void RMarkerDetect(){
 	}
 	if (JRState==1) {
 		uint16_t tDist = curPos[0]/DIST_mm_oc(1);
-		if ((tDist-disR)>40) {
+		if ((tDist-disR)>30) {
 			JRState = 0;
 			RSumMarker ++;
 			pulseLED(1,100);
