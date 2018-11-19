@@ -378,7 +378,7 @@ void AnalyseJunction(void){
 	unsigned int startSeg = 0;
 	for (index = 0; index <= segNumFL; index++) {
 		for (i = numJunction;i < JunctionTotal;i++) { // Check junctions
-			if ((JMarker[i] >= startSeg) && (JMarker[i] < segmentFL[index+1])) {
+			if ((JMarker[i] >= startSeg) && (JMarker[i] < segmentFL[index])) {
 				junction[i] = index;	 //store junction segment index
 			}
 			else

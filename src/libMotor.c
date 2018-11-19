@@ -89,6 +89,7 @@ void MotorPID(void)
 {
 	int i;
 
+
 	// Read in encoder values.
 	// The encoder values, encoderSpeed[] should be positive when robot is moving forward
 	newEncoderData[0] = -TIM_GetCounter(TIM3);		// left wheel motor encoder
@@ -122,8 +123,8 @@ void MotorPID(void)
 	{
 		// Accumulate the speed error to get position error
 		posErr[i] += PIDInput[i]-PIDFeedback[i];
-		if (posErr[i] > 800/kp[i])
-			posErr[i] = 800/kp[i];
+		if (posErr[i] > 850/kp[i])
+			posErr[i] = 850/kp[i];
 
 		// Simple PD control
 		posPWM[i] = (kp[i]*posErr[i] + kd[i]*(posErr[i]-posErrOld[i]));
@@ -141,6 +142,8 @@ void MotorPID(void)
 	else
 		posPWM[1] = ((0-sensoroffsetX2)/4 + (sensoroffsetold-sensoroffsetX2)*6);//*speed/SPEED_mm_oc(1000);
 	sensoroffsetold = sensoroffsetX2;
+//	posPWM[1] = (0-sensoroffset)/2 + ((sensoroffsetold-sensoroffset)*12);
+//	sensoroffsetold = sensoroffset;
 	/////////////////////////////////////////////////////////
 	// Calculate individual wheels PWM from X & W components
 	/////////////////////////////////////////////////////////

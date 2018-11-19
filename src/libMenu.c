@@ -40,7 +40,7 @@ void MainMenu(){
 	int8_t itemNum=0, selectedItem;
 
 	DispDotMatrixWait("AlphaCentre RobotKit-"__DATE__);
-
+	DelaymSec(200);
 	while(1){
 		char a[10];
 		sprintf(a,"%4u",ReadBatteryVolt() );

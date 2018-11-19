@@ -246,7 +246,7 @@ void DoMoveCommand( ) {
 		else {
 			if (finalPos[i]>=curPos[i]) {
 				moveState[i] = -1;
-				curSpeed[i] = targetSpeed[i] = targetEndSpeed[i];
+				targetSpeed[i] = targetEndSpeed[i];
 			}
 		}
 
