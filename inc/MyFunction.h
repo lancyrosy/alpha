@@ -21,6 +21,7 @@ extern int Index;
 extern int junction[100];
 extern int SegmentNum;
 
+
 #define SEGSIZE 300
 extern volatile uint16_t segment[SEGSIZE], segNum;
 extern volatile uint16_t segmentF1[SEGSIZE], segNumF1;

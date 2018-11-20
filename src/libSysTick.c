@@ -61,7 +61,7 @@ void Handler_SysTick(void){
 	if(fastFlag == TRUE){
 		LogData(SegmentNum*100);
 		LogData(curSpeed[0] / SPEED_mm_oc(1));
-		LogData(targetSpeed[0] / SPEED_mm_oc(1));
+		LogData(sensoroffset);
 		LogData(wheelPWM[0]);
 		LogData(wheelPWM[1]);
 		logFastFlag = TRUE;
@@ -70,8 +70,8 @@ void Handler_SysTick(void){
 		senLowCount++;
 	else
 		senLowCount =0;
-//	if(senLowCount >= 100)
-//		bSWFlag = TRUE;
+	if(senLowCount >= 100)
+		bSWFlag = TRUE;
 
 	StartSensorISR();
 

@@ -274,7 +274,7 @@ void FilterSegments(void) {
 	for (i = 1; i <= segNumF3; i++){
 		segNumFL++;
 
-		if(segmentF3[i] - segmentF3[i-1] > 300){ //if one segment more than 300(1500mm)
+		if(segmentF3[i] - segmentF3[i-1] > 250){ //if one segment more than 300(1500mm)
 			int index,index2,index3,sum,num,ave,leftmNum;
 			sum = ave = num = 0;
 			leftmNum = 0;
@@ -522,8 +522,8 @@ void TestRun(void){
 	StopRobot();
 	WaitSW();
 }
-#define LEFT_SEN	14
-#define RIGHT_SEN	13
+#define LEFT_SEN	13
+#define RIGHT_SEN	14
 //Marker detection
 void LMarkerDetect(){
 	if (sensorCal[LEFT_SEN] >= 400) {
