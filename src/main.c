@@ -28,7 +28,7 @@ int main(void){
 
 	clrscr();
 
-   	printf("I'm alive!12345999 %u", DIST_mm_oc(3655/20 + 3655/10 + 150));
+   	printf("I'm alive!123 %u", DIST_mm_oc(3655/20 + 3655/10 + 150));
 
 
    	InitDataCold();
@@ -43,6 +43,7 @@ int main(void){
 	//PrintCamValues();
 	//CAM_to_WinM3();
 	//TestMotorMenu();
+#define xxxx
 #ifdef xxx
 	int pwm=0;
 	while(1){

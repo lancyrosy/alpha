@@ -123,8 +123,8 @@ void MotorPID(void)
 	{
 		// Accumulate the speed error to get position error
 		posErr[i] += PIDInput[i]-PIDFeedback[i];
-		if (posErr[i] > 850/kp[i])
-			posErr[i] = 850/kp[i];
+//		if (posErr[i] > 850/kp[i])
+//			posErr[i] = 850/kp[i];
 
 		// Simple PD control
 		posPWM[i] = (kp[i]*posErr[i] + kd[i]*(posErr[i]-posErrOld[i]));

@@ -15,7 +15,7 @@
 
 #include "project.h"
 
-#define RobotNumber 2
+#define RobotNumber 1
 
 #if RobotNumber == 1
 volatile int16_t sensorCalMax[NUM_SENSOR]={1700,2000,2450,2250,2850,2300,2350,2350,2450,2650,2750,2700,2950,1400,1750};

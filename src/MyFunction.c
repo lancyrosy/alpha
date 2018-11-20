@@ -11,7 +11,7 @@ void AnalyseJunction(void);
 
 #define LOGSIZE	12200
 #define SEGSIZE 300
-int logData[LOGSIZE];
+extern int logData[LOGSIZE];
 int t = 0;
 volatile uint16_t segment[SEGSIZE], segNum;
 volatile uint16_t segmentF1[SEGSIZE], segNumF1;
@@ -51,7 +51,7 @@ volatile uint16_t  LeftMarker[300];
 volatile int LeftNum = 0;
 //for Junction marker
 volatile uint16_t  JMarker[100];
-int MarkerNum = 0;
+int JMarkerNum = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
@@ -87,15 +87,32 @@ void PrintLog() {
 		printf("\n %5d",logIndex);
 	}
 	else{
+		printf("int logData[LOGSIZE]={");
 		for (i=0; i<logIndex; ) {
-			printf("\n%5d", logData[i++]);
+			printf("\n%5d,", logData[i++]);
 		}
+		printf("};");
 	}
 }
 
 
 void PrintSegment() {
 	int i;
+		for (i=0; i<= segNum; i++ ) {
+			printf("%5d  %2d\n", segment[i], segType[i]);
+		}
+		printf("\n\n\n");
+		for (i=0; i<= segNumF1; i++ ) {
+			printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
+		}
+		printf("\n\n\n");
+		for (i=0; i<= segNumF2; i++ ) {
+			printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
+		}
+		printf("\n\n\n");
+		for (i=0; i<= segNumF3; i++ ) {
+			printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
+		}
 	printf("\n\n\n");
 		for (i=0; i<LeftNum; i++ ) {
 			printf("%5d\n ", LeftMarker[i]);
@@ -257,7 +274,7 @@ void FilterSegments(void) {
 	for (i = 1; i <= segNumF3; i++){
 		segNumFL++;
 
-		if(segmentF3[i] - segmentF3[i-1] > 200){ //if one segment more than 200(1000mm)
+		if(segmentF3[i] - segmentF3[i-1] > 300){ //if one segment more than 300(1500mm)
 			int index,index2,index3,sum,num,ave,leftmNum;
 			sum = ave = num = 0;
 			leftmNum = 0;
@@ -561,8 +578,8 @@ void JMarkerDetect(){
 			JMarkerFlag=TRUE;
 			if(fastFlag==FALSE){
 				JMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
-				JMarker[MarkerNum] = timeCount/5;
-				MarkerNum++;
+				JMarker[JMarkerNum] = timeCount/5;
+				JMarkerNum++;
 				pulseBuzzer(2500, 50);
 			}
 		}
@@ -573,7 +590,7 @@ void ClearMarkerFlag(){
 	JRState=JLState=0;
 	JMarkerFlag = 0;
 	LState=RState=0;
-	RSumMarker=LSumMarker=sumJunction=0;
+	RSumMarker=LSumMarker=sumJunction=JMarkerNum=0;
 }
 
 //Collect black value
