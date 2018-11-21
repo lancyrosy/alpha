@@ -15,7 +15,7 @@
 
 #include "project.h"
 
-#define RobotNumber 2
+#define RobotNumber 1
 
 #if RobotNumber == 1
 volatile int16_t sensorCalMax[NUM_SENSOR]={1700,2000,2450,2250,2850,2300,2350,2350,2450,2650,2750,2700,2950,1400,1750};
@@ -378,6 +378,7 @@ int16_t Cen1(){
 	int sumHigh=0;
 	int sumLowFst=0;
 	int sumLowScd =0;
+	int tmpOffset;
 	for (i=0; i<15; i++) {
 		sensorCal[i] = (sensor[i]-0)*2000l/sensorCalMax[i]; //sensorBlack[i]
 		if (sensorCal[i] <= 0) sensorCal[i] = 0;
@@ -391,11 +392,11 @@ int16_t Cen1(){
 		if (sensorCal[i] < 150) sumLowScd++;
 	}
 
-	sensoroffsetX2 = (sensorCal[4]*(-1600l)+sensorCal[5]*(-1200l)+sensorCal[6]*(-800l)+sensorCal[7]*(-400l)+sensorCal[9]*(400l)
+	tmpOffset = (sensorCal[4]*(-1600l)+sensorCal[5]*(-1200l)+sensorCal[6]*(-800l)+sensorCal[7]*(-400l)+sensorCal[9]*(400l)
 						+sensorCal[10]*(800l)+sensorCal[11]*(1200l)+sensorCal[12]*(1600l))*2
 					/(sensorCal[4]+sensorCal[5]+sensorCal[6]+sensorCal[7]+sensorCal[9]+sensorCal[10]
 						+sensorCal[11]+sensorCal[12]);
-	sensoroffset = sensoroffsetX2/2;
+
 	sensoroffset2 = (sensorCal[0]*(-600l)+sensorCal[1]*(-200l)+sensorCal[2]*(200l)+sensorCal[3]*(600l))
 					/(sensorCal[0]+sensorCal[1]+sensorCal[2]+sensorCal[3]);
 
@@ -403,7 +404,13 @@ int16_t Cen1(){
 		sensoroffset = sensoroffsetX2 = -1;// meet junction
 	}
 	if (sumLowFst == 4) sensoroffset2 = 0;
-	if (sumLowScd == 9) sensoroffset = 1;
+	if (sumLowScd == 9) {
+		sensoroffset = 1;
+	}
+	else {
+		sensoroffsetX2 += (tmpOffset-sensoroffsetX2);
+		sensoroffset = sensoroffsetX2/2;
+	}
 	if (sumLowFst == 4 && sumLowScd == 9)
 		senLowFlag = TRUE;
 	else

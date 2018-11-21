@@ -80,7 +80,7 @@ void PrintLog() {
 	int i;
 	logFlag=FALSE;
 	if(logFastFlag == TRUE){
-		printf("\nTargetspeed   CurrentSpeed   sensoroffset   pwm   currentAcc\n");
+		printf("\n   \n");
 		for (i=0; i<LOGSIZE; ) {
 			printf("\n%5d   %5d   %5d   %5d   %5d",logData[i++],logData[i++],logData[i++],logData[i++],logData[i++]);
 		}
@@ -168,7 +168,7 @@ void ExploreRun(){
 	DelaymSec(1000);
 }
 
-#define thres 70
+#define thres 60
 void FindSegments(void) {
 	int i, offset;
 	int cFlag;		//0:str, 1:+, -1:-ve
@@ -194,7 +194,7 @@ void FindSegments(void) {
 		}
 		else  {
 			if((cFlag != 0)){
-				if(abs(offset)<thres/3){
+				if(abs(offset)<thres/2){
 				segment[segNum] = i;
 				segType[segNum++] = cFlag;
 				cFlag = 0;
@@ -213,7 +213,7 @@ void FilterSegments(void) {
 
 	for (i = 1; i <= segNum; i++) {
 		difNum = segment[i] - segment[i-1];
-		if (difNum < 10) {
+		if (difNum < 15) { //75mm
 			segType[i] = 0;
 		}
 	}
@@ -234,40 +234,43 @@ void FilterSegments(void) {
 		}
 	}
 
-	// Join short segment to previous segment
-	segNumF2 = 0;
-	segmentF2[0] = segmentF1[0];
-	segTypeF2[0] = segTypeF1[0];
+	// Join short segment to previous segment (for straight only)
+	segNumF3 = 0;
+	segmentF3[0] = segmentF1[0];
+	segTypeF3[0] = segTypeF1[0];
 	for (i = 1; i <= segNumF1; i++) {
 		difNum = segmentF1[i] - segmentF1[i-1];
-		if (difNum > 20) {
-			segNumF2++;
-			segmentF2[segNumF2] = segmentF1[i];
-			segTypeF2[segNumF2] = segTypeF1[i];
-		} else {
-			segmentF2[segNumF2] = segmentF1[i];
-		}
-	}
-
-	//Join all adjacent same segment types
-	segNumF3=0;
-	segmentF3[0] = segmentF2[0];
-	segTypeF3[0] = segTypeF2[0];
-	for (i = 1; i <= segNumF2; i++) {
-		difType = segTypeF2[i] - segTypeF2[i-1];
-		if (difType != 0) {
-			segNumF3++;
-			segmentF3[segNumF3] = segmentF2[i];
-			segTypeF3[segNumF3] = segTypeF2[i];
+		if ((difNum < 20)&&(segTypeF1[i]==0)) { //100mm
+			segmentF3[segNumF3] = segmentF1[i];
 		}
 		else {
-			segmentF3[segNumF3] = segmentF2[i];
-
+			segNumF3++;
+			segmentF3[segNumF3] = segmentF1[i];
+			segTypeF3[segNumF3] = segTypeF1[i];
 		}
 	}
 
 
-	//Filter Based on left marker
+
+	//Join all adjacent same segment types
+//	segNumF3=0;
+//	segmentF3[0] = segmentF2[0];
+//	segTypeF3[0] = segTypeF2[0];
+//	for (i = 1; i <= segNumF2; i++) {
+//		difType = segTypeF2[i] - segTypeF2[i-1];
+//		if (difType != 0) {
+//			segNumF3++;
+//			segmentF3[segNumF3] = segmentF2[i];
+//			segTypeF3[segNumF3] = segTypeF2[i];
+//		}
+//		else {
+//			segmentF3[segNumF3] = segmentF2[i];
+//
+//		}
+//	}
+
+
+	//Filter Based on left marker, check long segment
 	segNumFL=0;
 	segmentFL[0] = segmentF3[0];
 	segTypeFL[0] = segTypeF3[0];
@@ -337,6 +340,8 @@ void FilterSegments(void) {
 		segmentFL[segNumFL] = segmentF3[i];
 		segTypeFL[segNumFL] = segTypeF3[i];
 	}
+
+
 	AnalyseCurve();
 	AnalyseJunction();
 }
@@ -386,6 +391,14 @@ void AnalyseCurve(void) {
 	}
 	for (i = 0; i <= segNumFL; i++) {
 		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
+	}
+	int tCurveSpeed = 0;
+	for (i = segNumFL; i>0; i--) {
+		if((segTypeFL[i]!=0)&&(segTypeFL[i-1]!=0)){
+			tCurveSpeed = (int)(sqrt(2.0f*dis[i-1]*3000+(long)curveSpeed[i]*(long)curveSpeed[i]));
+			if(tCurveSpeed < curveSpeed[i-1]) curveSpeed[i-1] = tCurveSpeed;
+		}
+		//curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
 	}
 }
 

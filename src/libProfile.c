@@ -161,7 +161,7 @@ unsigned GetDecRequired(int32_t dist, int32_t afterBrakeDist, int16_t curSpeed, 
 	if (endSpeed<0) endSpeed = -endSpeed;
 	if (dist<0) dist = -dist;
 	if (endSpeed>=curSpeed) return 0;
-	if (dist<afterBrakeDist) return ACC_mm_oc(9800);
+	if (dist<=afterBrakeDist) return ACC_mm_oc(9800);
 
 
 	//(curXSpeed*curXSpeed - endXSpeed*endXSpeed)/(2*(finalPosX-curPosX-brakeAllowanceX))
