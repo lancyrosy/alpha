@@ -40,7 +40,7 @@ volatile bool LMarkerFlag=FALSE;
 volatile bool JMarkerFlag=FALSE;
 volatile int LMarkerFlagPos;
 volatile int JMarkerFlagPos;
-
+volatile int fastModeX=1;
 unsigned pulseDuration[2];
 int pulseBuzzerDuration = 0;
 
@@ -55,6 +55,14 @@ int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
 
+volatile int16_t maxSpeed;
+volatile int16_t minSpeed;
+volatile int16_t maxRad;
+volatile int16_t minRad;
+
+int accStr=9000, decStr=10000;
+int accCur=3000, decCur=3000;
+
 volatile int LSumMarker,RSumMarker,sumJunction,disL,disR;
 int LState,RState,JLState,JRState;
 
@@ -65,6 +73,7 @@ bool bJunFlag = FALSE;
 void LMarkerDetect();
 void RMarkerDetect();
 void JMarkerDetect();
+void CurveSpeed();
 
 
 void LogData(int data) {
@@ -76,7 +85,7 @@ void LogData(int data) {
 	}
 }
 void PrintLog() {
-	int i;
+	int i=0;
 	logFlag=FALSE;
 	if(logFastFlag == TRUE){
 		printf("\n   \n");
@@ -222,7 +231,7 @@ void FilterSegments(void) {
 	segmentF1[0] = segment[0];
 	segTypeF1[0] = segType[0];
 	for (i = 1; i <= segNum; i++) {
-		if ((segTypeF1[i]==0)&&(segType[i+1]==0)) {
+		if ((segType[i]==0)&&(segType[i+1]==0)) {
 			segmentF1[segNumF1] = segment[i];
 		}
 		else {
@@ -343,6 +352,7 @@ void FilterSegments(void) {
 	AnalyseCurve();
 	AnalyseJunction();
 }
+
 void AnalyseCurve(void) {
 	int i,arcLength,radian,angle;
 	int w=1;
@@ -387,19 +397,53 @@ void AnalyseCurve(void) {
 			sum=0;
 		}
 	}
-	for (i = 0; i <= segNumFL; i++) {
-		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
-	}
-	int tCurveSpeed = 0;
-	for (i = segNumFL; i>0; i--) {
-		if((segTypeFL[i]!=0)&&(segTypeFL[i-1]!=0)){
-			tCurveSpeed = (int)(sqrt(2.0f*dis[i-1]*3000+(long)curveSpeed[i]*(long)curveSpeed[i]));
-			if(tCurveSpeed < curveSpeed[i-1]) curveSpeed[i-1] = tCurveSpeed;
-		}
-		//curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
-	}
 }
 
+void CurveSpeed(void){
+	int i;
+	switch (fastModeX) {
+		case 1:
+			maxSpeed = 3000;
+			minSpeed = 800;
+			maxRad = 1500;
+			minRad = 100;
+		    accCur=2000;
+		    decCur=3000;
+			break;
+		case 2:
+			maxSpeed = 3500;
+			minSpeed = 1400;
+			maxRad = 1200;
+			minRad = 100;
+			accCur=2000;
+			decCur=3000;
+			break;
+		case 3:
+			maxSpeed = 3500;
+			minSpeed = 1400;
+			maxRad = 1200;
+			minRad = 100;
+			accCur=2000;
+			decCur=3000;
+			break;
+		}
+		for (i = 0; i <= segNumFL; i++) {
+			curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
+	//		int tRad = fabs(rad[i]);
+	//		if (tRad<minRad) tRad = minRad;
+	//		curveSpeed[i]= minSpeed + (int)((long)(sqrt(fabs(rad[i])-minRad))*(long)(maxSpeed-minSpeed)/sqrt(maxRad-minRad));
+
+		}
+		int tCurveSpeed = 0;
+		for (i = segNumFL; i>0; i--) {
+			if((segTypeFL[i]!=0)&&(segTypeFL[i-1]!=0)){
+				tCurveSpeed = (int)(sqrt(2.0f*dis[i-1]*3000+(long)curveSpeed[i]*(long)curveSpeed[i]));
+				if(tCurveSpeed < curveSpeed[i-1]) curveSpeed[i-1] = tCurveSpeed;
+			}
+		}
+
+
+}
 void AnalyseJunction(void){
 	int index,i;
 	int numJunction=0;
@@ -422,8 +466,7 @@ int SegmentNum=0;
 void FastRun(void) {
 	int i = 0;
 	int endSpeed = 2500;
-	int accStr=9000, decStr=9000;
-	int accCur=2000, decCur=3000;
+
 	char s[8];
 
 	JIndex = 0;
@@ -432,7 +475,7 @@ void FastRun(void) {
 	EnWheelMotor();
 	ClearMarkerFlag();
 	fastFlag=TRUE;
-
+	CurveSpeed();
 	MoveRobotCheck(XSPEED, 1000, 50, 1500, 1200, 2000, 2000, 1); //before first marker
 	if(RSumMarker == 1){
 		logFlag = TRUE;
@@ -447,7 +490,7 @@ void FastRun(void) {
 			else {								//Last segment
 				strEndSpeed = endSpeed;
 			}
-			MoveRobotStraight(XSPEED, dis[i], 50+dis[i]/20, 3300, strEndSpeed, accStr, decStr, 2, SegmentNum);
+			MoveRobotStraight(XSPEED, dis[i], 20+dis[i]/25, 3300, strEndSpeed, accStr, decStr, 2, SegmentNum);
 			//pulseBuzzer(250,50);
 		}
 		else {							//Curve

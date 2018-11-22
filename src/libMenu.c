@@ -70,7 +70,9 @@ void MenuRun(){
 	static const char *const menuStrg[] = {
 				"----",
 				"expR",
-				"fastR",
+				"fastR1",
+				"fastR2",
+				"fastR3",
 				"dumbR",
 				"testR",
 				"pLog",
@@ -78,9 +80,9 @@ void MenuRun(){
 	};
 	while(1) {
 		menuNum = 1;
-	     selectedItem=SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
+		selectedItem = SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
 
-		switch(selectedItem) {
+		switch (selectedItem) {
 		case 1:
 			EnableSensor();
 			EnWheelMotor();
@@ -91,7 +93,8 @@ void MenuRun(){
 		case 2:
 			EnableSensor();
 			EnWheelMotor();
-			if(exploreFlag==TRUE){
+			if (exploreFlag == TRUE) {
+				fastModeX = 1;
 				FastRun();
 			}
 			DisableSensor();
@@ -100,26 +103,46 @@ void MenuRun(){
 		case 3:
 			EnableSensor();
 			EnWheelMotor();
-			DumbRun();
+			if (exploreFlag == TRUE) {
+				fastModeX = 2;
+				FastRun();
+			}
 			DisableSensor();
 			DisWheelMotor();
 			break;
 		case 4:
 			EnableSensor();
 			EnWheelMotor();
-			TestRun();
+			if (exploreFlag == TRUE) {
+				fastModeX = 3;
+				FastRun();
+			}
 			DisableSensor();
 			DisWheelMotor();
 			break;
 		case 5:
-			PrintLog();
+			EnableSensor();
+			EnWheelMotor();
+			DumbRun();
+			DisableSensor();
+			DisWheelMotor();
 			break;
 		case 6:
+			EnableSensor();
+			EnWheelMotor();
+			TestRun();
+			DisableSensor();
+			DisWheelMotor();
+			break;
+		case 7:
+			PrintLog();
+			break;
+		case 8:
 			PrintSegment();
 			break;
-	    case MENU_EXIT:
+		case MENU_EXIT:
 			return;
-     	}
+		}
 	}
 }
 void MenuTest(){
