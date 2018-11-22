@@ -8,10 +8,9 @@ void FindSegments(void);
 void FilterSegments(void);
 void AnalyseCurve(void);
 void AnalyseJunction(void);
-
 #define LOGSIZE	12200
 #define SEGSIZE 300
-extern int logData[LOGSIZE];
+int logData[LOGSIZE];
 int t = 0;
 volatile uint16_t segment[SEGSIZE], segNum;
 volatile uint16_t segmentF1[SEGSIZE], segNumF1;
@@ -207,7 +206,7 @@ void FindSegments(void) {
 	FilterSegments();
 }
 void FilterSegments(void) {
-	int difNum, difType, i;
+	int difNum, i;
 
 	//Filter out spike. Make it straight
 
@@ -218,19 +217,18 @@ void FilterSegments(void) {
 		}
 	}
 
-	//Join all adjacent same segment types
+	//Join all adjacent same segment types (for straight only)
 	segNumF1=0;
 	segmentF1[0] = segment[0];
 	segTypeF1[0] = segType[0];
 	for (i = 1; i <= segNum; i++) {
-		difType = segType[i] - segType[i - 1];
-		if (difType != 0) {
+		if ((segTypeF1[i]==0)&&(segType[i+1]==0)) {
+			segmentF1[segNumF1] = segment[i];
+		}
+		else {
 			segNumF1++;
 			segmentF1[segNumF1] = segment[i];
 			segTypeF1[segNumF1] = segType[i];
-		}
-		else {
-			segmentF1[segNumF1] = segment[i];
 		}
 	}
 
@@ -419,6 +417,7 @@ void AnalyseJunction(void){
 	}
 	junction[numJunction] = -1;
 }
+
 int SegmentNum=0;
 void FastRun(void) {
 	int i = 0;
@@ -535,6 +534,13 @@ void TestRun(void){
 	StopRobot();
 	WaitSW();
 }
+
+void Analyse(){
+	FindSegments();
+	DelaymSec(500);
+	pulseBuzzer(2000,100);
+}
+
 #define LEFT_SEN	13
 #define RIGHT_SEN	14
 //Marker detection
