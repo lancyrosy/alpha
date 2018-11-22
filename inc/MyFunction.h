@@ -20,7 +20,7 @@ extern int JIndex;
 extern int Index;
 extern int junction[100];
 extern int SegmentNum;
-
+extern volatile int fastModeX;
 #define SEGSIZE 300
 extern volatile uint16_t segment[SEGSIZE], segNum;
 extern volatile uint16_t segmentF1[SEGSIZE], segNumF1;

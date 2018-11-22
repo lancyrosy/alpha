@@ -41,7 +41,7 @@ volatile bool LMarkerFlag=FALSE;
 volatile bool JMarkerFlag=FALSE;
 volatile int LMarkerFlagPos;
 volatile int JMarkerFlagPos;
-
+volatile int fastModeX;
 unsigned pulseDuration[2];
 int pulseBuzzerDuration = 0;
 
@@ -55,6 +55,14 @@ int JMarkerNum = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
+
+volatile int16_t maxSpeed ;
+volatile int16_t minSpeed ;
+volatile int16_t maxRad ;
+volatile int16_t minRad ;
+
+int accStr=9000, decStr=9000;
+int accCur=2000, decCur=3000;
 
 volatile int LSumMarker,RSumMarker,sumJunction,disL,disR;
 int LState,RState,JLState,JRState;
@@ -340,6 +348,7 @@ void FilterSegments(void) {
 	AnalyseCurve();
 	AnalyseJunction();
 }
+
 void AnalyseCurve(void) {
 	int i,arcLength,radian,angle;
 	int w=1;
@@ -384,8 +393,35 @@ void AnalyseCurve(void) {
 			sum=0;
 		}
 	}
+	switch (fastModeX) {
+	case 1:
+		maxSpeed = 3500;
+		minSpeed = 1400;
+		maxRad = 3500;
+		minRad = 1400;
+	    accCur=2000;
+	    decCur=3000;
+		break;
+	case 2:
+		maxSpeed = 3500;
+		minSpeed = 1400;
+		maxRad = 3500;
+		minRad = 1400;
+		accCur=2000;
+		decCur=3000;
+		break;
+	case 3:
+		maxSpeed = 3500;
+		minSpeed = 1400;
+		maxRad = 3500;
+		minRad = 1400;
+		accCur=2000;
+		decCur=3000;
+		break;
+	}
 	for (i = 0; i <= segNumFL; i++) {
-		curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
+		//curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
+		curveSpeed[i]= (int)(sqrt(fabs(rad[i])-minRad)*(maxSpeed-minSpeed)/sqrt(maxRad-minRad));
 	}
 }
 
@@ -406,12 +442,12 @@ void AnalyseJunction(void){
 	}
 	junction[numJunction] = -1;
 }
+
 int SegmentNum=0;
 void FastRun(void) {
 	int i = 0;
 	int endSpeed = 2500;
-	int accStr=9000, decStr=9000;
-	int accCur=2000, decCur=3000;
+
 	char s[8];
 
 	JIndex = 0;
