@@ -50,7 +50,7 @@ void Handler_SysTick(void){
 		timeCount++;
 	}
 	count++;
-	fOffset = (sensoroffset*2+fOffset*8)/10; //filtering
+	fOffset = (sensoroffset*5+fOffset*5)/10; //filtering
 	if(count==5){
 
 		if(fastFlag == FALSE){ //Explore run
@@ -60,18 +60,18 @@ void Handler_SysTick(void){
 	}
 	if(fastFlag == TRUE){
 		LogData(SegmentNum*100);
-		LogData(curSpeed[0] / SPEED_mm_oc(1));
-		LogData(targetSpeed[0] / SPEED_mm_oc(1));
-		LogData(wheelPWM[0]);
-		LogData(wheelPWM[1]);
+		LogData(sensor[8]);
+		LogData(sensor[9]);
+		LogData(sensor[10]);
+		LogData(sensoroffsetX2);
 		logFastFlag = TRUE;
 	}
 	if(senLowFlag)
 		senLowCount++;
 	else
 		senLowCount =0;
-//	if(senLowCount >= 100)
-//		bSWFlag = TRUE;
+	if(senLowCount >= 100)
+		bSWFlag = TRUE;
 
 	StartSensorISR();
 
