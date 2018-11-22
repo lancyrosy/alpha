@@ -80,9 +80,9 @@ void MenuRun(){
 	};
 	while(1) {
 		menuNum = 1;
-	     selectedItem=SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
+		selectedItem = SelectMenuItem(&itemNum, MENU_SIZE, menuStrg);
 
-		switch(selectedItem) {
+		switch (selectedItem) {
 		case 1:
 			EnableSensor();
 			EnWheelMotor();
@@ -93,8 +93,8 @@ void MenuRun(){
 		case 2:
 			EnableSensor();
 			EnWheelMotor();
-			if(exploreFlag==TRUE){
-				fastModeX=1;
+			if (exploreFlag == TRUE) {
+				fastModeX = 1;
 				FastRun();
 			}
 			DisableSensor();
@@ -140,9 +140,9 @@ void MenuRun(){
 		case 8:
 			PrintSegment();
 			break;
-	    case MENU_EXIT:
+		case MENU_EXIT:
 			return;
-     	}
+		}
 	}
 }
 void MenuTest(){

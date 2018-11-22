@@ -62,8 +62,9 @@ void Handler_SysTick(void){
 		LogData(SegmentNum*100);
 		LogData(sensor[8]);
 		LogData(sensor[9]);
-		LogData(sensor[10]);
+		//LogData(sensor[10]);
 		LogData(sensoroffsetX2);
+		LogData(curSpeed[0]);
 		logFastFlag = TRUE;
 	}
 	if(senLowFlag)
