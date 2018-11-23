@@ -231,7 +231,7 @@ void FilterSegments(void) {
 	segmentF1[0] = segment[0];
 	segTypeF1[0] = segType[0];
 	for (i = 1; i <= segNum; i++) {
-		if ((segType[i]==0)&&(segType[i+1]==0)) {
+		if ((segType[i]==0)&&(segType[i-1]==0)) {
 			segmentF1[segNumF1] = segment[i];
 		}
 		else {
@@ -437,7 +437,7 @@ void CurveSpeed(void){
 		int tCurveSpeed = 0;
 		for (i = segNumFL; i>0; i--) {
 			if((segTypeFL[i]!=0)&&(segTypeFL[i-1]!=0)){
-				tCurveSpeed = (int)(sqrt(2.0f*dis[i-1]*3000+(long)curveSpeed[i]*(long)curveSpeed[i]));
+				tCurveSpeed = (int)(sqrt(2.0f*dis[i-1]*decCur+(long)curveSpeed[i]*(long)curveSpeed[i]));
 				if(tCurveSpeed < curveSpeed[i-1]) curveSpeed[i-1] = tCurveSpeed;
 			}
 		}
@@ -567,7 +567,7 @@ void TestRun(void){
 
 	while(RSumMarker!=2)
 	{
-		SetRobotSpeedX(1500);
+		MoveRobot(XSPEED, 3500, 20+3500/25, 3000, 0, 11000, 11000);
 		if (bSWFlag ) {
 			break;
 		}
@@ -579,8 +579,8 @@ void TestRun(void){
 }
 
 
-#define LEFT_SEN	13
-#define RIGHT_SEN	14
+#define LEFT_SEN	14
+#define RIGHT_SEN	13
 //Marker detection
 void LMarkerDetect(){
 	if (sensorCal[LEFT_SEN] >= 400) {
