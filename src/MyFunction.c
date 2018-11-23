@@ -578,11 +578,6 @@ void TestRun(void){
 	WaitSW();
 }
 
-void Analyse(){
-	FindSegments();
-	DelaymSec(500);
-	pulseBuzzer(2000,100);
-}
 
 #define LEFT_SEN	13
 #define RIGHT_SEN	14

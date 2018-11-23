@@ -276,8 +276,6 @@ void MyTest(){
 		static const char *const menuStrg[]={
 				"----",
 				"TestR",
-				"Anlys"
-				"simRun",
 				"PLog",
 				"pSeg",
 				"ColBlack",
@@ -293,29 +291,19 @@ void MyTest(){
 				DisWheelMotor();
 				break;
 			case 2:
-				Analyse();
-				break;
-			case 3:
-				EnableSensor();
-				EnWheelMotor();
-				FastRun();
-				DisableSensor();
-				DisWheelMotor();
-				break;
-			case 4:
 				PrintLog();
 				break;
-			case 5:
+			case 3:
 				PrintSegment();
 				break;
-			case 6:
+			case 4:
 				EnableSensor();
 				EnWheelMotor();
 				MoveRobotCalibrate(XSPEED, 1000, 0, 200, 0, 1000,1000);
 				DisableSensor();
 				DisWheelMotor();
 				break;
-			case 7:
+			case 5:
 				PrintBlackValue();
 				break;
 			case MENU_EXIT:
