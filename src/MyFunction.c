@@ -64,7 +64,8 @@ volatile int16_t minRad;
 int accStr=9000, decStr=10000;
 int accCur=3000, decCur=3000;
 
-volatile int LSumMarker,RSumMarker,sumJunction,disL,disR;
+volatile int LSumMarker,RSumMarker,sumJunction;
+volatile long disL,disR;
 int LState,RState,JLState,JRState;
 
 
@@ -465,18 +466,29 @@ void CurveSpeed(void){
 			break;
 		case 3:
 			x=12000;
-			accCur=2000;
-			decCur=3000;
+			accCur=3000;
+			decCur=4000;
 			break;
 		}
 		for (i = 0; i <= segNumFL; i++) {
-			m = x;
-//			if(abs(arcAngle[i])>2000)
-//				m = x*1.2f;
-//			if(dis[i]>1000)
-//				m = x*1.1f;
+
+			//small curve  MAXSPEED=
+			m=x;
+			if(dis[i]<200){
+//				m=x*dis[i]*(0.0013f);
+			}
+			//medium curve
+			else if ((dis[i]>200)&&(dis[i]<400)){
+//				m=x*dis[i]*(0.0015f);
+			}
+			//big curve
+			else{
+//				m=x*dis[i]*(0.0018f);
+			}
+			//m=dis[i]*(0.002)*x;
 			curveSpeed[i]= (int)(sqrt(fabs(rad[i])*m));
-			// Limit speed
+			// Limit max speed
+
 			if(curveSpeed[i]>3000)
 				curveSpeed[i]=3000;
 			if(curveSpeed[i]<1200)
@@ -632,8 +644,8 @@ void TestRun(void){
 }
 
 
-#define LEFT_SEN	13
-#define RIGHT_SEN	14
+#define LEFT_SEN	14
+#define RIGHT_SEN	13
 //Marker detection
 void LMarkerDetect(){
 	if (sensorCal[LEFT_SEN] >= 400) {
@@ -643,11 +655,11 @@ void LMarkerDetect(){
 	if (sensorCal[LEFT_SEN] <= 300 && LState == 1){
 		LState = 0;
 		JLState = 1;
-		disL = curPos[0]/DIST_mm_oc(1);
+		disL = curPosTotal[0]/DIST_mm_oc(1);
 		JMarkerDetect();
 	}
 	if (JLState==1) {
-		uint16_t tDist = curPos[0]/DIST_mm_oc(1);
+		uint16_t tDist = curPosTotal[0]/DIST_mm_oc(1);
 		if ((tDist-disL)>30) {
 			JLState = 0;
 			LSumMarker ++;
@@ -668,11 +680,11 @@ void RMarkerDetect(){
 	if (sensorCal[RIGHT_SEN] <= 300 && RState == 1){
 		RState = 0;
 		JRState = 1;
-		disR = curPos[0]/DIST_mm_oc(1);
+		disR = curPosTotal[0]/DIST_mm_oc(1);
 		JMarkerDetect();
 	}
 	if (JRState==1) {
-		uint16_t tDist = curPos[0]/DIST_mm_oc(1);
+		uint16_t tDist = curPosTotal[0]/DIST_mm_oc(1);
 		if ((tDist-disR)>30) {
 			JRState = 0;
 			RSumMarker ++;
@@ -687,7 +699,7 @@ void JMarkerDetect(){
 			sumJunction++;
 			JMarkerFlag=TRUE;
 			if(fastFlag==FALSE){
-				JMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
+				//JMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 				JMarker[JMarkerNum] = (timeCount-60)/5;
 				JMarkerNum++;
 				pulseBuzzer(2500, 50);
