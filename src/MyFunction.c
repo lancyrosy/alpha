@@ -51,7 +51,7 @@ volatile int LeftNum = 0;
 int leftm[10];
 //for Junction marker
 volatile uint16_t  JMarker[100];
-int JMarkerNum = 0;
+volatile int JMarkerNum = 0;
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
@@ -107,25 +107,25 @@ void PrintLog() {
 
 void PrintSegment() {
 	int i;
-		for (i=0; i<= segNum; i++ ) {
-			printf("%5d  %2d\n", segment[i], segType[i]);
-		}
-		printf("\n\n\n");
-		for (i=0; i<= segNumF1; i++ ) {
-			printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
-		}
-		printf("\n\n\n");
-		for (i=0; i<= segNumF2; i++ ) {
-			printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
-		}
-		printf("\n\n\n");
-		for (i=0; i<= segNumF3; i++ ) {
-			printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
-		}
+	for (i=0; i<= segNum; i++ ) {
+		printf("%5d  %2d\n", segment[i], segType[i]);
+	}
 	printf("\n\n\n");
-		for (i=0; i<LeftNum; i++ ) {
-			printf("%5d\n ", LeftMarker[i]);
-		}
+	for (i=0; i<= segNumF1; i++ ) {
+		printf("%5d  %2d\n", segmentF1[i], segTypeF1[i]);
+	}
+	printf("\n\n\n");
+	for (i=0; i<= segNumF2; i++ ) {
+		printf("%5d  %2d\n", segmentF2[i], segTypeF2[i]);
+	}
+	printf("\n\n\n");
+	for (i=0; i<= segNumF3; i++ ) {
+		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
+	}
+	printf("\n\n\n");
+	for (i=0; i<LeftNum; i++ ) {
+		printf("%5d\n ", LeftMarker[i]);
+	}
 	printf("\n\n\n");
 	printf("          arcAngle  rad  dis  curveSpeed\n");
 	for (i=0; i<= segNumFL; i++ ) {
@@ -135,7 +135,6 @@ void PrintSegment() {
 	for (i=0; i<JunctionTotal; i++ ) {
 		printf("%5d %5d\n ", JMarker[i],junction[i]);
 	}
-	printf("JunctionTotal = %3d\n",JunctionTotal);
 
 }
 void pulseLED(int num, int duration){
@@ -144,7 +143,7 @@ void pulseLED(int num, int duration){
 }
 void pulseBuzzer( int period, int duration){
 	TIM2->ARR = period;
-    TIM2->CCR2 = TIM2->ARR/2;
+	TIM2->CCR2 = TIM2->ARR/2;
 	pulseBuzzerDuration = duration;
 }
 
@@ -411,10 +410,11 @@ void AnalyseCurve(void) {
 			if(i==segmentFL[0]){
 				arcLength=segmentFL[0]*5;
 				dis[w]=arcLength;
-				angle=sum/13;
+				angle=sum/14;
 				arcAngle[w]=angle;
 				radian=(int)(arcLength/(angle*3.142f/1800));
 				rad[w]=radian;
+
 //				angle = radian = 0; //if straight, clear angle and radius value
 				w++;
 				sum=0;
@@ -446,7 +446,7 @@ void AnalyseCurve(void) {
 
 void CurveSpeed(void){
 	int i;
-	double x;
+	double x,m;
 	switch (fastModeX) {
 		case 1:
 
@@ -454,9 +454,7 @@ void CurveSpeed(void){
 //			minSpeed = 800;
 //			maxRad = 1500;
 //			minRad = 100;
-
 			x=10000;
-
 		    accCur=2000;
 		    decCur=3000;
 			break;
@@ -472,22 +470,17 @@ void CurveSpeed(void){
 			break;
 		}
 		for (i = 0; i <= segNumFL; i++) {
-			//small curve
-			if(rad[i]<200){
-				//x=x*(0.9f);
-			}
-			//medium curve
-			else if ((rad[i]>200)&&(rad[i]<800)){
-				//x=x*(1.1f);
-			}
-			//big curve
-			else{
-				//x=x*(1.3f);
-			}
-			curveSpeed[i]= (int)(sqrt(fabs(rad[i])*x));
-			// Limit max speed
+			m = x;
+//			if(abs(arcAngle[i])>2000)
+//				m = x*1.2f;
+//			if(dis[i]>1000)
+//				m = x*1.1f;
+			curveSpeed[i]= (int)(sqrt(fabs(rad[i])*m));
+			// Limit speed
 			if(curveSpeed[i]>3000)
 				curveSpeed[i]=3000;
+			if(curveSpeed[i]<1200)
+				curveSpeed[i]=1200;
 
 	//		int tRad = fabs(rad[i]);
 	//		if (tRad<minRad) tRad = minRad;

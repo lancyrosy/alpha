@@ -292,15 +292,15 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 		if (bSWFlag) {
 			break;
 		}
-		while(junction[JIndex] == segmentNum && !bSWFlag) {
-			DispDotMatrix("JJCC");
-			if (JMarkerFlag == TRUE) {
-				curPos[0] = (JMarker[JIndex]-segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
-				JIndex++;
-				JMarkerFlag = FALSE;
-				pulseBuzzer(500, 50);
-			}
-		}
+//		while(junction[JIndex] == segmentNum && !bSWFlag) {
+//			DispDotMatrix("JJCC");
+//			if (JMarkerFlag == TRUE) {
+//				curPos[0] = (JMarker[JIndex]-segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
+//				JIndex++;
+//				JMarkerFlag = FALSE;
+//				pulseBuzzer(500, 50);
+//			}
+//		}
 		DispDotMatrix("    ");
 		if (bSWFlag) {
 			break;
@@ -323,11 +323,11 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 			}
 		}
 	}
-//	while((curPos[0]< (finalPos[0]+DIST_mm_oc(40))) && (segTypeFL[segmentNum+1] == 0) && !bSWFlag){//Next segment is straight
-//		if((abs(sensoroffset)<200)||(abs(sensoroffset2)<100)) {
-//			break;
-//		}
-//	}
+	while((curPos[0]< (finalPos[0]+DIST_mm_oc(40))) && (segTypeFL[segmentNum+1] == 0) && !bSWFlag){//Next segment is straight
+		if(((abs(sensoroffset)<200)||(abs(sensoroffset2)<100))&&(abs(sensoroffset2)!=1)){
+			break;
+		}
+	}
 }
 
 
@@ -368,7 +368,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 				}
 			}
 		}
-		while(junction[JIndex] == segmentNum && !bSWFlag) {
+		while((curPos[0]< (finalPos[0]+DIST_mm_oc(40)))&&(junction[JIndex] == segmentNum) && (!bSWFlag)) {
 			DispDotMatrix("JJSS");
 			if (JMarkerFlag == TRUE) {
 				curPos[0] = (JMarker[JIndex]-segmentFL[segmentNum-1])*5*DIST_mm_oc(1);
