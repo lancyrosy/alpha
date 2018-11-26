@@ -403,7 +403,7 @@ int16_t Cen1(){
 	if (sumHigh >= 7) {
 		sensoroffset = sensoroffsetX2 = -1;// meet junction
 	}
-	if (sumLowFst == 4) sensoroffset2 = 0;
+	if (sumLowFst == 4) sensoroffset2 = 1;
 	if (sumLowScd == 9) {
 		sensoroffset = 1;
 	}
