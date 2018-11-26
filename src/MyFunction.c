@@ -217,7 +217,7 @@ void FindSegments(void) {
 }
 
 void FilterSegments(void) {
-	int difNum, i;
+	int difNum, difType, i;
 
 	//Filter out spike. Make it straight
 	for (i = 1; i <= segNum; i++) {
@@ -234,6 +234,8 @@ void FilterSegments(void) {
 	int index = 0;
 	for (i=1; i <= segNum; i++){
 		if((JMarker[index]>=segment[i-1])&&(JMarker[index]<segment[i])){
+			segNumF1++;
+			segmentF1[segNumF1] = segment[i];
 			segTypeF1[segNumF1] = 0;
 			index++;
 			while((JMarker[index]>segment[i-1])&&(JMarker[index]<segment[i])){
@@ -262,14 +264,36 @@ void FilterSegments(void) {
 		}
 	}
 
-	// Join short straight segment to previous segment
+	// Join short segments to previous segments (different segType)
 	segNumF3 = 0;
 	segmentF3[0] = segmentF2[0];
 	segTypeF3[0] = segTypeF2[0];
+	bool JFlag = FALSE;
 	for (i = 1; i <= segNumF2; i++) {
 		difNum = segmentF2[i] - segmentF2[i-1];
-		if ((difNum < 15)&&(segTypeF2[i]==0)) {
-			segmentF3[segNumF3] = segmentF2[i];
+		difType = segTypeF2[i] - segTypeF2[i-1];
+		if (difNum < 20){
+			if(abs(difType) == 1){
+				for(index=0; index<JMarkerNum;index++){
+					if((JMarker[index]>=segmentF2[i-1])&&(JMarker[index]<segmentF2[i])){
+						JFlag = TRUE;
+					}
+				}
+				if(JFlag!=TRUE){
+					segmentF3[segNumF3] = segmentF2[i];
+				}
+				else{
+					segNumF3++;
+					segmentF3[segNumF3] = segmentF2[i];
+					segTypeF3[segNumF3] = segTypeF2[i];
+					JFlag = FALSE;
+				}
+			}
+			else{
+				segNumF3++;
+				segmentF3[segNumF3] = segmentF2[i];
+				segTypeF3[segNumF3] = segTypeF2[i];
+			}
 		}
 		else {
 			segNumF3++;
@@ -601,8 +625,8 @@ void TestRun(void){
 }
 
 
-#define LEFT_SEN	14
-#define RIGHT_SEN	13
+#define LEFT_SEN	13
+#define RIGHT_SEN	14
 //Marker detection
 void LMarkerDetect(){
 	if (sensorCal[LEFT_SEN] >= 400) {
@@ -622,7 +646,7 @@ void LMarkerDetect(){
 			LSumMarker ++;
 			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			LMarkerFlag=TRUE;
-			LeftMarker[LeftNum] = (timeCount-30-50)/5;
+			LeftMarker[LeftNum] = (timeCount-30-60)/5;
 			LeftNum++;
 			pulseLED(0,100);
 			//pulseBuzzer(1000, 50);
@@ -657,7 +681,7 @@ void JMarkerDetect(){
 			JMarkerFlag=TRUE;
 			if(fastFlag==FALSE){
 				JMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
-				JMarker[JMarkerNum] = (timeCount-50)/5;
+				JMarker[JMarkerNum] = (timeCount-60)/5;
 				JMarkerNum++;
 				pulseBuzzer(2500, 50);
 			}
