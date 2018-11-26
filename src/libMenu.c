@@ -277,7 +277,7 @@ void MyTest(){
 				"----",
 				"TestR",
 				"PLog",
-				"pExpl",
+				"pSeg",
 				"ColBlack",
 				"pBlack"
 		};
