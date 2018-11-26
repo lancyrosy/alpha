@@ -50,7 +50,10 @@ void Handler_SysTick(void){
 		timeCount++;
 	}
 	count++;
+
 	fOffset = (sensoroffset*5+fOffset*5)/10; //filtering
+	//fOffset += 	PIDFeedback[WSPEED];
+
 	if(count==5){
 
 		if(fastFlag == FALSE){ //Explore run

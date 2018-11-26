@@ -48,6 +48,7 @@ unsigned int strEndSpeed;
 //for left marker
 volatile uint16_t  LeftMarker[300];
 volatile int LeftNum = 0;
+int leftm[10];
 //for Junction marker
 volatile uint16_t  JMarker[100];
 int JMarkerNum = 0;
@@ -214,46 +215,90 @@ void FindSegments(void) {
 	segType[segNum] = cFlag;
 	FilterSegments();
 }
+
 void FilterSegments(void) {
-	int difNum, i;
+	int difNum, difType, i;
 
 	//Filter out spike. Make it straight
-
 	for (i = 1; i <= segNum; i++) {
 		difNum = segment[i] - segment[i-1];
-		if (difNum < 15) { //75mm
+		if (difNum < 10) {
 			segType[i] = 0;
 		}
 	}
 
-	//Join all adjacent same segment types (for straight only)
-	segNumF1=0;
+	//make segments with junction straight
+	segNumF1 = 0;
 	segmentF1[0] = segment[0];
 	segTypeF1[0] = segType[0];
-	for (i = 1; i <= segNum; i++) {
-		if ((segType[i]==0)&&(segType[i-1]==0)) {
+	int index = 0;
+	for (i=1; i <= segNum; i++){
+		if((JMarker[index]>=segment[i-1])&&(JMarker[index]<segment[i])){
+			segNumF1++;
 			segmentF1[segNumF1] = segment[i];
+			segTypeF1[segNumF1] = 0;
+			index++;
+			while((JMarker[index]>segment[i-1])&&(JMarker[index]<segment[i])){
+				index++;
+			}
 		}
-		else {
+		else{
 			segNumF1++;
 			segmentF1[segNumF1] = segment[i];
 			segTypeF1[segNumF1] = segType[i];
 		}
 	}
 
-	// Join short segment to previous segment (for straight only)
-	segNumF3 = 0;
-	segmentF3[0] = segmentF1[0];
-	segTypeF3[0] = segTypeF1[0];
+	//Join all adjacent same segment types (for straight only)
+	segNumF2=0;
+	segmentF2[0] = segmentF1[0];
+	segTypeF2[0] = segTypeF1[0];
 	for (i = 1; i <= segNumF1; i++) {
-		difNum = segmentF1[i] - segmentF1[i-1];
-		if ((difNum < 20)&&(segTypeF1[i]==0)) { //100mm
-			segmentF3[segNumF3] = segmentF1[i];
+		if ((segTypeF1[i]==0)&&(segTypeF1[i-1]==0)) {
+			segmentF2[segNumF2] = segmentF1[i];
+		}
+		else {
+			segNumF2++;
+			segmentF2[segNumF2] = segmentF1[i];
+			segTypeF2[segNumF2] = segTypeF1[i];
+		}
+	}
+
+	// Join short segments to previous segments (different segType)
+	segNumF3 = 0;
+	segmentF3[0] = segmentF2[0];
+	segTypeF3[0] = segTypeF2[0];
+	bool JFlag = FALSE;
+	for (i = 1; i <= segNumF2; i++) {
+		difNum = segmentF2[i] - segmentF2[i-1];
+		difType = segTypeF2[i] - segTypeF2[i-1];
+		if (difNum < 20){
+			if(abs(difType) == 1){
+				for(index=0; index<JMarkerNum;index++){
+					if((JMarker[index]>=segmentF2[i-1])&&(JMarker[index]<segmentF2[i])){
+						JFlag = TRUE;
+					}
+				}
+				if(JFlag!=TRUE){
+					segmentF3[segNumF3] = segmentF2[i];
+				}
+				else{
+					segNumF3++;
+					segmentF3[segNumF3] = segmentF2[i];
+					segTypeF3[segNumF3] = segTypeF2[i];
+					JFlag = FALSE;
+				}
+			}
+			else{
+				segNumF3++;
+				segmentF3[segNumF3] = segmentF2[i];
+				segTypeF3[segNumF3] = segTypeF2[i];
+			}
 		}
 		else {
 			segNumF3++;
-			segmentF3[segNumF3] = segmentF1[i];
-			segTypeF3[segNumF3] = segTypeF1[i];
+			segmentF3[segNumF3] = segmentF2[i];
+			segTypeF3[segNumF3] = segTypeF2[i];
 		}
 	}
 
@@ -287,8 +332,7 @@ void FilterSegments(void) {
 		if(segmentF3[i] - segmentF3[i-1] > 250){ //if one segment more than 300(1500mm)
 			int index,index2,index3,sum,num,ave,leftmNum;
 			sum = ave = num = 0;
-			leftmNum = 0;
-			int leftm[5];
+			leftmNum = 0;//must be clear to 0 before checking
 			for(index = 0; index < LeftNum; index++){ //check left marker inside this segment
 				if((LeftMarker[index] > (segmentF3[i-1]+20))&&(LeftMarker[index] < (segmentF3[i]-20))){
 					leftm[leftmNum] = LeftMarker[index];
@@ -351,6 +395,7 @@ void FilterSegments(void) {
 
 	AnalyseCurve();
 	AnalyseJunction();
+	CurveSpeed();
 }
 
 void AnalyseCurve(void) {
@@ -405,6 +450,7 @@ void CurveSpeed(void){
 		case 1:
 			maxSpeed = 3000;
 			minSpeed = 800;
+
 			maxRad = 1500;
 			minRad = 100;
 		    accCur=2000;
@@ -579,8 +625,8 @@ void TestRun(void){
 }
 
 
-#define LEFT_SEN	14
-#define RIGHT_SEN	13
+#define LEFT_SEN	13
+#define RIGHT_SEN	14
 //Marker detection
 void LMarkerDetect(){
 	if (sensorCal[LEFT_SEN] >= 400) {
@@ -600,7 +646,7 @@ void LMarkerDetect(){
 			LSumMarker ++;
 			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			LMarkerFlag=TRUE;
-			LeftMarker[LeftNum] = (timeCount-30)/5;
+			LeftMarker[LeftNum] = (timeCount-30-60)/5;
 			LeftNum++;
 			pulseLED(0,100);
 			//pulseBuzzer(1000, 50);
@@ -635,7 +681,7 @@ void JMarkerDetect(){
 			JMarkerFlag=TRUE;
 			if(fastFlag==FALSE){
 				JMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
-				JMarker[JMarkerNum] = timeCount/5;
+				JMarker[JMarkerNum] = (timeCount-60)/5;
 				JMarkerNum++;
 				pulseBuzzer(2500, 50);
 			}
