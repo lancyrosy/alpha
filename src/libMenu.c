@@ -70,11 +70,11 @@ void MenuRun(){
 	static const char *const menuStrg[] = {
 				"----",
 				"expR",
-				"fastR1",
-				"fastR2",
-				"fastR3",
-				"dumbR",
-				"testR",
+				"fR1",
+				"fR2",
+				"fR3",
+				"dumR",
+				"tesR",
 				"pLog",
 				"pSeg"
 	};

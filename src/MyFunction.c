@@ -446,35 +446,49 @@ void AnalyseCurve(void) {
 
 void CurveSpeed(void){
 	int i;
+	double x;
 	switch (fastModeX) {
 		case 1:
-			maxSpeed = 3000;
-			minSpeed = 800;
 
-			maxRad = 1500;
-			minRad = 100;
+//			maxSpeed = 3000;
+//			minSpeed = 800;
+//			maxRad = 1500;
+//			minRad = 100;
+
+			x=10000;
+
 		    accCur=2000;
 		    decCur=3000;
 			break;
 		case 2:
-			maxSpeed = 3500;
-			minSpeed = 1400;
-			maxRad = 1200;
-			minRad = 100;
+			x=10600;
 			accCur=2000;
 			decCur=3000;
 			break;
 		case 3:
-			maxSpeed = 3500;
-			minSpeed = 1400;
-			maxRad = 1200;
-			minRad = 100;
+			x=12000;
 			accCur=2000;
 			decCur=3000;
 			break;
 		}
 		for (i = 0; i <= segNumFL; i++) {
-			curveSpeed[i]= (int)(sqrt(fabs(rad[i])*10600.0f));
+			//small curve
+			if(rad[i]<200){
+				//x=x*(0.9f);
+			}
+			//medium curve
+			else if ((rad[i]>200)&&(rad[i]<800)){
+				//x=x*(1.1f);
+			}
+			//big curve
+			else{
+				//x=x*(1.3f);
+			}
+			curveSpeed[i]= (int)(sqrt(fabs(rad[i])*x));
+			// Limit max speed
+			if(curveSpeed[i]>3000)
+				curveSpeed[i]=3000;
+
 	//		int tRad = fabs(rad[i]);
 	//		if (tRad<minRad) tRad = minRad;
 	//		curveSpeed[i]= minSpeed + (int)((long)(sqrt(fabs(rad[i])-minRad))*(long)(maxSpeed-minSpeed)/sqrt(maxRad-minRad));
