@@ -46,6 +46,7 @@ bool bUseEncoderClickFlag;
 
 int16_t tmplog1, tmplog2, tmplog3, tmplog4;
 
+
 void InitMotor(void)
 {
    	// Phase counting input for motor encoders
@@ -136,6 +137,7 @@ void MotorPID(void)
 	if (speed > SPEED_mm_oc(2000)) speed = SPEED_mm_oc(2000);
 
 	//Kp=/5 robot2
+
 	if (fastFlag==TRUE)
 		posPWM[1] = (0-sensoroffsetX2)/5 + (sensoroffsetold-sensoroffsetX2)*6*speed/SPEED_mm_oc(1000);
 	else
