@@ -140,7 +140,7 @@ void MotorPID(void)
 	if (fastFlag==TRUE)
 		posPWM[1] = (0-sensoroffsetX2)/5 + (sensoroffsetold-sensoroffsetX2)*6*speed/SPEED_mm_oc(1000);
 	else
-		posPWM[1] = ((0-sensoroffsetX2)/4 + (sensoroffsetold-sensoroffsetX2)*12);//*speed/SPEED_mm_oc(1000);
+		posPWM[1] = ((0-sensoroffsetX2)/4 + (sensoroffsetold-sensoroffsetX2)*3);//*speed/SPEED_mm_oc(1000);
 	sensoroffsetold = sensoroffsetX2;
 //	posPWM[1] = (0-sensoroffset)/2 + ((sensoroffsetold-sensoroffset)*12);
 //	sensoroffsetold = sensoroffset;

@@ -10,7 +10,7 @@ INCLUDE "../ld_script/STM32_COMMON.ld"
 /* Memory Spaces Definitions */
 MEMORY
 {
-  RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 128K  /* also change _estack below */
+  RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 64K  /* also change _estack below */
 /*FLASH (rx) : ORIGIN = 0x8000000, LENGTH = 128K*/
 /*  FLASH (rx) : ORIGIN = 0x8003000, LENGTH = 512K - 12K*/
   FLASH (rx) : ORIGIN = 0x8000000, LENGTH = 512K
