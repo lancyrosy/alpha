@@ -18,7 +18,7 @@ volatile int16_t alignSpeed;
 volatile sPos robotPos;
 volatile int16_t robotPosInc[NUM_OF_SPEED];
 
-volatile int32_t curPos[NUM_OF_SPEED];
+volatile int32_t curPos[NUM_OF_SPEED], curPosTotal[NUM_OF_SPEED];
 volatile int32_t finalPos[NUM_OF_SPEED];
 
 int16_t curAcc[NUM_OF_SPEED] = {ACC_mm_oc(5000),		// curAcc[0] is for X-component
@@ -43,6 +43,7 @@ void ResetSpeedProfileData() {
 		curSpeed[i]=0;
 		targetSpeed[i]=0;
 		curPos[i]=0;
+		curPosTotal[i]=0;
 		moveState[i]=-1;
 		posErr[i]=0;
 		posErrOld[i]=0;
@@ -109,6 +110,7 @@ void UpdateWheelPos() {
 		robotPosInc[i] += (curSpeed[i]*curSpeedPercent)/100;
 
 		curPos[i] += robotPosInc[i]/FIXED_PT_SCALING;	// add the whole number
+		curPosTotal[i] += robotPosInc[i]/FIXED_PT_SCALING;	// add the whole number
 
 		PIDInput[i] = robotPosInc[i]/FIXED_PT_SCALING;
 		PIDInput[i] *=2;								// There are 2 wheels, so

@@ -115,7 +115,7 @@ extern volatile int16_t PIDInput[NUM_OF_SPEED];
 extern volatile int16_t oldEncoderData[NUM_OF_WHEEL];
 extern volatile int16_t encoderSpeed[NUM_OF_WHEEL];
 extern volatile int16_t wheelPWM[NUM_OF_WHEEL];
-extern volatile int32_t curPos[NUM_OF_SPEED];
+extern volatile int32_t curPos[NUM_OF_SPEED], curPosTotal[NUM_OF_SPEED];
 extern volatile int32_t finalPos[NUM_OF_SPEED];
 extern volatile int16_t curSpeed[NUM_OF_SPEED];
 extern volatile int16_t targetSpeed[NUM_OF_SPEED];

@@ -123,8 +123,8 @@ void MotorPID(void)
 	{
 		// Accumulate the speed error to get position error
 		posErr[i] += PIDInput[i]-PIDFeedback[i];
-		if (posErr[i] > 850/kp[i])
-			posErr[i] = 850/kp[i];
+		if (posErr[i] > MAXPWMVALUE/kp[i])
+			posErr[i] = MAXPWMVALUE/kp[i];
 
 		// Simple PD control
 		posPWM[i] = (kp[i]*posErr[i] + kd[i]*(posErr[i]-posErrOld[i]));
@@ -151,6 +151,14 @@ void MotorPID(void)
 	/////////////////////////////////////////////////////////
 	wheelPWM[0] = posPWM[0] - posPWM[1];
 	wheelPWM[1] = posPWM[0] + posPWM[1];
+
+	int pwm0 = wheelPWM[0]>0?wheelPWM[0]:-wheelPWM[0];
+	int pwm1 = wheelPWM[1]>0?wheelPWM[1]:-wheelPWM[1];
+	int maxPWM = pwm0>pwm1?pwm0:pwm1;
+	if (maxPWM>MAXPWMVALUE) {
+		wheelPWM[0] = wheelPWM[0]*(long)MAXPWMVALUE/maxPWM;
+		wheelPWM[1] = wheelPWM[1]*(long)MAXPWMVALUE/maxPWM;
+	}
 
 	// Limit maximum PWM value
 	for (i=0; i<NUM_OF_WHEEL; i++) {
