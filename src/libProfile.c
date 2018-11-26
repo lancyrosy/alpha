@@ -325,7 +325,7 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 			}
 		}
 	}
-	while((curPos[0]< (finalPos[0]+DIST_mm_oc(40))) && (segTypeFL[segmentNum+1] == 0) && !bSWFlag){//Next segment is straight
+	while((curPos[0]< (finalPos[0]+DIST_mm_oc(40)))&&(curPos[0]>(finalPos[0]-DIST_mm_oc(40)))&&(segTypeFL[segmentNum+1] == 0) && !bSWFlag){//Next segment is straight
 		if(((abs(sensoroffset)<200)||(abs(sensoroffset2)<100))&&(abs(sensoroffset2)!=1)){
 			break;
 		}
