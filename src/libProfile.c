@@ -312,14 +312,14 @@ void MoveRobotCurve(int16_t speedType, int16_t dist, int16_t brakeDist, int16_t 
 
 	while((curPos[0]< (finalPos[0]+DIST_mm_oc(40))) && (segTypeFL[segmentNum+1] != 0)&&(segTypeFL[segmentNum]!=segTypeFL[segmentNum+1]) && !bSWFlag){//Next segment is curve
 		if(segTypeFL[segmentNum]==-1){// Left-Right
-			if(sensoroffset>0){
+			if((sensoroffset>0)&&(abs(sensoroffset)!=1)){
 				pulseBuzzer(1500, 50);
 				break;
 			}
 		}
 
 		else{						// Right-Left
-			if(sensoroffset<0){
+			if((sensoroffset<0)&&(abs(sensoroffset)!=1)){
 				pulseBuzzer(1500, 50);
 				break;
 			}
