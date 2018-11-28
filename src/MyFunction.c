@@ -16,11 +16,13 @@ volatile uint16_t segment[SEGSIZE], segNum;
 volatile uint16_t segmentF1[SEGSIZE], segNumF1;
 volatile uint16_t segmentF2[SEGSIZE], segNumF2;
 volatile uint16_t segmentF3[SEGSIZE], segNumF3;
+volatile uint16_t segmentF4[SEGSIZE], segNumF4;
 volatile uint16_t segmentFL[SEGSIZE], segNumFL;
 volatile int16_t segType[SEGSIZE];
 volatile int16_t segTypeF1[SEGSIZE];
 volatile int16_t segTypeF2[SEGSIZE];
 volatile int16_t segTypeF3[SEGSIZE];
+volatile int16_t segTypeF4[SEGSIZE];
 volatile int16_t segTypeFL[SEGSIZE];
 uint16_t dis[SEGSIZE];
 int16_t rad[SEGSIZE];
@@ -52,6 +54,7 @@ int leftm[50];
 //for Junction marker
 volatile uint16_t  JMarker[100];
 volatile int JMarkerNum = 0;
+
 int sensoroffsetsqr = 0;
 int tsensoroffset = 0;
 int xSpeed = 0;
@@ -64,7 +67,7 @@ volatile int16_t minRad;
 int accStr=9000, decStr=10000;
 int accCur=3000, decCur=3000;
 
-volatile int LSumMarker,RSumMarker,sumJunction;
+volatile int RSumMarker,sumJunction;
 volatile long disL,disR;
 int LState,RState,JLState,JRState;
 
@@ -122,6 +125,10 @@ void PrintSegment() {
 	printf("\n\n\n");
 	for (i=0; i<= segNumF3; i++ ) {
 		printf("%5d  %2d\n ", segmentF3[i], segTypeF3[i]);
+	}
+	printf("\n\n\n");
+	for (i=0; i<= segNumF4; i++ ) {
+		printf("%5d  %2d\n ", segmentF4[i], segTypeF4[i]);
 	}
 	printf("\n\n\n");
 	for (i=0; i<LeftNum; i++ ) {
@@ -217,7 +224,7 @@ void FindSegments(void) {
 }
 
 void FilterSegments(void) {
-	int difNum, difType, i;
+	int difNum, difType, i, leftmNum;;
 
 	//Filter out spike. Make it straight
 	for (i = 1; i <= segNum; i++) {
@@ -231,9 +238,38 @@ void FilterSegments(void) {
 	segNumF1 = 0;
 	segmentF1[0] = segment[0];
 	segTypeF1[0] = segType[0];
-	int index = 0;
+	int index,index2,index3,sum,num,ave;
+	index = index2 = index3 = 0;
+	sum = num = ave = 0;
 	for (i=1; i <= segNum; i++){
 		if((JMarker[index]>=segment[i-1])&&(JMarker[index]<segment[i])){
+			leftmNum = 0;
+			for(index2 = 0; index2 < LeftNum; index2++){ //check left marker inside this segment
+				if((LeftMarker[index2] > (segment[i-1]+20))&&(LeftMarker[index2] < JMarker[index])){
+					leftm[leftmNum] = LeftMarker[index2];
+					leftmNum++;
+				}
+			}
+			if(leftmNum!=0){
+				segmentF1[segNumF1] = leftm[leftmNum-1];
+				for(index3=segment[i-1];index3<leftm[leftmNum-1];index3++){
+					sum += logData[index3];
+					num++;
+					ave = sum/num;
+				}
+				if(ave>35){
+					segmentFL[segNumFL] = leftm[leftmNum-1];
+					segTypeFL[segNumFL] = 1;
+				}
+				else if(ave<-35){
+					segmentFL[segNumFL] = leftm[leftmNum-1];
+					segTypeFL[segNumFL] = -1;
+				}
+				else{
+					segmentFL[segNumFL] = leftm[leftmNum-1];
+					segTypeFL[segNumFL] = 0;
+				}
+			}
 			segNumF1++;
 			segmentF1[segNumF1] = segment[i];
 			segTypeF1[segNumF1] = 0;
@@ -279,14 +315,14 @@ void FilterSegments(void) {
 						JFlag = TRUE;
 					}
 				}
-				if(JFlag!=TRUE){
-					segmentF3[segNumF3] = segmentF2[i];
-				}
-				else{
+				if(JFlag==TRUE){
 					segNumF3++;
 					segmentF3[segNumF3] = segmentF2[i];
 					segTypeF3[segNumF3] = segTypeF2[i];
 					JFlag = FALSE;
+				}
+				else{ // JFlag = FALSE
+					segmentF3[segNumF3] = segmentF2[i];
 				}
 			}
 			else{
@@ -304,37 +340,49 @@ void FilterSegments(void) {
 
 
 
-	//Join all adjacent same segment types
-//	segNumF3=0;
-//	segmentF3[0] = segmentF2[0];
-//	segTypeF3[0] = segTypeF2[0];
-//	for (i = 1; i <= segNumF2; i++) {
-//		difType = segTypeF2[i] - segTypeF2[i-1];
-//		if (difType != 0) {
-//			segNumF3++;
-//			segmentF3[segNumF3] = segmentF2[i];
-//			segTypeF3[segNumF3] = segTypeF2[i];
-//		}
-//		else {
-//			segmentF3[segNumF3] = segmentF2[i];
-//
-//		}
-//	}
+	//Join all adjacent same segment types (based on left marker)
+	segNumF4=0;
+	segmentF4[0] = segmentF3[0];
+	segTypeF4[0] = segTypeF3[0];
+	for (i = 1; i <= segNumF3; i++) {
+		difType = segTypeF3[i] - segTypeF3[i-1];
+		if (difType == 0) {
+			leftmNum = 0;
+			for(index = 0; index < LeftNum; index++){ //check left marker inside this segment
+				if((LeftMarker[index] > (segmentF3[i-1]-20))&&(LeftMarker[index] < (segmentF3[i-1]+20))){
+					leftmNum++;
+				}
+			}
+			if(leftmNum!=0){// left marker within segments
+				segNumF4++;
+				segmentF4[segNumF4] = segmentF3[i];
+				segTypeF4[segNumF4] = segTypeF3[i];
+			}
+			else{
+				segmentF4[segNumF4] = segmentF3[i];
+			}
+		}
+		else {
+			segNumF4++;
+			segmentF4[segNumF4] = segmentF3[i];
+			segTypeF4[segNumF4] = segTypeF3[i];
+		}
+	}
 
 
 	//Filter Based on left marker, check long segment
 	segNumFL=0;
-	segmentFL[0] = segmentF3[0];
-	segTypeFL[0] = segTypeF3[0];
-	for (i = 1; i <= segNumF3; i++){
+	segmentFL[0] = segmentF4[0];
+	segTypeFL[0] = segTypeF4[0];
+	for (i = 1; i <= segNumF4; i++){
 		segNumFL++;
 
-		if(segmentF3[i] - segmentF3[i-1] > 250){ //if one segment more than 300(1500mm)
-			int index,index2,index3,sum,num,ave,leftmNum;
+		if(segmentF4[i] - segmentF4[i-1] > 250){ //if one segment more than 300(1500mm)
+			int index,index2,index3,sum,num,ave;
 			sum = ave = num = 0;
-			leftmNum = 0;//must be clear to 0 before checking
+			leftmNum = 0;
 			for(index = 0; index < LeftNum; index++){ //check left marker inside this segment
-				if((LeftMarker[index] > (segmentF3[i-1]+20))&&(LeftMarker[index] < (segmentF3[i]-20))){
+				if((LeftMarker[index] > (segmentF4[i-1]+20))&&(LeftMarker[index] < (segmentF4[i]-20))){
 					leftm[leftmNum] = LeftMarker[index];
 					leftmNum++;
 				}
@@ -342,7 +390,7 @@ void FilterSegments(void) {
 			if(leftmNum != 0){
 				for(index2=0;index2<leftmNum;index2++){
 					if(index2==0){
-						for(index3=segmentF3[i-1];index3<leftm[index2];index3++){
+						for(index3=segmentF4[i-1];index3<leftm[index2];index3++){
 							sum += logData[index3];
 							num++;
 							ave = sum/num;
@@ -369,27 +417,27 @@ void FilterSegments(void) {
 					}
 					sum = ave = num = 0;
 					if(index2==(leftmNum-1)){
-						for(index3=leftm[index2];index3<segmentF3[i];index3++){
+						for(index3=leftm[index2];index3<segmentF4[i];index3++){
 							sum += logData[index3];
 							num++;
 							ave = sum/num;
 						}
 						if(ave>35){
-							segTypeF3[i] = 1;
+							segTypeF4[i] = 1;
 						}
 						else if(ave<-35){
-							segTypeF3[i] = -1;
+							segTypeF4[i] = -1;
 						}
 						else{
-							segTypeF3[i] = 0;
+							segTypeF4[i] = 0;
 						}
 					}
 					segNumFL++;
 				}
 			}
 		}
-		segmentFL[segNumFL] = segmentF3[i];
-		segTypeFL[segNumFL] = segTypeF3[i];
+		segmentFL[segNumFL] = segmentF4[i];
+		segTypeFL[segNumFL] = segTypeF4[i];
 	}
 
 
@@ -499,10 +547,10 @@ void CurveSpeed(void){
 				m = x * (1.1f)*dis[i]*(0.0013f);
 			}
 			else if ((rad[i] > 200) && (rad[i] < 300)) {
-				m = x * (1.2f)*dis[i]*(0.0015f);
+				m = x * (1.2f)*dis[i]*(0.0013f);
 			}
 			else {
-				m = x * (1.3f)*dis[i]*(0.0015f);
+				m = x * (1.25f)*dis[i]*(0.0013f);
 			}
 		}
 		//m=dis[i]*(0.002f)*x;
@@ -511,8 +559,8 @@ void CurveSpeed(void){
 		// Limit max/min speed
 		if (curveSpeed[i] > 3000)
 			curveSpeed[i] = 3000;
-		if (curveSpeed[i] < 1200)
-			curveSpeed[i] = 1200;
+		if (curveSpeed[i] < 1300)
+			curveSpeed[i] = 1300;
 
 		//		int tRad = fabs(rad[i]);
 		//		if (tRad<minRad) tRad = minRad;
@@ -683,14 +731,16 @@ void LMarkerDetect(){
 		uint16_t tDist = curPosTotal[0]/DIST_mm_oc(1);
 		if ((tDist-disL)>30) {
 			JLState = 0;
-			LSumMarker ++;
 			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			LMarkerFlag=TRUE;
 			JMarkerFlag = FALSE;
-			LeftMarker[LeftNum] = (timeCount-30-60)/5;
-			LeftNum++;
+			if(fastFlag==FALSE){
+				LeftMarker[LeftNum] = (timeCount-30-60)/5;
+				LeftNum++;
+				//pulseBuzzer(1000, 50);
+			}
 			pulseLED(0,100);
-			//pulseBuzzer(1000, 50);
+
 		}
 	}
 }
@@ -736,7 +786,7 @@ void ClearMarkerFlag(){
 	JMarkerFlag = 0;
 	LState=RState=0;
 	timeCount = 0;
-	RSumMarker=LSumMarker=sumJunction=JMarkerNum=0;
+	RSumMarker=sumJunction=JMarkerNum=LeftNum=0;
 }
 
 //Collect black value

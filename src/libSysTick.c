@@ -63,11 +63,10 @@ void Handler_SysTick(void){
 	}
 	if(fastFlag == TRUE){
 		LogData(SegmentNum*100);
-		LogData(sensor[8]);
-		LogData(sensor[9]);
-		//LogData(sensor[10]);
-		LogData(sensoroffsetX2);
 		LogData(curSpeed[0]);
+		LogData(sensoroffset);
+		LogData(wheelPWM[0]);
+		LogData(wheelPWM[1]);
 		logFastFlag = TRUE;
 	}
 	if(senLowFlag)
