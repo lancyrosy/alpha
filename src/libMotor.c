@@ -132,7 +132,6 @@ void MotorPID(void)
 
 		CLIP(posPWM[i], -(900), (900) );
 
-
 	}
 
 	long  speed = curSpeed[0];
