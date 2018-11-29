@@ -24,7 +24,7 @@ extern volatile int fastModeX;
 
 #define SEGSIZE 300
 extern volatile uint16_t segmentFL[SEGSIZE], segNumFL;
-extern volatile int16_t segTypeFL[SEGSIZE];
+extern volatile char segTypeFL[SEGSIZE];
 
 
 

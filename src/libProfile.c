@@ -524,8 +524,8 @@ void UpdateRobotPos() {
 //		robotPos.dir = curCompassValue;
 
 	robotPosIncT  += curSpeed[XSPEED];
-	robotPosIncY += curSpeed[XSPEED]*Sine(robotPos.dir)/10000;
-	robotPosIncX += curSpeed[XSPEED]*Cosine(robotPos.dir)/10000;
+	//robotPosIncY += curSpeed[XSPEED]*Sine(robotPos.dir)/10000;
+	//robotPosIncX += curSpeed[XSPEED]*Cosine(robotPos.dir)/10000;
 	robotPosIncW += curSpeed[WSPEED] + alignSpeed;
 
 

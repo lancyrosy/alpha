@@ -22,13 +22,13 @@
 
 
 int main(void){
-
+	char i=-1;
 
 	InitIO();	// Must be initialised before any printf()
 
 	clrscr();
 
-   	printf("I'm alive!123999 %u", DIST_mm_oc(3655/20 + 3655/10 + 150));
+   	printf("I'm alive!%d", i);
 
 
    	InitDataCold();
