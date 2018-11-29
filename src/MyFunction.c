@@ -575,7 +575,12 @@ void CurveSpeed(void){
 			}
 		}
 		//m=dis[i]*(0.002f)*x;
-		curveSpeed[i] = (int) (sqrt(fabs(rad[i]) * m));
+		float a = arcAngle[i];
+		if (a<0) a = -a;
+		float f = (3600-a)/1800;
+		f = sqrt(f);
+		f = sqrt(f);
+		curveSpeed[i] = (int) (sqrt(fabs(rad[i]) * x *f));
 
 		// Limit max/min speed
 		if (curveSpeed[i] > maxCurSpeed)
