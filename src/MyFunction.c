@@ -577,7 +577,8 @@ void CurveSpeed(void){
 		//m=dis[i]*(0.002f)*x;
 		float a = arcAngle[i];
 		if (a<0) a = -a;
-		float f = (3600-a)/1800;
+		if (a>1200) a = 1200;
+		float f = (4000-a)/1800;
 		f = sqrt(f);
 		f = sqrt(f);
 		curveSpeed[i] = (int) (sqrt(fabs(rad[i]) * x *f));
@@ -739,8 +740,8 @@ void TestRun(void){
 }
 
 
-#define LEFT_SEN	13
-#define RIGHT_SEN	14
+#define LEFT_SEN	14
+#define RIGHT_SEN	13
 //Marker detection
 void LMarkerDetect(){
 	if (sensorCal[LEFT_SEN] >= 400) {
