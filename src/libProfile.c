@@ -353,6 +353,9 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 //		if (abs(sensoroffset2) > 100) {   // Entering the curve (Straight-Curve)
 //			curSpeedPercent = 90;
 //		}
+		if((junction[JIndex]<segmentNum)&&(junction[JIndex]!=1)){
+			JIndex++;
+		}
 		if(dist > CHECK_DIST) {			 //For long distance straight
 
 			if (LMarkerFlag == TRUE) {
@@ -370,6 +373,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 				}
 			}
 		}
+
 		while((curPos[0]< (finalPos[0]+DIST_mm_oc(40)))&&(junction[JIndex] == segmentNum) && (!bSWFlag)) {
 			DispDotMatrix("JJSS");
 			if (JMarkerFlag == TRUE) {
