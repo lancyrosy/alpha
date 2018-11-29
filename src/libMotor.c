@@ -130,6 +130,9 @@ void MotorPID(void)
 		posPWM[i] = (kp[i]*posErr[i] + kd[i]*(posErr[i]-posErrOld[i]));
 		posErrOld[i] = posErr[i];
 
+		CLIP(posPWM[i], -(900), (900) );
+
+
 	}
 
 	long  speed = curSpeed[0];

@@ -506,6 +506,7 @@ int maxCurSpeed=3000, minCurSpeed=1300;
 void CurveSpeed(void){
 	int i;
 	double x,m;
+	for (i = 0; i <= segNumFL; i++) {
 	switch (fastModeX) {
 		case 1:
 			x=9000;
@@ -533,12 +534,12 @@ void CurveSpeed(void){
 			decStr=10000;
 			accCur=2500;
 			decCur=3500;
-			maxCurSpeed=3000;
+			maxCurSpeed=2750;
 			minCurSpeed=1300;
 			strTopSpeed=4000;
 			break;
 		}
-	for (i = 0; i <= segNumFL; i++) {
+
 		m = x;
 
 		//small curve
@@ -547,31 +548,55 @@ void CurveSpeed(void){
 				m = x * (0.90f);
 			}
 			else {
-				m = x * 0.95f;
+				m = x * (0.95f);
 			}
 		}
 		//medium curve
-		else if ((dis[i] > 200) && (dis[i] < 400)) {
+		else if ((dis[i] > 200) && (dis[i] <= 400)) {
 			if (rad[i] <= 200) {
-				m = x * (1.05f);
-			}
-			else if ((rad[i] > 200) && (rad[i] < 300)) {
 				m = x * (1.1f);
+				maxCurSpeed=1650;
+			}
+			else if ((rad[i] > 200) && (rad[i] <= 300)) {
+				m = x * (1.15f);
+				maxCurSpeed=1800;
 			}
 			else {
 				m = x * (1.2f);
 			}
 		}
 		//big curve (dis>400)
+		else if ((dis[i] > 400) && (dis[i] <= 600)) {
+			if (rad[i] <= 200) {
+				m = x * dis[i] * (0.0022f);
+				maxCurSpeed=1650;
+			} else if ((rad[i] > 200) && (rad[i] <= 300)) {
+				m = x * dis[i] * (0.0025f);
+				maxCurSpeed=1800;
+			} else {
+				m = x * dis[i] * (0.0030f);
+			}
+		} else if ((dis[i] > 600) && (dis[i] <= 800)) {
+			if (rad[i] <= 200) {
+				m = x * dis[i] * (0.0022f);
+				maxCurSpeed=1650;
+			} else if ((rad[i] > 200) && (rad[i] <= 300)) {
+				m = x * dis[i] * (0.0026f);
+				maxCurSpeed=1800;
+			} else {
+				m = x * dis[i] * (0.0031f);
+			}
+		}
+		//big curve (dis>800)
 		else {
 			if (rad[i] <= 200) {
-				m = x * (1.1f)*dis[i]*(0.0013f);
-			}
-			else if ((rad[i] > 200) && (rad[i] < 300)) {
-				m = x * (1.2f)*dis[i]*(0.0013f);
-			}
-			else {
-				m = x * (1.25f)*dis[i]*(0.0013f);
+				m = x * dis[i] * (0.0022f);
+				maxCurSpeed=1650;
+			} else if ((rad[i] > 200) && (rad[i] <= 300)) {
+				m = x * dis[i] * (0.0027f);
+				maxCurSpeed=1800;
+			} else {
+				m = x * dis[i] * (0.003f);
 			}
 		}
 		//m=dis[i]*(0.002f)*x;
