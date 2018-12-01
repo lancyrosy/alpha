@@ -339,8 +339,8 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 	int diff,range, dist2=dist;
 
 	if (dist > CHECK_DIST){				  //For long distance straight
-		dist2 = dist + dist/10 + 100;
-		brakeDist += dist/10 + 100;
+		dist2 = dist + dist/10 + 200;
+		brakeDist += dist/10 + 200;
 		//topSpeed=topSpeed+200;
 	}
 	curSpeedPercent = 100;
@@ -373,6 +373,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 				}
 			}
 		}
+
 
 		while((curPos[0]< (finalPos[0]+DIST_mm_oc(40)))&&(junction[JIndex] == segmentNum) && (!bSWFlag)) {
 			DispDotMatrix("JJSS");
