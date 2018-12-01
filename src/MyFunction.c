@@ -507,106 +507,113 @@ void CurveSpeed(void){
 	int i;
 	double x,m;
 	for (i = 0; i <= segNumFL; i++) {
-	switch (fastModeX) {
+		switch (fastModeX) {
 		case 1:
-			x=9000;
-			accStr=8000;
-			decStr=9000;
-		    accCur=2000;
-		    decCur=3000;
-		    maxCurSpeed=2500;
-		    minCurSpeed=1200;
-		    strTopSpeed=3500;
+			x = 9000;
+			accStr = 8000;
+			decStr = 9000;
+			accCur = 2000;
+			decCur = 3000;
+			maxCurSpeed = 2500;
+			minCurSpeed = 1200;
+			strTopSpeed = 3500;
 			break;
 		case 2:
-			x=10500;
-			accStr=8500;
-			decStr=9500;
-			accCur=2250;
-			decCur=3250;
-			maxCurSpeed=2750;
-			minCurSpeed=1200;
-			strTopSpeed=4300;
+			x = 10500;
+			accStr = 8500;
+			decStr = 9500;
+			accCur = 2250;
+			decCur = 3250;
+			maxCurSpeed = 2600;
+			minCurSpeed = 1250;
+			strTopSpeed = 4000;
 			break;
 		case 3:
-			x=12000;
-			accStr=9000;
-			decStr=10000;
-			accCur=2500;
-			decCur=3500;
-			maxCurSpeed=3000;
-			minCurSpeed=1300;
-			strTopSpeed=4800;
+			x = 12000;
+			accStr = 9000;
+			decStr = 10000;
+			accCur = 2500;
+			decCur = 3500;
+			maxCurSpeed = 2750;
+			minCurSpeed = 1250;
+			strTopSpeed = 4500;
 			break;
 		}
 
 		m = x;
-
+		rad[i]=abs(rad[i]);
 		//small curve
 		if (dis[i] <= 200) {
 			if (rad[i] <= 200) {
 				m = x * (0.90f);
-			}
-			else {
-				m = x * (0.95f);
+				maxCurSpeed = 1600;
+			} else if ((rad[i] > 200) && (rad[i] <= 300)) {
+				m = x * (0.94f);
+				maxCurSpeed = 1800;
+			} else {
+				m = x * (0.96f);
 			}
 		}
 		//medium curve
 		else if ((dis[i] > 200) && (dis[i] <= 400)) {
 			if (rad[i] <= 200) {
 				m = x * (1.1f);
-				maxCurSpeed=1650;
-			}
-			else if ((rad[i] > 200) && (rad[i] <= 300)) {
-				m = x * (1.15f);
-				maxCurSpeed=1800;
-			}
-			else {
-				m = x * (1.2f);
+				maxCurSpeed = 1600;
+			} else if ((rad[i] > 200) && (rad[i] <= 300)) {
+				m = x * (1.14f);
+				maxCurSpeed = 1800;
+			} else {
+				m = x * (1.17f);
 			}
 		}
 		//big curve (dis>400)
 		else if ((dis[i] > 400) && (dis[i] <= 600)) {
 			if (rad[i] <= 200) {
 				m = x * dis[i] * (0.0022f);
-				maxCurSpeed=1650;
+				maxCurSpeed = 1600;
 			} else if ((rad[i] > 200) && (rad[i] <= 300)) {
 				m = x * dis[i] * (0.0025f);
-				maxCurSpeed=1800;
+				maxCurSpeed = 1800;
 			} else {
-				m = x * dis[i] * (0.0030f);
+				m = x * dis[i] * (0.0028f);
 			}
-		} else if ((dis[i] > 600) && (dis[i] <= 800)) {
+		}
+		else if ((dis[i] > 600) && (dis[i] <= 800)) {
 			if (rad[i] <= 200) {
 				m = x * dis[i] * (0.0022f);
-				maxCurSpeed=1650;
+				maxCurSpeed = 1600;
 			} else if ((rad[i] > 200) && (rad[i] <= 300)) {
 				m = x * dis[i] * (0.0026f);
-				maxCurSpeed=1800;
+				maxCurSpeed = 1800;
 			} else {
-				m = x * dis[i] * (0.0031f);
+				m = x * dis[i] * (0.0029f);
 			}
 		}
 		//big curve (dis>800)
 		else {
 			if (rad[i] <= 200) {
 				m = x * dis[i] * (0.0022f);
-				maxCurSpeed=1650;
+				maxCurSpeed = 1650;
 			} else if ((rad[i] > 200) && (rad[i] <= 300)) {
 				m = x * dis[i] * (0.0027f);
-				maxCurSpeed=1800;
+				maxCurSpeed = 1800;
 			} else {
 				m = x * dis[i] * (0.003f);
 			}
 		}
 
-		float a = abs(arcAngle[i]);
-		if (a>1300) a = 1300;
-		float f = (3600-a)/1800;
+
+		float a = arcAngle[i];
+		if (a < 0)
+			a = -a;
+		if (a > 1200)
+			a = 1200;
+		float f = (4000 - a) / 1800;
 		f = sqrt(f);
 		f = sqrt(f);
 
-		curveSpeed[i] = (int) (sqrt(fabs(rad[i]) * x *f));
+		curveSpeed[i] = (int) (sqrt(fabs(rad[i]) * m));
+
 
 		// Limit max/min speed
 		if (curveSpeed[i] > maxCurSpeed)
@@ -629,7 +636,6 @@ void CurveSpeed(void){
 				curveSpeed[i - 1] = tCurveSpeed;
 		}
 	}
-
 
 }
 void AnalyseJunction(void){
@@ -781,7 +787,8 @@ void LMarkerDetect(){
 	}
 	if (JLState==1) {
 		uint16_t tDist = curPosTotal[0]/DIST_mm_oc(1);
-		if ((tDist-disL)>20) {
+		if ((tDist-disL)>25) {
+
 			JLState = 0;
 			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			LMarkerFlag=TRUE;
@@ -809,7 +816,8 @@ void RMarkerDetect(){
 	}
 	if (JRState==1) {
 		uint16_t tDist = curPosTotal[0]/DIST_mm_oc(1);
-		if ((tDist-disR)>20) {
+		if ((tDist-disR)>25) {
+
 			JRState = 0;
 			JMarkerFlag = FALSE;
 			RSumMarker ++;
