@@ -513,29 +513,29 @@ void CurveSpeed(void){
 			accStr = 8000;
 			decStr = 9000;
 			accCur = 2000;
-			decCur = 3000;
+			decCur = 2750;
 			maxCurSpeed = 2500;
 			minCurSpeed = 1200;
-			strTopSpeed = 3500;
+			strTopSpeed = 3800;
 			break;
 		case 2:
 			x = 10500;
 			accStr = 8500;
-			decStr = 9500;
+			decStr = 9000;
 			accCur = 2250;
-			decCur = 3250;
-			maxCurSpeed = 2600;
+			decCur = 3000;
+			maxCurSpeed = 2650;
 			minCurSpeed = 1250;
-			strTopSpeed = 4000;
+			strTopSpeed = 4200;
 			break;
 		case 3:
 			x = 12000;
 			accStr = 9000;
-			decStr = 10000;
+			decStr = 9500;
 			accCur = 2500;
-			decCur = 3500;
-			maxCurSpeed = 2750;
-			minCurSpeed = 1250;
+			decCur = 3250;
+			maxCurSpeed = 2800;
+			minCurSpeed = 1300;
 			strTopSpeed = 4500;
 			break;
 		}
@@ -788,7 +788,6 @@ void LMarkerDetect(){
 	if (JLState==1) {
 		uint16_t tDist = curPosTotal[0]/DIST_mm_oc(1);
 		if ((tDist-disL)>25) {
-
 			JLState = 0;
 			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			LMarkerFlag=TRUE;

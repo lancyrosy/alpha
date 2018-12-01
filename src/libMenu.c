@@ -299,7 +299,7 @@ void MyTest(){
 			case 4:
 				EnableSensor();
 				EnWheelMotor();
-				MoveRobotCalibrate(XSPEED, 500, 0, 200, 0, 1000,1000);
+				MoveRobotCalibrate(XSPEED, 300, 0, 200, 0, 1000,1000);
 				DisableSensor();
 				DisWheelMotor();
 				break;
