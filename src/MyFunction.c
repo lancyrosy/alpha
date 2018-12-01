@@ -515,7 +515,7 @@ void CurveSpeed(void){
 		    accCur=2000;
 		    decCur=3000;
 		    maxCurSpeed=2500;
-		    minCurSpeed=1100;
+		    minCurSpeed=1200;
 		    strTopSpeed=3500;
 			break;
 		case 2:
@@ -526,7 +526,7 @@ void CurveSpeed(void){
 			decCur=3250;
 			maxCurSpeed=2750;
 			minCurSpeed=1200;
-			strTopSpeed=3750;
+			strTopSpeed=4300;
 			break;
 		case 3:
 			x=12000;
@@ -534,9 +534,9 @@ void CurveSpeed(void){
 			decStr=10000;
 			accCur=2500;
 			decCur=3500;
-			maxCurSpeed=2750;
+			maxCurSpeed=3000;
 			minCurSpeed=1300;
-			strTopSpeed=4000;
+			strTopSpeed=4800;
 			break;
 		}
 
@@ -599,13 +599,13 @@ void CurveSpeed(void){
 				m = x * dis[i] * (0.003f);
 			}
 		}
-		//m=dis[i]*(0.002f)*x;
-		float a = arcAngle[i];
-		if (a<0) a = -a;
-		if (a>1200) a = 1200;
-		float f = (4000-a)/1800;
+
+		float a = abs(arcAngle[i]);
+		if (a>1300) a = 1300;
+		float f = (3600-a)/1800;
 		f = sqrt(f);
 		f = sqrt(f);
+
 		curveSpeed[i] = (int) (sqrt(fabs(rad[i]) * x *f));
 
 		// Limit max/min speed
@@ -765,8 +765,8 @@ void TestRun(void){
 }
 
 
-#define LEFT_SEN	14
-#define RIGHT_SEN	13
+#define LEFT_SEN	13
+#define RIGHT_SEN	14
 //Marker detection
 void LMarkerDetect(){
 	if (sensorCal[LEFT_SEN] >= 400) {
@@ -781,15 +781,15 @@ void LMarkerDetect(){
 	}
 	if (JLState==1) {
 		uint16_t tDist = curPosTotal[0]/DIST_mm_oc(1);
-		if ((tDist-disL)>30) {
+		if ((tDist-disL)>20) {
 			JLState = 0;
 			LMarkerFlagPos=curPos[0]/DIST_mm_oc(1);
 			LMarkerFlag=TRUE;
 			JMarkerFlag = FALSE;
 			if(fastFlag==FALSE){
-				LeftMarker[LeftNum] = (timeCount-30-60)/5;
+				LeftMarker[LeftNum] = (timeCount-25-60)/5;
 				LeftNum++;
-				//pulseBuzzer(1000, 50);
+				pulseBuzzer(1000, 50);
 			}
 			pulseLED(0,100);
 
@@ -809,7 +809,7 @@ void RMarkerDetect(){
 	}
 	if (JRState==1) {
 		uint16_t tDist = curPosTotal[0]/DIST_mm_oc(1);
-		if ((tDist-disR)>30) {
+		if ((tDist-disR)>20) {
 			JRState = 0;
 			JMarkerFlag = FALSE;
 			RSumMarker ++;

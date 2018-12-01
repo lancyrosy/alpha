@@ -339,8 +339,8 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 	int diff,range, dist2=dist;
 
 	if (dist > CHECK_DIST){				  //For long distance straight
-		dist2 = dist + dist/10 + 100;
-		brakeDist += dist/10 + 100;
+		dist2 = dist + dist/5 + 200;
+		brakeDist += dist/5 + 200;
 		//topSpeed=topSpeed+200;
 	}
 	curSpeedPercent = 100;
@@ -353,7 +353,7 @@ void MoveRobotStraight(int16_t speedType, int16_t dist, int16_t brakeDist, int16
 //		if (abs(sensoroffset2) > 100) {   // Entering the curve (Straight-Curve)
 //			curSpeedPercent = 90;
 //		}
-		if((junction[JIndex]<segmentNum)&&(junction[JIndex]!=1)){
+		if((junction[JIndex]<segmentNum)&&(junction[JIndex]!=-1)){
 			JIndex++;
 		}
 		if(dist > CHECK_DIST) {			 //For long distance straight
